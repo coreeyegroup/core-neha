@@ -62,8 +62,9 @@ class MigrationPrivilegesTest extends PostgresTestBase {
     void runtimeRoleCanUseSessionTables() throws SQLException {
         try (Connection c = asApp(); Statement s = c.createStatement();
              ResultSet rs = s.executeQuery("select count(*) from session.spring_session")) {
-            rs.next();
-            assertThat(rs.getInt(1)).isZero();
+            // Other tests share this database and may have created sessions; the point is that the runtime role can read it.
+            assertThat(rs.next()).isTrue();
+            assertThat(rs.getInt(1)).isNotNegative();
         }
     }
 }

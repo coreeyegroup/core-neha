@@ -9,8 +9,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import java.util.List;
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.Mockito.when;
+
 import com.jayway.jsonpath.JsonPath;
-import in.coreeye.coreneha.kernel.TenantContext;
 import in.coreeye.coreneha.support.PostgresTestBase;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.MethodOrderer;
@@ -21,6 +24,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -39,6 +43,8 @@ class AccessScenarioTest extends PostgresTestBase {
     @Autowired ActorContext actorContext;
     @Autowired BootstrapService bootstrap;
     @Autowired UserService users;
+    /** The identity provider is replaced in this test; KeycloakProvisioner is exercised on the server. */
+    @MockitoBean IdentityProvisioner provisioner;
 
     MockMvc mvc;
     final String run = UUID.randomUUID().toString().substring(0, 8);
@@ -124,11 +130,11 @@ class AccessScenarioTest extends PostgresTestBase {
         String detail = get(adminA, "/v1/people/" + personP, 200);
         assertThat(JsonPath.<List<String>>read(detail, "$.postings[*].centreName")).containsExactlyInAnyOrder("Centre A", "Centre B");
 
-        userU = id(post(adminA, "/v1/users", "{\"personId\":\"" + personP + "\",\"username\":\"priya-" + run + "\"}", 201));
-        TenantContext.callAs(tenantId, () -> {
-            users.linkIdentity(tenantId, UUID.fromString(userU), staff);
-            return null;
-        });
+        when(provisioner.create(any(), any(), any(), any(), anyBoolean()))
+                .thenReturn(new IdentityProvisioner.ProvisionedIdentity(staff, "Temporary1234Ab"));
+        String created = post(adminA, "/v1/users", "{\"personId\":\"" + personP + "\",\"username\":\"priya-" + run + "\"}", 201);
+        userU = JsonPath.read(created, "$.user.id");
+        assertThat((String) JsonPath.read(created, "$.temporaryPassword")).isEqualTo("Temporary1234Ab");
     }
 
     @Test

@@ -33,10 +33,14 @@ public class BootstrapService {
 
     public static final String SYSTEM_ROLE_CODE = "SYSTEM_ADMINISTRATOR";
 
+    /** {@code subject} null means: create the login account in the identity provider now. */
     public record Administrator(String givenName, String familyName, String email, String username, String subject) {
     }
 
-    public record Result(UUID tenantId, UUID systemRoleId, List<UUID> userIds) {
+    public record Credential(String username, String temporaryPassword) {
+    }
+
+    public record Result(UUID tenantId, UUID systemRoleId, List<UUID> userIds, List<Credential> credentials) {
     }
 
     private final JdbcClient jdbc;
@@ -66,7 +70,8 @@ public class BootstrapService {
             throw new RuleViolationException("bootstrap.distinct-administrators", "The two administrators must be different people");
         }
         boolean exists = jdbc.sql("select exists(select 1 from iam.login_identity li where li.subject in (:a, :b))")
-                .param("a", admins.get(0).subject()).param("b", admins.get(1).subject()).query(Boolean.class).single();
+                .param("a", String.valueOf(admins.get(0).subject())).param("b", String.valueOf(admins.get(1).subject()))
+                .query(Boolean.class).single();
         if (exists) {
             throw new ConflictException("bootstrap.identity-in-use", "A login identity is already linked to another account");
         }
@@ -95,11 +100,20 @@ public class BootstrapService {
                 Map.of("code", SYSTEM_ROLE_CODE, "permissions", Permission.values().length)));
 
         List<UUID> userIds = new ArrayList<>();
+        List<Credential> credentials = new ArrayList<>();
         for (Administrator a : admins) {
             var person = workforce.insertPerson(tenantId,
                     new WorkforceModels.CreatePerson(a.givenName(), a.familyName(), a.email()), demo, null);
-            UUID userId = users.insert(tenantId, person.id(), a.username());
-            users.linkIdentity(tenantId, userId, a.subject());
+            UUID userId;
+            if (a.subject() == null) {
+                var created = users.createForLoader(tenantId, person.id(), a.username(), a.email(), a.givenName(),
+                        a.familyName(), demo);
+                userId = created.user().id();
+                credentials.add(new Credential(a.username(), created.temporaryPassword()));
+            } else {
+                userId = users.insert(tenantId, person.id(), a.username());
+                users.linkIdentity(tenantId, userId, a.subject());
+            }
             for (String kind : List.of("ACCESS", "AUTHORITY")) {
                 UUID assignmentId = jdbc.sql("""
                         insert into iam.role_assignment (tenant_id, kind, user_id, role_id, scope_type, scope_id, valid_from,
@@ -114,6 +128,6 @@ public class BootstrapService {
             }
             userIds.add(userId);
         }
-        return new Result(tenantId, roleId, userIds);
+        return new Result(tenantId, roleId, userIds, credentials);
     }
 }

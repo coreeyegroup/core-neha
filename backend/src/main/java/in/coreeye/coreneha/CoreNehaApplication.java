@@ -2,6 +2,7 @@ package in.coreeye.coreneha;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 /**
  * core-neha modular monolith. Each top-level package below this one is an
@@ -9,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  * public API packages. See docs/adr/0001-modular-monolith.md.
  */
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class CoreNehaApplication {
 
     public static void main(String[] args) {

@@ -61,7 +61,7 @@ class IamController {
 
     @PostMapping("/users")
     @ResponseStatus(HttpStatus.CREATED)
-    UserView createUser(@Valid @RequestBody IamModels.CreateUser body) {
+    IamModels.UserCreated createUser(@Valid @RequestBody IamModels.CreateUser body) {
         return users.create(actor.require(), body);
     }
 

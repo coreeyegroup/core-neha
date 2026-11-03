@@ -22,6 +22,10 @@ public final class IamModels {
                            int accessVersion, boolean loginLinked, int version) {
     }
 
+    /** The temporary password is returned once only; it is never stored or logged by core-neha. */
+    public record UserCreated(UserView user, String temporaryPassword, String instructions) {
+    }
+
     public record CreateUser(@NotNull UUID personId,
                              @NotBlank @Pattern(regexp = "^[a-z0-9][a-z0-9._-]{2,59}$") String username) {
     }

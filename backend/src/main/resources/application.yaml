@@ -30,6 +30,26 @@ spring:
       initialize-schema: never
   jackson:
     default-property-inclusion: non_null
+  security:
+    oauth2:
+      client:
+        registration:
+          keycloak:
+            provider: keycloak
+            client-id: core-neha-staff
+            client-secret: ${oidc_staff_client_secret:}
+            client-authentication-method: client_secret_basic
+            authorization-grant-type: authorization_code
+            redirect-uri: "{baseUrl}/login/oauth2/code/{registrationId}"
+            scope: openid,profile,email
+        provider:
+          keycloak:
+            # Browser-facing endpoint on the public address; server-to-server endpoints on the internal network.
+            authorization-uri: ${core-neha.identity.public-url}/realms/core-neha/protocol/openid-connect/auth
+            token-uri: ${core-neha.identity.internal-url}/realms/core-neha/protocol/openid-connect/token
+            jwk-set-uri: ${core-neha.identity.internal-url}/realms/core-neha/protocol/openid-connect/certs
+            user-info-uri: ${core-neha.identity.internal-url}/realms/core-neha/protocol/openid-connect/userinfo
+            user-name-attribute: sub
 
 server:
   port: 8080
@@ -63,3 +83,20 @@ logging:
   structured:
     format:
       console: ecs
+
+core-neha:
+  environment: ${CORE_NEHA_ENVIRONMENT:dev}
+  public-base-url: ${CORE_NEHA_PUBLIC_BASE_URL:http://localhost:18400/core-neha}
+  base-path: ${CORE_NEHA_BASE_PATH:/core-neha}
+  identity:
+    realm: core-neha
+    internal-url: http://${CORE_NEHA_KEYCLOAK_HOST:keycloak}:8080${CORE_NEHA_BASE_PATH:/core-neha}/auth
+    public-url: ${CORE_NEHA_PUBLIC_BASE_URL:http://localhost:18400/core-neha}/auth
+    staff-client-id: core-neha-staff
+    provisioner-client-id: core-neha-provisioner
+    provisioner-client-secret: ${oidc_provisioner_client_secret:}
+  session:
+    absolute-timeout: 12h
+  operations:
+    command: ${CORE_NEHA_COMMAND:}
+    output-dir: ${CORE_NEHA_OUTPUT_DIR:/out}

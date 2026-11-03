@@ -9,6 +9,7 @@ import in.coreeye.coreneha.audit.AuditEntry;
 import in.coreeye.coreneha.audit.AuditLog;
 import in.coreeye.coreneha.audit.AuditOutcome;
 import in.coreeye.coreneha.kernel.Actor;
+import in.coreeye.coreneha.kernel.CoreNehaProperties;
 import in.coreeye.coreneha.kernel.CurrentActor;
 import in.coreeye.coreneha.kernel.TenantContext;
 import jakarta.servlet.FilterChain;
@@ -38,10 +39,12 @@ class ActorContext extends OncePerRequestFilter implements CurrentActor {
 
     private final JdbcClient jdbc;
     private final AuditLog audit;
+    private final CoreNehaProperties props;
 
-    ActorContext(JdbcClient jdbc, AuditLog audit) {
+    ActorContext(JdbcClient jdbc, AuditLog audit, CoreNehaProperties props) {
         this.jdbc = jdbc;
         this.audit = audit;
+        this.props = props;
     }
 
     @Override
@@ -63,7 +66,7 @@ class ActorContext extends OncePerRequestFilter implements CurrentActor {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             if (auth != null && auth.isAuthenticated() && !(auth instanceof AnonymousAuthenticationToken)) {
                 Optional<Actor> actor = resolve(auth.getName());
-                if (actor.isEmpty()) {
+                if (actor.isEmpty() || absoluteTimeoutReached(request)) {
                     refuse(request, response, auth.getName());
                     return;
                 }
@@ -77,6 +80,17 @@ class ActorContext extends OncePerRequestFilter implements CurrentActor {
             MDC.remove("request_id");
             MDC.remove("user_id");
         }
+    }
+
+    /** Sessions end 12 hours after login regardless of activity (Phase 6). */
+    private boolean absoluteTimeoutReached(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        if (session == null || props.session() == null || props.session().absoluteTimeout() == null) {
+            return false;
+        }
+        Object at = session.getAttribute(SecurityConfiguration.AUTHENTICATED_AT);
+        return at instanceof Long started
+                && System.currentTimeMillis() - started > props.session().absoluteTimeout().toMillis();
     }
 
     /** Subject -> active user. Login identities are looked up before the tenant is known (no RLS on that table). */

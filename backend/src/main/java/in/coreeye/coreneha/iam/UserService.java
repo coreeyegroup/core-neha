@@ -36,8 +36,12 @@ public class UserService {
     private final AuditLog audit;
     private final IamSupport support;
     private final WorkforceDirectory workforce;
+    private final IdentityProvisioner provisioner;
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(UserService.class);
 
-    UserService(JdbcClient jdbc, AccessControl access, AuditLog audit, IamSupport support, WorkforceDirectory workforce) {
+    UserService(JdbcClient jdbc, AccessControl access, AuditLog audit, IamSupport support, WorkforceDirectory workforce,
+                IdentityProvisioner provisioner) {
+        this.provisioner = provisioner;
         this.jdbc = jdbc;
         this.access = access;
         this.audit = audit;
@@ -46,16 +50,55 @@ public class UserService {
     }
 
     @Transactional
-    public UserView create(Actor actor, IamModels.CreateUser cmd) {
-        workforce.person(cmd.personId()).orElseThrow(() -> new NotFoundException("Person not found"));
+    public IamModels.UserCreated create(Actor actor, IamModels.CreateUser cmd) {
+        var person = workforce.person(cmd.personId()).orElseThrow(() -> new NotFoundException("Person not found"));
         if (!support.mayActOnUser(actor, Permission.IAM_USER_MANAGE, cmd.personId())) {
             access.require(actor, Permission.IAM_USER_MANAGE, Scope.tenant(actor.tenantId()), "iam.user.create", "person",
                     cmd.personId().toString());
         }
+        boolean demo = Boolean.TRUE.equals(jdbc.sql("select is_demo from workforce.person where id = :id")
+                .param("id", cmd.personId()).query(Boolean.class).single());
         UUID id = insert(actor.tenantId(), cmd.personId(), cmd.username());
-        audit.record(AuditEntry.success(actor, "iam.user.create", "user_account", id, null,
-                IamSupport.details("personId", cmd.personId().toString(), "username", cmd.username())));
-        return row(id);
+        IdentityProvisioner.ProvisionedIdentity identity =
+                provisioner.create(cmd.username(), person.email(), person.givenName(), person.familyName(), demo);
+        try {
+            linkIdentity(actor.tenantId(), id, identity.subject());
+            audit.record(AuditEntry.success(actor, "iam.user.create", "user_account", id, null,
+                    IamSupport.details("personId", cmd.personId().toString(), "username", cmd.username(),
+                            "loginAccountCreated", true, "temporaryPasswordIssued", true)));
+        } catch (RuntimeException e) {
+            safeDelete(identity.subject());
+            throw e;
+        }
+        return new IamModels.UserCreated(row(id), identity.temporaryPassword(),
+                "Give this temporary password to the person privately. At first sign-in they must choose a new password and set up an authenticator app.");
+    }
+
+    /** Creates the account and login for bootstrap and demonstration loaders (they audit as the system). */
+    IamModels.UserCreated createForLoader(UUID tenantId, UUID personId, String username, String email, String givenName,
+                                          String familyName, boolean demo) {
+        UUID id = insert(tenantId, personId, username);
+        IdentityProvisioner.ProvisionedIdentity identity = provisioner.create(username, email, givenName, familyName, demo);
+        try {
+            linkIdentity(tenantId, id, identity.subject());
+        } catch (RuntimeException e) {
+            safeDelete(identity.subject());
+            throw e;
+        }
+        return new IamModels.UserCreated(row(id), identity.temporaryPassword(), null);
+    }
+
+    private void safeDelete(String subject) {
+        try {
+            provisioner.delete(subject);
+        } catch (RuntimeException ex) {
+            log.warn("Could not remove login account {} after a failed user creation", subject);
+        }
+    }
+
+    private String subjectOf(UUID userId) {
+        return jdbc.sql("select subject from iam.login_identity where user_id = :id").param("id", userId)
+                .query(String.class).optional().orElse(null);
     }
 
     UUID insert(UUID tenantId, UUID personId, String username) {
@@ -96,8 +139,19 @@ public class UserService {
             throw new ConflictException("iam.user.stale", "The account was changed by someone else or is already disabled");
         }
         int sessions = support.endSessionsAndBumpAccess(userId);
+        // Access in core-neha has already ended (checked on every request). Also stop new logins at the identity provider.
+        boolean loginDisabled = false;
+        String subject = subjectOf(userId);
+        if (subject != null) {
+            try {
+                provisioner.disable(subject);
+                loginDisabled = true;
+            } catch (RuntimeException e) {
+                log.warn("Identity provider did not confirm disabling login {}: {}", subject, e.getMessage());
+            }
+        }
         audit.record(AuditEntry.success(actor, "iam.user.disable", "user_account", userId, null,
-                IamSupport.details("reason", cmd.reason(), "sessionsEnded", sessions)));
+                IamSupport.details("reason", cmd.reason(), "sessionsEnded", sessions, "loginDisabled", loginDisabled)));
         return row(userId);
     }
 
@@ -115,6 +169,10 @@ public class UserService {
                 """).param("id", userId).param("v", cmd.expectedVersion()).update();
         if (updated == 0) {
             throw new ConflictException("iam.user.stale", "The account was changed by someone else or is already active");
+        }
+        String subject = subjectOf(userId);
+        if (subject != null) {
+            provisioner.enable(subject);
         }
         audit.record(AuditEntry.success(actor, "iam.user.enable", "user_account", userId, null,
                 IamSupport.details("reason", cmd.reason())));

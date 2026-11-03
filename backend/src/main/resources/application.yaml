@@ -1,0 +1,65 @@
+# core-neha backend configuration. Secrets come from files in /run/secrets
+# (Docker Compose secrets) through the config tree import; file names become
+# property names. Nothing secret is written here or in the environment.
+spring:
+  application:
+    name: core-neha
+  config:
+    import: "optional:configtree:/run/secrets/"
+  threads:
+    virtual:
+      enabled: true
+  datasource:
+    url: jdbc:postgresql://${CORE_NEHA_DB_HOST:postgres}:5432/core_neha
+    username: core_neha_app
+    password: ${core_neha_app_password}
+    hikari:
+      maximum-pool-size: 20
+      pool-name: core-neha-app
+  flyway:
+    # Migrations run as the owner role; the application runs as core_neha_app (ADR-0007).
+    url: ${spring.datasource.url}
+    user: core_neha_owner
+    password: ${core_neha_owner_password}
+    locations: classpath:db/migration
+    validate-migration-naming: true
+  session:
+    timeout: 30m
+    jdbc:
+      table-name: session.spring_session
+      initialize-schema: never
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  port: 8080
+  servlet:
+    context-path: ${CORE_NEHA_BASE_PATH:/core-neha}/api
+    session:
+      cookie:
+        name: CORE_NEHA_SESSION
+        http-only: true
+        secure: true
+        same-site: lax
+  forward-headers-strategy: framework
+  error:
+    include-message: never
+    include-stacktrace: never
+
+management:
+  server:
+    port: 8081
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+
+logging:
+  structured:
+    format:
+      console: ecs

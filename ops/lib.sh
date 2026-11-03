@@ -1,3 +1,4 @@
+# shellcheck shell=bash
 # Shared paths for core-neha operations scripts (sourced, not executed).
 CN_ROOT="${CN_ROOT:-$HOME/core-neha}"
 CN_REPO="$CN_ROOT/repo"

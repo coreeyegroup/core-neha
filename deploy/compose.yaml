@@ -119,6 +119,42 @@ services:
           memory: 1280m
           cpus: "1.5"
 
+  backend:
+    <<: *hardening
+    build:
+      context: ../backend
+    image: core-neha/backend:local
+    environment:
+      CORE_NEHA_ENVIRONMENT: ${CORE_NEHA_ENVIRONMENT:?set in config}
+      CORE_NEHA_PUBLIC_BASE_URL: ${CORE_NEHA_PUBLIC_BASE_URL}
+      CORE_NEHA_BASE_PATH: ${CORE_NEHA_BASE_PATH}
+      CORE_NEHA_DB_HOST: postgres
+    secrets:
+      - core_neha_app_password
+      - core_neha_owner_password
+      - oidc_staff_client_secret
+      - oidc_provisioner_client_secret
+    networks:
+      backplane:
+        ipv4_address: 172.29.84.30
+    depends_on:
+      postgres:
+        condition: service_healthy
+      keycloak:
+        condition: service_healthy
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "/bin/bash", "/opt/core-neha/healthcheck.sh"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 90s
+    deploy:
+      resources:
+        limits:
+          memory: 1536m
+          cpus: "1.5"
+
   gateway:
     <<: *hardening
     image: nginx:1.30.6-alpine3.24
@@ -142,6 +178,8 @@ services:
       edge: {}
     depends_on:
       keycloak:
+        condition: service_healthy
+      backend:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/__gateway_health"]

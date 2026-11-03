@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+# Single entry point for Docker Compose: always the right config and secrets.
+#   ops/cn up -d | ops/cn ps | ops/cn logs -f keycloak | ops/cn down
+set -euo pipefail
+. "$(dirname "$(readlink -f "$0")")/lib.sh"
+[ -f "$CN_ENV" ] || { echo "core-neha: missing $CN_ENV (run ops/init-config.sh)" >&2; exit 1; }
+export CORE_NEHA_SECRETS_DIR="$CN_SECRETS"
+exec docker compose --project-directory "$CN_REPO/deploy" -f "$CN_REPO/deploy/compose.yaml" --env-file "$CN_ENV" "$@"

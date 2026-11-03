@@ -1,0 +1,6 @@
+    # CORE NEHA BEGIN (managed by ~/core-neha/repo/ops/caddy-route.sh; do not edit by hand)
+    redir __BASE_PATH__ __BASE_PATH__/ 308
+    handle __BASE_PATH__/* {
+        reverse_proxy 127.0.0.1:__HTTP_PORT__
+    }
+    # CORE NEHA END

@@ -1,0 +1,19 @@
+# Never commit secrets, live config, backups or data
+/secrets/
+/config/
+/backups/
+*.env
+!deploy/config/*.env.example
+*.dump
+*.pem
+*.key
+# Build output
+target/
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+.idea/
+.vscode/
+*.log

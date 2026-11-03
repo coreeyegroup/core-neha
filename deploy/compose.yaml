@@ -1,0 +1,189 @@
+# core-neha deployment stack. Run through ops/cn, never directly, so the
+# config file and secrets folder are always the right ones.
+name: core-neha
+
+x-logging: &logging
+  driver: local
+  options:
+    max-size: "20m"
+    max-file: "5"
+
+x-hardening: &hardening
+  security_opt:
+    - "no-new-privileges:true"
+  restart: unless-stopped
+  logging: *logging
+
+services:
+  postgres:
+    <<: *hardening
+    image: postgres:18.6-alpine3.24
+    entrypoint: ["/bin/sh", "/opt/core-neha/entrypoint-wrapper.sh"]
+    command:
+      - postgres
+      - -c
+      - shared_buffers=384MB
+      - -c
+      - effective_cache_size=1GB
+      - -c
+      - work_mem=8MB
+      - -c
+      - maintenance_work_mem=128MB
+      - -c
+      - max_connections=100
+      - -c
+      - password_encryption=scram-sha-256
+      - -c
+      - timezone=UTC
+      - -c
+      - log_min_duration_statement=500ms
+      - -c
+      - log_line_prefix=%m [%p] %q%u@%d
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./postgres/entrypoint-wrapper.sh:/opt/core-neha/entrypoint-wrapper.sh:ro
+      - ./postgres/initdb:/docker-entrypoint-initdb.d:ro
+    secrets:
+      - pg_superuser_password
+      - core_neha_owner_password
+      - core_neha_app_password
+      - keycloak_db_password
+    networks:
+      - backplane
+    shm_size: 256mb
+    stop_grace_period: 60s
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres -q"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    deploy:
+      resources:
+        limits:
+          memory: 1536m
+          cpus: "1.5"
+
+  keycloak:
+    <<: *hardening
+    build:
+      context: ./keycloak
+      args:
+        KC_VERSION: "26.8.1"
+        BASE_PATH: ${CORE_NEHA_BASE_PATH:?set in config}
+    image: core-neha/keycloak:26.8.1
+    environment:
+      CORE_NEHA_PUBLIC_BASE_URL: ${CORE_NEHA_PUBLIC_BASE_URL:?set in config}
+      CORE_NEHA_BASE_PATH: ${CORE_NEHA_BASE_PATH}
+      KC_HTTP_RELATIVE_PATH: ${CORE_NEHA_BASE_PATH}/auth
+      KC_DB_URL: jdbc:postgresql://postgres:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_HOSTNAME: ${CORE_NEHA_PUBLIC_BASE_URL}/auth
+      KC_HOSTNAME_ADMIN: http://localhost:${CORE_NEHA_KC_ADMIN_PORT:?set in config}${CORE_NEHA_BASE_PATH}/auth
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: "true"
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+      KC_PROXY_TRUSTED_ADDRESSES: 172.29.84.10/32   # the gateway only
+      KC_LOG: console
+      KC_LOG_CONSOLE_OUTPUT: json
+      KC_BOOTSTRAP_ADMIN_USERNAME: core-neha-bootstrap-admin
+      JAVA_OPTS_KC_HEAP: "-XX:MaxRAMPercentage=60 -XX:InitialRAMPercentage=25"
+    secrets:
+      - keycloak_db_password
+      - keycloak_bootstrap_admin_password
+      - oidc_staff_client_secret
+      - oidc_provisioner_client_secret
+    ports:
+      # Admin console only; reach it through an SSH tunnel.
+      - "127.0.0.1:${CORE_NEHA_KC_ADMIN_PORT}:8080"
+    networks:
+      backplane:
+        ipv4_address: 172.29.84.20
+      edge: {}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    stop_grace_period: 30s
+    healthcheck:
+      test: ["CMD", "/bin/bash", "/opt/core-neha/healthcheck.sh"]
+      interval: 15s
+      timeout: 5s
+      retries: 10
+      start_period: 120s
+    deploy:
+      resources:
+        limits:
+          memory: 1280m
+          cpus: "1.5"
+
+  gateway:
+    <<: *hardening
+    image: nginx:1.30.6-alpine3.24
+    environment:
+      CORE_NEHA_BASE_PATH: ${CORE_NEHA_BASE_PATH}
+    volumes:
+      - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./gateway/templates:/etc/nginx/templates:ro
+      - ./gateway/site:/usr/share/nginx/html${CORE_NEHA_BASE_PATH}:ro
+    tmpfs:
+      - /etc/nginx/conf.d
+      - /var/cache/nginx
+      - /var/run
+      - /tmp
+    read_only: true
+    ports:
+      - "127.0.0.1:${CORE_NEHA_HTTP_PORT:?set in config}:8080"
+    networks:
+      backplane:
+        ipv4_address: 172.29.84.10
+      edge: {}
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/__gateway_health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          memory: 128m
+          cpus: "0.5"
+
+networks:
+  # No outbound access, no host ports: database and internal traffic.
+  backplane:
+    internal: true
+    ipam:
+      config:
+        - subnet: 172.29.84.0/24
+  # Only for publishing the two localhost ports.
+  edge:
+    ipam:
+      config:
+        - subnet: 172.29.85.0/24
+
+volumes:
+  pgdata:
+    name: core-neha_pgdata
+
+secrets:
+  pg_superuser_password:
+    file: ${CORE_NEHA_SECRETS_DIR:?run through ops/cn}/pg_superuser_password
+  core_neha_owner_password:
+    file: ${CORE_NEHA_SECRETS_DIR}/core_neha_owner_password
+  core_neha_app_password:
+    file: ${CORE_NEHA_SECRETS_DIR}/core_neha_app_password
+  keycloak_db_password:
+    file: ${CORE_NEHA_SECRETS_DIR}/keycloak_db_password
+  keycloak_bootstrap_admin_password:
+    file: ${CORE_NEHA_SECRETS_DIR}/keycloak_bootstrap_admin_password
+  oidc_staff_client_secret:
+    file: ${CORE_NEHA_SECRETS_DIR}/oidc_staff_client_secret
+  oidc_provisioner_client_secret:
+    file: ${CORE_NEHA_SECRETS_DIR}/oidc_provisioner_client_secret

@@ -1,0 +1,49 @@
+upstream core_neha_keycloak { server keycloak:8080; keepalive 16; }
+
+server {
+  listen 8080;
+  server_name _;
+
+  # Container health only; Caddy forwards ${CORE_NEHA_BASE_PATH}/* and never reaches this.
+  location = /__gateway_health { access_log off; default_type text/plain; return 200 "ok\n"; }
+
+  location = ${CORE_NEHA_BASE_PATH} { return 308 ${CORE_NEHA_BASE_PATH}/; }
+
+  # Identity: public login endpoints only. Administration uses the localhost-only port.
+  location ^~ ${CORE_NEHA_BASE_PATH}/auth/admin          { return 403; }
+  location ^~ ${CORE_NEHA_BASE_PATH}/auth/realms/master  { return 403; }
+  location ^~ ${CORE_NEHA_BASE_PATH}/auth/metrics        { return 403; }
+  location ^~ ${CORE_NEHA_BASE_PATH}/auth/health         { return 403; }
+  location ^~ ${CORE_NEHA_BASE_PATH}/auth/ {
+    proxy_pass http://core_neha_keycloak;
+    proxy_http_version 1.1;
+    proxy_set_header Connection "";
+    proxy_set_header Host              $xf_host;
+    proxy_set_header X-Forwarded-For   $proxy_add_x_forwarded_for;
+    proxy_set_header X-Forwarded-Proto $xf_proto;
+    proxy_set_header X-Forwarded-Host  $xf_host;
+    proxy_set_header X-Forwarded-Port  $xf_port;
+    proxy_set_header X-Request-Id      $request_id;
+    proxy_buffer_size 16k;
+    proxy_buffers 8 16k;
+  }
+
+  # Backend API: not deployed in this increment (stated, not simulated).
+  location ^~ ${CORE_NEHA_BASE_PATH}/api/ {
+    default_type application/problem+json;
+    add_header Cache-Control "no-store" always;
+    return 503 '{"status":503,"title":"Backend not deployed","detail":"The core-neha backend is not installed yet. Slice 1.1 is in progress."}';
+  }
+
+  # Staff application (static files).
+  location ^~ ${CORE_NEHA_BASE_PATH}/ {
+    root /usr/share/nginx/html;
+    try_files $uri $uri/ ${CORE_NEHA_BASE_PATH}/index.html;
+    add_header Cache-Control "no-cache" always;
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header Content-Security-Policy "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; font-src 'self'; script-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'" always;
+  }
+
+  location / { return 404; }
+}

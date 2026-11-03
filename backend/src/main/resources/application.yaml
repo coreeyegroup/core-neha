@@ -100,3 +100,8 @@ core-neha:
   operations:
     command: ${CORE_NEHA_COMMAND:}
     output-dir: ${CORE_NEHA_OUTPUT_DIR:/out}
+
+springdoc:
+  api-docs:
+    version: openapi_3_1
+  default-produces-media-type: application/json

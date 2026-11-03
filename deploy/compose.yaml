@@ -157,13 +157,17 @@ services:
 
   gateway:
     <<: *hardening
-    image: nginx:1.30.6-alpine3.24
+    # nginx 1.30.6 with the staff application built in (frontend/Dockerfile).
+    build:
+      context: ../frontend
+      args:
+        BASE_PATH: ${CORE_NEHA_BASE_PATH}
+    image: core-neha/gateway:local
     environment:
       CORE_NEHA_BASE_PATH: ${CORE_NEHA_BASE_PATH}
     volumes:
       - ./gateway/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./gateway/templates:/etc/nginx/templates:ro
-      - ./gateway/site:/usr/share/nginx/html${CORE_NEHA_BASE_PATH}:ro
     tmpfs:
       - /etc/nginx/conf.d
       - /var/cache/nginx

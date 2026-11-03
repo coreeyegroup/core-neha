@@ -8,12 +8,10 @@ Hospital management platform for a multi-centre group. This repository holds the
 
 | Increment | Contents | State |
 |---|---|---|
-| 1. Environment | Compose stack (PostgreSQL 18.6, Keycloak 26.8.1, nginx gateway), secrets, backup, restore test, Caddy route | Delivered in this commit; verify with `ops/status.sh` |
-| 2. Backend foundation | Spring Boot 4.1.2 modular monolith, Flyway migrations, organisation and access modules | Next |
-| 3. Staff frontend | React 19 + MUI 9 application shell and admin workflows | After 2 |
-| 4. Slice 1.1 acceptance | Tests, browser workflow, restart, restore evidence | After 3 |
-
-Nothing in "Next" or "After" exists yet. The gateway answers `503 Backend not deployed` for the API until increment 2.
+| 1. Environment | Compose stack (PostgreSQL 18.6, Keycloak 26.8.1, nginx gateway), secrets, backup, restore test, Caddy route | Delivered and running on core-node |
+| 2. Backend foundation | Spring Boot 4.1.2 modular monolith: organisation, workforce, access, audit; OIDC login; bootstrap and demo commands | Delivered; CI green |
+| 3. Staff frontend | React 19 + MUI 9: centres, departments, positions, people, users and access, roles, approvals, audit | Delivered; CI green |
+| 4. Slice 1.1 acceptance | Evidence on core-node (see docs/slice-1.1.md) | Next |
 
 ## Layout on the server
 
@@ -37,6 +35,8 @@ ops/status.sh           # health, exposure and resource report
 ops/backup.sh           # back up both databases
 ops/restore-test.sh     # restore the latest backup into a throwaway container
 ops/caddy-route.sh add  # publish https://coreeye.in/core-neha (needs sudo)
+ops/demo-seed.sh        # load the synthetic 20-centre demonstration tenant (demo environment only)
+ops/bootstrap.sh        # create a real tenant with its two first administrators
 ```
 
 Details: [docs/operations/OPERATIONS.md](docs/operations/OPERATIONS.md) · Versions: [docs/versions/VERSIONS.md](docs/versions/VERSIONS.md) · Decisions: [docs/adr](docs/adr/README.md)

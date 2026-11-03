@@ -50,9 +50,9 @@ Raw evidence: `version-check-20261103T1921Z.txt` (run on core-node) plus npm pee
 | @emotion/react / @emotion/styled | 11.14.0 / 11.14.1 | MUI peer dependencies |
 | react-router | 8.5.0 | 8.5.1 too new; requires Node >= 22.22 |
 | @tanstack/react-query | 5.104.5 | 5.105.x too new |
-| @tanstack/react-table | 9.3.1 | Data grid without licence (decision I-A8, proposed) |
+| Data grid | MUI Table + own sorting/filter component | Decision I-A8 (proposed): no licensed grid; @tanstack/react-table 9 not adopted yet |
 | react-hook-form | 7.90.0 | 7.91.0 too new |
-| @hookform/resolvers | **6.0.0** | **Correction:** 7.0.x released 2026-11-03; 6.0.0 supports zod 4 and react-hook-form ^7.55 |
+| @hookform/resolvers | **5.9.2** | **Correction:** 7.0.x is too new; 6.0.0 has conflicting optional peer dependencies (npm refuses to resolve); 5.9.2 supports zod 4 |
 | zod | 4.6.7 | |
 | vitest | 5.0.5 | 5.1.0 too new |
 | @testing-library/react / jest-dom / user-event | 16.3.3 / 7.0.1 / 14.6.8 | |
@@ -63,6 +63,8 @@ Raw evidence: `version-check-20261103T1921Z.txt` (run on core-node) plus npm pee
 | typescript-eslint | 8.72.0 | |
 | eslint-plugin-react-hooks | 7.1.1 | |
 | @fontsource/ibm-plex-sans | 5.3.0 | Self-hosted font; no external font CDN |
+| @types/node | 24.19.2 | Matches the Node 24 build image |
+| npm | 11 (bundled with Node 24) | npm 10 fails to resolve the dependency tree (installer bug); the lockfile is produced with npm 11 |
 
 **Not used:** oidc-client-ts. The browser never holds tokens; see ADR-0005.
 
@@ -74,3 +76,10 @@ Raw evidence: `version-check-20261103T1921Z.txt` (run on core-node) plus npm pee
 | 2026-11-04 | TypeScript 6.0.3 instead of 7.0.x | typescript-eslint peer range |
 | 2026-11-04 | Node 24 LTS for builds (baseline said "current LTS") | Node 26 LTS only 6 days old |
 | 2026-11-04 | Maven 3.9.16 (not 3.10.0) | Proven line; 3.10 adoption by ADR |
+| 2026-11-04 | @hookform/resolvers 5.9.2; no TanStack Table; npm 11 for installs | Dependency resolution on the real lockfile |
+| 2026-11-04 | No RestClient auto-configuration (Boot 4 moved it to a separate starter) | The Keycloak admin client builds RestClient directly |
+
+## Verified by build
+
+- Backend: Maven resolution and 24 tests green on GitHub Actions (Spring Boot 4.1.2, Modulith 2.1.1, Testcontainers 2.0.5, PostgreSQL 18.6 container).
+- Frontend: npm 11 install, type-check, lint, 7 unit tests, production build and 12 browser workflow tests green locally; repeated in CI.

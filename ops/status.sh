@@ -19,7 +19,7 @@ expect "API (not deployed yet)"                 "http://127.0.0.1:$P$B/api/" 503
 expect "OIDC discovery, realm core-neha"        "http://127.0.0.1:$P$B/auth/realms/core-neha/.well-known/openid-configuration" 200
 expect "admin console blocked publicly"         "http://127.0.0.1:$P$B/auth/admin/" 403
 expect "master realm blocked publicly"          "http://127.0.0.1:$P$B/auth/realms/master/" 403
-expect "admin console on localhost-only port"   "http://127.0.0.1:$A$B/auth/admin/" 302
+expect "admin console on localhost-only port"   "http://localhost:$A$B/auth/admin/" 302
 issuer="$(curl -s --max-time 10 "http://127.0.0.1:$P$B/auth/realms/core-neha/.well-known/openid-configuration" | python3 -c 'import json,sys; print(json.load(sys.stdin).get("issuer"))' 2>/dev/null)"
 if [ "$issuer" = "$CORE_NEHA_PUBLIC_BASE_URL/auth/realms/core-neha" ]; then echo "  ok    issuer $issuer"; else echo "  FAIL  issuer '$issuer'"; fi
 echo "== resources"; docker stats --no-stream --format 'table {{.Name}}\t{{.MemUsage}}\t{{.CPUPerc}}' $(docker ps -q --filter label=com.docker.compose.project=core-neha) 2>/dev/null

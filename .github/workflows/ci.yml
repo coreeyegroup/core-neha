@@ -28,7 +28,16 @@ jobs:
         run: mvn -v
       - name: Build and test
         run: mvn -B -ntp -f backend/pom.xml verify
-      - name: OpenAPI contract
+      - name: OpenAPI contract matches contracts/openapi.json
+        run: |
+          python3 -m json.tool --sort-keys backend/target/openapi.json > /tmp/exported.json
+          if [ -f contracts/openapi.json ] && diff -q /tmp/exported.json contracts/openapi.json > /dev/null; then
+            echo "contract unchanged"
+          else
+            echo "::warning::contracts/openapi.json differs from the exported contract; update it and regenerate the client"
+            echo "OPENAPI-CONTRACT-BEGIN"; python3 -c "import json;print(json.dumps(json.load(open('/tmp/exported.json')),sort_keys=True))"; echo "OPENAPI-CONTRACT-END"
+          fi
+      - name: OpenAPI contract artifact
         uses: actions/upload-artifact@v4
         with:
           name: openapi-contract

@@ -48,8 +48,9 @@ class KeycloakProvisioner implements IdentityProvisioner {
                 "enabled", true,
                 "emailVerified", true,
                 "requiredActions", List.of("UPDATE_PASSWORD", "CONFIGURE_TOTP"),
-                "credentials", List.of(Map.of("type", "password", "value", password, "temporary", true)),
-                "attributes", Map.of("core_neha_demo", List.of(String.valueOf(demo))));
+                "credentials", List.of(Map.of("type", "password", "value", password, "temporary", true)));
+        // The demonstration flag is kept in core-neha (person.is_demo); Keycloak's user profile
+        // rejects unmanaged attributes, so none are sent.
         ResponseEntity<Void> response = http.post().uri(admin("/users")).headers(h -> h.setBearerAuth(token()))
                 .contentType(MediaType.APPLICATION_JSON).body(body).retrieve().toBodilessEntity();
         URI location = response.getHeaders().getLocation();

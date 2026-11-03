@@ -32,8 +32,8 @@ class KeycloakProvisioner implements IdentityProvisioner {
     private String token;
     private Instant tokenExpiry = Instant.EPOCH;
 
-    KeycloakProvisioner(RestClient.Builder builder, CoreNehaProperties props) {
-        this.http = builder.build();
+    KeycloakProvisioner(CoreNehaProperties props) {
+        this.http = RestClient.builder().build();
         this.identity = props.identity();
     }
 

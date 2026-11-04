@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Adds the synthetic Vijay Eye Clinic to the demonstration tenant: six departments,
+# Adds the synthetic Vijaya Eye Clinic to the demonstration tenant: six departments,
 # two positions each, twelve logins, a price list and a day of synthetic patients.
 # Runs once, after ops/demo-seed.sh, only when CORE_NEHA_ENVIRONMENT=demo.
 # One-time login passwords go to ~/core-neha/secrets/onboarding/ (owner-only); nothing is printed.

@@ -44,6 +44,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 class ClinicSeedTest extends PostgresTestBase {
 
     @Autowired ClinicSeed seed;
+    @Autowired ClinicStaff clinicStaff;
     @Autowired BootstrapService bootstrap;
     @Autowired JdbcClient jdbc;
     @Autowired PatientService patients;
@@ -200,6 +201,47 @@ class ClinicSeedTest extends PostgresTestBase {
     }
 
     /** Clinic staff sign in with their employee number; find them by name. */
+    @Test
+    void addsTheFullStaffOnceWithTwoPeoplePerPosition() {
+        when(provisioner.create(any(), any(), any(), any(), anyBoolean()))
+                .thenAnswer(inv -> new IdentityProvisioner.ProvisionedIdentity("kc-" + UUID.randomUUID(), "Temporary1234Ab"));
+        String code = "staff-" + UUID.randomUUID().toString().substring(0, 8);
+        UUID tenant = bootstrap.bootstrap(code, "Clinic staff test group", true, List.of(
+                new BootstrapService.Administrator("Asha", "Admin", "asha@" + code + ".test", null, null),
+                new BootstrapService.Administrator("Bala", "Approver", "bala@" + code + ".test", null, null))).tenantId();
+        UUID centre = seed.load(code).centreId();
+
+        ClinicStaff.Summary first = clinicStaff.extend(code);
+        assertThat(first.positions()).isEqualTo(40);
+        assertThat(first.added()).isEqualTo(40 * 2 - 12);
+        assertThat(first.logins()).allSatisfy(l -> assertThat(l.username()).matches("e\\d{5}"));
+        assertThat(clinicStaff.extend(code).added()).isZero();
+
+        TenantContext.callAs(tenant, () -> {
+            // Every position at the clinic has two people posted, and every login has one independently approved assignment.
+            assertThat(jdbc.sql("""
+                    select count(*) from workforce.establishment e where e.centre_id = :c and e.approved_headcount = 2
+                    and (select count(*) from workforce.posting p where p.establishment_id = e.id) = 2""")
+                    .param("c", centre).query(Integer.class).single()).isEqualTo(40);
+            assertThat(jdbc.sql("""
+                    select count(*) from iam.role_assignment where scope_id = :c and status = 'ACTIVE'
+                    and decided_by is not null and decided_by <> requested_by""").param("c", centre).query(Integer.class).single())
+                    .isEqualTo(80);
+            // Employee numbers (login ids) are unique across tenants.
+            assertThat(jdbc.sql("select count(*) - count(distinct username) from iam.user_account").query(Integer.class).single()).isZero();
+            // Sterilisation staff work in the theatre but have no access to patient records.
+            Actor cssd = staff("Basavaraj", "Hosamani");
+            assertThatThrownBy(() -> patients.search(cssd, "Lakshmi", 10)).isInstanceOf(AccessDeniedException.class);
+            // The cashier collects payments but cannot change the price list.
+            Actor cashier = staff("Feroz", "Ahmed");
+            assertThat(billing.bills(cashier, centre, null, null, null)).isNotEmpty();
+            assertThatThrownBy(() -> billing.createTariffItem(cashier, centre, new BillingModels.CreateTariffItem(
+                    "TEST_ITEM", "Test item", "CONSULTATION", new BigDecimal("100"), BigDecimal.ZERO)))
+                    .isInstanceOf(AccessDeniedException.class);
+            return null;
+        });
+    }
+
     private Actor staff(String given, String family) {
         String username = jdbc.sql("""
                 select u.username from iam.user_account u join workforce.person p on p.id = u.person_id

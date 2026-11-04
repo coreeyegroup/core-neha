@@ -36,7 +36,9 @@ ops/backup.sh           # back up both databases
 ops/restore-test.sh     # restore the latest backup into a throwaway container
 ops/caddy-route.sh add  # publish https://coreeye.in/core-neha (needs sudo)
 ops/demo-seed.sh        # load the synthetic 20-centre demonstration tenant (demo environment only)
-ops/demo-reset.sh       # demo only: wipe and reload both demo seeds (type RESET DEMO)
+ops/clinic-staff.sh     # demo only: add the clinic's full staff (40 positions, two people each)
+ops/demo-reset.sh       # demo only: wipe and reload the demo data (type RESET DEMO)
+ops/login-check.sh      # read-only sign-in diagnosis
 ops/clinic-seed.sh      # add Vijaya Eye Clinic: 6 departments, 12 logins, synthetic patients (after demo-seed)
 ops/bootstrap.sh        # create a real tenant with its two first administrators
 ```

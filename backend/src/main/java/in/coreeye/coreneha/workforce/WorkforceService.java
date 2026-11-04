@@ -220,6 +220,40 @@ public class WorkforceService implements WorkforceDirectory, DepartmentRetiremen
                 """).param("c", centreId).query(EstablishmentView.class).list();
     }
 
+    /** Changes the approved headcount of an establishment; never below the people currently posted to it. */
+    @Transactional
+    public EstablishmentView changeHeadcount(Actor actor, UUID establishmentId, int headcount, String reason) {
+        UUID centreId = jdbc.sql("select centre_id from workforce.establishment where id = :id for update")
+                .param("id", establishmentId).query(UUID.class).optional()
+                .orElseThrow(() -> new NotFoundException("Establishment not found"));
+        Scope scope = Scope.centre(centreId);
+        access.require(actor, Permission.WORKFORCE_ESTABLISH, scope, "workforce.establishment.headcount", "establishment",
+                establishmentId.toString());
+        if (headcount < 1 || headcount > 10000) {
+            throw new RuleViolationException("workforce.headcount-range", "The approved headcount must be between 1 and 10000");
+        }
+        if (reason == null || reason.isBlank()) {
+            throw new RuleViolationException("workforce.reason-required", "Give a reason for the change");
+        }
+        int filled = jdbc.sql("""
+                select count(*) from workforce.posting where establishment_id = :e and (valid_to is null or valid_to >= current_date)
+                """).param("e", establishmentId).query(Integer.class).single();
+        if (headcount < filled) {
+            throw new RuleViolationException("workforce.headcount-below-filled",
+                    "The approved headcount cannot be less than the " + filled + " people posted now");
+        }
+        int before = jdbc.sql("select approved_headcount from workforce.establishment where id = :id")
+                .param("id", establishmentId).query(Integer.class).single();
+        jdbc.sql("update workforce.establishment set approved_headcount = :n, version = version + 1 where id = :id")
+                .param("n", headcount).param("id", establishmentId).update();
+        Map<String, Object> details = new HashMap<>();
+        details.put("before", before);
+        details.put("after", headcount);
+        details.put("reason", reason);
+        audit.record(AuditEntry.success(actor, "workforce.establishment.headcount", "establishment", establishmentId, scope, details));
+        return establishmentRows(centreId).stream().filter(e -> e.id().equals(establishmentId)).findFirst().orElseThrow();
+    }
+
     // ---------------------------------------------------------------- people and postings
 
     @Transactional
@@ -233,11 +267,8 @@ public class WorkforceService implements WorkforceDirectory, DepartmentRetiremen
         UUID id;
         try {
             // A permanent employee number: the person's login id, unchanged when positions change.
-            String employeeNo = jdbc.sql("""
-                    insert into workforce.employee_counter (tenant_id, last_value) values (:t, 10001)
-                    on conflict (tenant_id) do update set last_value = workforce.employee_counter.last_value + 1
-                    returning prefix || last_value
-                    """).param("t", tenantId).query(String.class).single();
+            // Unique across tenants: the identity provider's realm is shared (V7).
+            String employeeNo = jdbc.sql("select 'E' || nextval('workforce.employee_no_seq')").query(String.class).single();
             id = jdbc.sql("""
                     insert into workforce.person (tenant_id, employee_no, given_name, family_name, email, is_demo)
                     values (:t, :no, :g, :f, :e, :demo) returning id

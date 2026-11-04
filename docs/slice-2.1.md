@@ -32,6 +32,16 @@ stage, two surgeries today (one ready, one completed), one tomorrow, one accepte
 waiting for a date, a discount waiting for approval and bills paid by cash, UPI, card
 and insurance. One-time passwords go to `~/core-neha/secrets/onboarding/clinic-logins-*.txt`.
 
+```bash
+ops/clinic-staff.sh       # after clinic-seed; adds the full staff; safe to run again
+```
+
+It adds every position the clinic runs (40 in the six departments, from receptionist,
+cashier and Mediclaim coordinator to retina consultant, anaesthesiologist, scrub nurse and
+CSSD technician), twelve more roles, and two synthetic people per position (80 in all),
+each with an approved, centre-scoped login. One-time passwords go to
+`~/core-neha/secrets/onboarding/clinic-staff-logins-*.txt`.
+
 ## Checked automatically (CI)
 
 `ClinicSeedTest` builds the clinic through the services, then checks: the board counts

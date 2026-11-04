@@ -45,7 +45,7 @@ frontend/                 staff application (React)
   e2e/                    Playwright tests and the mock API
 contracts/openapi.json    the API contract (exported by the backend, checked in CI)
 deploy/                   compose.yaml, postgres init, keycloak image and realm, gateway config, caddy snippet, env examples
-ops/                      operator scripts (cn, init-config, gen-secrets, preflight, status, backup, restore-test, caddy-route, bootstrap, demo-seed, clinic-seed)
+ops/                      operator scripts (cn, init-config, gen-secrets, preflight, status, backup, restore-test, caddy-route, bootstrap, demo-seed, clinic-seed, clinic-staff, demo-reset, login-check)
 docs/                     ADRs, version matrix, operations guide, slice notes
 .github/workflows/ci.yml  CI
 ```

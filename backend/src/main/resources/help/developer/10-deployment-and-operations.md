@@ -30,6 +30,8 @@ Compose project `core-neha`: `postgres`, `keycloak`, `backend`, `gateway`. Memor
 | `demo-seed.sh` | Load the 20-centre demonstration tenant (demo only, once) |
 | `demo-reset.sh` | Demo only: back up, wipe the application and Keycloak databases, and reload both demo seeds (asks you to type RESET DEMO) |
 | `clinic-seed.sh` | Add Vijaya Eye Clinic to the demonstration tenant (demo only, once, after demo-seed) |
+| `clinic-staff.sh` | Add the clinic's full staff: 40 positions in its six departments, two people each, with logins (demo only; safe to run again, adds only what is missing) |
+| `login-check.sh` | Read-only sign-in diagnosis: each step, the accounts in both databases, and the reason for recent failed sign-ins |
 
 ## Website contact details
 

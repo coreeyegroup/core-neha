@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Empties the DEMONSTRATION system and loads it again (20 centres + Vijaya Eye Clinic).
+# Empties the DEMONSTRATION system and loads it again (20 centres + Vijaya Eye Clinic and its full staff).
 # Use after a change to how demonstration data is built (for example employee-number logins).
 # Refuses outside CORE_NEHA_ENVIRONMENT=demo, asks you to type RESET DEMO, backs up first.
 # Removes all data in both databases (core_neha and keycloak), including every login.
@@ -31,7 +31,7 @@ ALTER SCHEMA public OWNER TO core_neha_owner;
 SQL
 cn_log "databases recreated; starting (Keycloak imports the realm, the backend runs the migrations)"
 "$cn" up -d
-for i in $(seq 1 60); do
+for _ in $(seq 1 60); do
   state="$("$cn" ps --format '{{.Service}} {{.Health}}' | awk '$1=="backend"{print $2}')"
   [ "$state" = healthy ] && break
   sleep 5
@@ -40,4 +40,5 @@ done
 "$cn" restart gateway
 "$CN_REPO/ops/demo-seed.sh"
 "$CN_REPO/ops/clinic-seed.sh"
+"$CN_REPO/ops/clinic-staff.sh"
 cn_log "demonstration system reloaded; new one-time passwords are in $CN_SECRETS/onboarding/"

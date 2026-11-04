@@ -81,4 +81,4 @@ Rules:
 
 ## Operator commands
 
-`OperationsRunner` runs a command when `CORE_NEHA_COMMAND` is set (`bootstrap`, `demo-seed`, `clinic-seed`) and then exits. The `ops/*.sh` scripts start a one-off backend container with that variable and no web server. Commands go through the same services and rules as the web application.
+`OperationsRunner` runs a command when `CORE_NEHA_COMMAND` is set (`bootstrap`, `demo-seed`, `clinic-seed`, `clinic-staff`) and then exits. The `ops/*.sh` scripts start a one-off backend container with that variable and no web server. Commands go through the same services and rules as the web application.

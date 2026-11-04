@@ -28,15 +28,17 @@ class OperationsRunner implements ApplicationRunner {
     private final BootstrapService bootstrap;
     private final DemoSeed demoSeed;
     private final ClinicSeed clinicSeed;
+    private final ClinicStaff clinicStaff;
     private final ConfigurableApplicationContext context;
 
     OperationsRunner(CoreNehaProperties props, Environment env, BootstrapService bootstrap, DemoSeed demoSeed,
-                     ClinicSeed clinicSeed, ConfigurableApplicationContext context) {
+                     ClinicSeed clinicSeed, ClinicStaff clinicStaff, ConfigurableApplicationContext context) {
         this.props = props;
         this.env = env;
         this.bootstrap = bootstrap;
         this.demoSeed = demoSeed;
         this.clinicSeed = clinicSeed;
+        this.clinicStaff = clinicStaff;
         this.context = context;
     }
 
@@ -52,6 +54,7 @@ class OperationsRunner implements ApplicationRunner {
                 case "bootstrap" -> runBootstrap();
                 case "demo-seed" -> runDemoSeed();
                 case "clinic-seed" -> runClinicSeed();
+                case "clinic-staff" -> runClinicStaff();
                 default -> throw new IllegalArgumentException("Unknown command: " + command);
             }
         } catch (Exception e) {
@@ -104,5 +107,23 @@ class OperationsRunner implements ApplicationRunner {
         log.info("{} loaded: {} departments, {} positions, {} synthetic patients, {} login accounts; one-time passwords written to {}",
                 ClinicSeed.CENTRE_NAME, summary.departments(), summary.positions(), summary.patients(), summary.logins().size(),
                 file.getFileName());
+    }
+
+    /** Adds the full staff of the eye clinic (every position, two people each); safe to run again. */
+    private void runClinicStaff() throws Exception {
+        if (!props.demo()) {
+            throw new IllegalStateException("Demonstration data is loaded only when CORE_NEHA_ENVIRONMENT=demo");
+        }
+        String tenant = env.getProperty("CORE_NEHA_SEED_TENANT", DemoSeed.TENANT_CODE);
+        ClinicStaff.Summary summary = clinicStaff.extend(tenant);
+        if (summary.logins().isEmpty()) {
+            log.info("{} staff: all {} positions already have two people; nothing added", ClinicSeed.CENTRE_NAME, summary.positions());
+            return;
+        }
+        Path file = CredentialsFile.write(props.operations().outputDir(), "clinic-staff-logins",
+                "core-neha DEMONSTRATION logins for the full staff of " + ClinicSeed.CENTRE_NAME + " (synthetic people, tenant " + tenant + ")",
+                summary.logins());
+        log.info("{} staff: {} positions, {} people added; one-time passwords written to {}", ClinicSeed.CENTRE_NAME,
+                summary.positions(), summary.added(), file.getFileName());
     }
 }

@@ -134,9 +134,10 @@ services:
       - core_neha_owner_password
       - oidc_staff_client_secret
       - oidc_provisioner_client_secret
+    # No fixed address: one-off command containers (ops/demo-seed.sh,
+    # ops/bootstrap.sh) run beside the live backend on the same network.
     networks:
-      backplane:
-        ipv4_address: 172.29.84.30
+      - backplane
     depends_on:
       postgres:
         condition: service_healthy

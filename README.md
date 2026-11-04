@@ -41,3 +41,10 @@ ops/bootstrap.sh        # create a real tenant with its two first administrators
 ```
 
 Details: [docs/operations/OPERATIONS.md](docs/operations/OPERATIONS.md) · Versions: [docs/versions/VERSIONS.md](docs/versions/VERSIONS.md) · Decisions: [docs/adr](docs/adr/README.md)
+
+## Knowledge centre
+
+The operation manual (for hospital staff and management) and the developer guide are
+inside the application at `/core-neha/help` (the **?** button opens the chapter for the
+current screen). Their sources are Markdown files in `frontend/src/help/manual/` and
+`frontend/src/help/developer/`; update them in the same change as the feature.

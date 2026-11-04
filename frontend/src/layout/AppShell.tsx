@@ -21,10 +21,12 @@ import {
 } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import AccountCircle from '@mui/icons-material/AccountCircle';
+import HelpIcon from '@mui/icons-material/HelpOutlined';
 import { useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router';
 
 import { useSession } from '../auth/session';
+import { chapterForPath } from '../help/content';
 import { signOut } from '../auth/signin';
 import { visibleItems, type NavItem } from './navigation';
 
@@ -39,7 +41,7 @@ export function AppShell() {
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const location = useLocation();
   const items = visibleItems(session.hasAnywhere);
-  const groups = ['Workspace', 'Clinic', 'Organisation', 'People', 'Access'] as const;
+  const groups = ['Workspace', 'Clinic', 'Organisation', 'People', 'Access', 'Help'] as const;
   const centres = me.centres ?? [];
 
   const centreSelect = centres.length > 0 && (
@@ -80,7 +82,7 @@ export function AppShell() {
                 key={i.to}
                 component={NavLink}
                 to={i.to}
-                selected={i.to === '/' ? location.pathname === '/' : location.pathname.startsWith(i.to)}
+                selected={i.to === '/' || i.to === '/help' ? location.pathname === i.to : location.pathname.startsWith(i.to)}
                 onClick={() => setMobileOpen(false)}
               >
                 <ListItemText primary={i.label} />
@@ -117,6 +119,11 @@ export function AppShell() {
           </Typography>
           <Box sx={{ flexGrow: 1 }} />
           {desktop && centreSelect}
+          <Tooltip title="Help for this screen">
+            <IconButton aria-label="Help for this screen" component={NavLink} to={chapterForPath(location.pathname)}>
+              <HelpIcon />
+            </IconButton>
+          </Tooltip>
           <Tooltip title={me.displayName ?? me.username ?? ''}>
             <IconButton aria-label="Account menu" onClick={(e) => setMenuAnchor(e.currentTarget)}>
               <AccountCircle />

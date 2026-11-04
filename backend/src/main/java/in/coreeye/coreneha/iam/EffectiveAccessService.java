@@ -151,8 +151,12 @@ public class EffectiveAccessService {
             }
         }
         int pending = assignments.pendingForMe(actor).size();
+        List<IamModels.MyPosting> postings = support.postingsOf(user.personId()).stream()
+                .map(p -> new IamModels.MyPosting(p.centreId(), org.centre(p.centreId()).map(OrgDirectory.CentreRef::name).orElse(""),
+                        p.positionTitle(), p.departmentName()))
+                .toList();
         return new Me(actor.userId(), actor.username(), user.personName(), actor.tenantId(), (String) tenant[0],
-                (Boolean) tenant[1], tenantPermissions, centres, pending, responsibilities.forPersonRows(user.personId()));
+                (Boolean) tenant[1], tenantPermissions, centres, pending, responsibilities.forPersonRows(user.personId()), postings);
     }
 
     private void checkMaySee(Actor actor, UserView user, String action) {

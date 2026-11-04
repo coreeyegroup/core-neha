@@ -72,6 +72,10 @@ class IamSupport {
                 .anyMatch(p -> access.holds(actor, permission, Scope.centre(p.centreId())));
     }
 
+    java.util.List<WorkforceDirectory.PostingRef> postingsOf(UUID personId) {
+        return personId == null ? java.util.List.of() : workforce.activePostings(personId);
+    }
+
     UUID personOfUser(UUID userId) {
         return jdbc.sql("select person_id from iam.user_account where id = :id").param("id", userId)
                 .query(UUID.class).optional().orElseThrow(() -> new NotFoundException("User not found"));

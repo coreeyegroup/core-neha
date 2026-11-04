@@ -27,14 +27,16 @@ class OperationsRunner implements ApplicationRunner {
     private final Environment env;
     private final BootstrapService bootstrap;
     private final DemoSeed demoSeed;
+    private final ClinicSeed clinicSeed;
     private final ConfigurableApplicationContext context;
 
     OperationsRunner(CoreNehaProperties props, Environment env, BootstrapService bootstrap, DemoSeed demoSeed,
-                     ConfigurableApplicationContext context) {
+                     ClinicSeed clinicSeed, ConfigurableApplicationContext context) {
         this.props = props;
         this.env = env;
         this.bootstrap = bootstrap;
         this.demoSeed = demoSeed;
+        this.clinicSeed = clinicSeed;
         this.context = context;
     }
 
@@ -49,10 +51,11 @@ class OperationsRunner implements ApplicationRunner {
             switch (command) {
                 case "bootstrap" -> runBootstrap();
                 case "demo-seed" -> runDemoSeed();
+                case "clinic-seed" -> runClinicSeed();
                 default -> throw new IllegalArgumentException("Unknown command: " + command);
             }
         } catch (Exception e) {
-            log.error("Command {} failed: {}", command, e.getMessage());
+            log.error("Command {} failed: {}", command, e.getMessage(), e);
             exit = 1;
         }
         int code = exit;
@@ -87,5 +90,19 @@ class OperationsRunner implements ApplicationRunner {
                 "core-neha DEMONSTRATION logins (synthetic people, tenant " + summary.tenantCode() + ")", summary.logins());
         log.info("Demonstration data loaded: {} centres, {} people, {} login accounts; one-time passwords written to {}",
                 summary.centres(), summary.people(), summary.logins().size(), file.getFileName());
+    }
+
+    private void runClinicSeed() throws Exception {
+        if (!props.demo()) {
+            throw new IllegalStateException("Demonstration data is loaded only when CORE_NEHA_ENVIRONMENT=demo");
+        }
+        String tenant = env.getProperty("CORE_NEHA_SEED_TENANT", DemoSeed.TENANT_CODE);
+        ClinicSeed.Summary summary = clinicSeed.load(tenant);
+        Path file = CredentialsFile.write(props.operations().outputDir(), "clinic-logins",
+                "core-neha DEMONSTRATION logins for " + ClinicSeed.CENTRE_NAME + " (synthetic staff and patients, tenant " + tenant + ")",
+                summary.logins());
+        log.info("{} loaded: {} departments, {} positions, {} synthetic patients, {} login accounts; one-time passwords written to {}",
+                ClinicSeed.CENTRE_NAME, summary.departments(), summary.positions(), summary.patients(), summary.logins().size(),
+                file.getFileName());
     }
 }

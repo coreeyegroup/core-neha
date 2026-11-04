@@ -93,11 +93,11 @@ public class BootstrapService {
         UUID roleId = roles.insertRole(tenantId, SYSTEM_ROLE_CODE, "System administrator",
                 "Created by bootstrap. Configures organisation, workforce and access; all changes still need independent approval.", true);
         UUID versionId = roles.insertVersion(tenantId, roleId, 1, "DRAFT", "Bootstrap version", null);
-        roles.setGrants(tenantId, versionId, Arrays.stream(Permission.values()).map(Permission::code).toList());
+        roles.setGrants(tenantId, versionId, Arrays.stream(Permission.values()).filter(Permission::administrative).map(Permission::code).toList());
         jdbc.sql("update iam.role_version set status = 'PUBLISHED', decided_at = now(), decision_note = 'Published by bootstrap' where id = :id")
                 .param("id", versionId).update();
         audit.record(AuditEntry.system(tenantId, "bootstrap", "iam.role.bootstrap-publish", "role", roleId, tenantScope,
-                Map.of("code", SYSTEM_ROLE_CODE, "permissions", Permission.values().length)));
+                Map.of("code", SYSTEM_ROLE_CODE, "permissions", Arrays.stream(Permission.values()).filter(Permission::administrative).count())));
 
         List<UUID> userIds = new ArrayList<>();
         List<Credential> credentials = new ArrayList<>();

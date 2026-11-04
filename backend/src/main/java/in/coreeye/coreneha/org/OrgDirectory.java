@@ -23,4 +23,7 @@ public interface OrgDirectory {
     List<CentreRef> allCentres();
 
     Optional<CentreDepartmentRef> centreDepartment(UUID centreDepartmentId);
+
+    /** Operator commands only: the id of a tenant by its code (works without a tenant context). */
+    Optional<UUID> tenantIdByCode(String code);
 }

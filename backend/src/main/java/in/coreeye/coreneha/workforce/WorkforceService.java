@@ -69,20 +69,42 @@ public class WorkforceService implements WorkforceDirectory, DepartmentRetiremen
     public Optional<PostingRef> posting(UUID postingId) {
         return jdbc.sql("""
                 select p.id, p.person_id, e.centre_id, e.position_id, pd.title as position_title,
+                       coalesce(cd.local_name, d.name) as department_name,
                        (p.valid_from <= current_date and (p.valid_to is null or p.valid_to >= current_date)) as active
                 from workforce.posting p join workforce.establishment e on e.id = p.establishment_id
-                join workforce.position_definition pd on pd.id = e.position_id where p.id = :id
+                join workforce.position_definition pd on pd.id = e.position_id
+                left join org.centre_department cd on cd.id = e.centre_department_id
+                left join org.department_definition d on d.id = cd.department_id where p.id = :id
                 """).param("id", postingId).query(PostingRef.class).optional();
     }
 
     @Override
     public List<PostingRef> activePostings(UUID personId) {
         return jdbc.sql("""
-                select p.id, p.person_id, e.centre_id, e.position_id, pd.title as position_title, true as active
+                select p.id, p.person_id, e.centre_id, e.position_id, pd.title as position_title,
+                       coalesce(cd.local_name, d.name) as department_name, true as active
                 from workforce.posting p join workforce.establishment e on e.id = p.establishment_id
                 join workforce.position_definition pd on pd.id = e.position_id
+                left join org.centre_department cd on cd.id = e.centre_department_id
+                left join org.department_definition d on d.id = cd.department_id
                 where p.person_id = :id and p.valid_from <= current_date and (p.valid_to is null or p.valid_to >= current_date)
                 """).param("id", personId).query(PostingRef.class).list();
+    }
+
+    @Override
+    public List<StaffRef> staffAt(UUID centreId, String departmentCode) {
+        return jdbc.sql("""
+                select distinct pe.id as person_id, trim(pe.given_name || ' ' || pe.family_name) as name, pd.title as position_title,
+                       d.code as department_code, coalesce(cd.local_name, d.name) as department_name
+                from workforce.posting p join workforce.establishment e on e.id = p.establishment_id
+                join workforce.position_definition pd on pd.id = e.position_id
+                join workforce.person pe on pe.id = p.person_id and pe.status = 'ACTIVE'
+                left join org.centre_department cd on cd.id = e.centre_department_id
+                left join org.department_definition d on d.id = cd.department_id
+                where e.centre_id = :c and p.valid_from <= current_date and (p.valid_to is null or p.valid_to >= current_date)
+                  and (cast(:dept as text) is null or d.code = :dept)
+                order by name
+                """).param("c", centreId).param("dept", departmentCode).query(StaffRef.class).list();
     }
 
     @Override

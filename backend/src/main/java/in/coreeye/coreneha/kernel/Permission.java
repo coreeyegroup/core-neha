@@ -27,7 +27,32 @@ public enum Permission {
     IAM_ASSIGNMENT_APPROVE("iam.assignment.approve", false),
     IAM_ASSIGNMENT_REVOKE("iam.assignment.revoke", false),
     IAM_RESPONSIBILITY_MANAGE("iam.responsibility.manage", false),
-    AUDIT_READ("audit.read", false);
+    AUDIT_READ("audit.read", false),
+
+    // Patients (one identity across the group)
+    PATIENT_READ("patient.read", false),
+    PATIENT_REGISTER("patient.register", false),
+    // Outpatient flow: appointments, check-in, queue, checkout
+    OPD_QUEUE_READ("opd.queue.read", false),
+    OPD_APPOINTMENT_MANAGE("opd.appointment.manage", false),
+    OPD_CHECKIN("opd.checkin", false),
+    // Eye care clinical records
+    EYE_CLINICAL_READ("eye.clinical.read", false),
+    EYE_OPTOMETRY_RECORD("eye.optometry.record", false),
+    EYE_CONSULTATION_RECORD("eye.consultation.record", false),
+    EYE_COUNSELLING_RECORD("eye.counselling.record", false),
+    EYE_SURGERY_SCHEDULE("eye.surgery.schedule", false),
+    EYE_SURGERY_PREPARE("eye.surgery.prepare", false),
+    EYE_SURGERY_OPERATE("eye.surgery.operate", false),
+    // Billing and accounts
+    BILLING_READ("billing.read", false),
+    BILLING_CHARGE("billing.charge", false),
+    BILLING_COLLECT("billing.collect", false),
+    BILLING_DISCOUNT_APPROVE("billing.discount.approve", false),
+    BILLING_TARIFF_MANAGE("billing.tariff.manage", false),
+    BILLING_REPORT_READ("billing.report.read", false),
+    BILLING_DAYCLOSE_SUBMIT("billing.dayclose.submit", false),
+    BILLING_DAYCLOSE_APPROVE("billing.dayclose.approve", false);
 
     private final String code;
     private final boolean tenantOnly;
@@ -43,6 +68,15 @@ public enum Permission {
 
     public boolean tenantOnly() {
         return tenantOnly;
+    }
+
+    /**
+     * Administration permissions (organisation, workforce, access, audit). Only these
+     * go to the bootstrap system administrator role: administrators configure the
+     * group but do not see patients, clinical records or money unless given a role for it.
+     */
+    public boolean administrative() {
+        return code.startsWith("org.") || code.startsWith("workforce.") || code.startsWith("iam.") || code.startsWith("audit.");
     }
 
     public static Optional<Permission> fromCode(String code) {

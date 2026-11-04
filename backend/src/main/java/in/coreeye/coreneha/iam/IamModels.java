@@ -126,8 +126,12 @@ public final class IamModels {
     public record CentreAccess(UUID centreId, String code, String name, List<String> permissions) {
     }
 
+    /** One of the signed-in person's current postings: where they work and in which position. */
+    public record MyPosting(UUID centreId, String centreName, String positionTitle, String departmentName) {
+    }
+
     public record Me(UUID userId, String username, String displayName, UUID tenantId, String tenantName,
                      boolean demoTenant, List<String> tenantPermissions, List<CentreAccess> centres,
-                     int pendingApprovals, List<ResponsibilityView> responsibilities) {
+                     int pendingApprovals, List<ResponsibilityView> responsibilities, List<MyPosting> postings) {
     }
 }

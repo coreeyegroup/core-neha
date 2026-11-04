@@ -49,4 +49,9 @@ class JdbcOrgDirectory implements OrgDirectory {
                 where cd.id = :id
                 """).param("id", centreDepartmentId).query(CentreDepartmentRef.class).optional();
     }
+
+    @Override
+    public Optional<UUID> tenantIdByCode(String code) {
+        return jdbc.sql("select x.id from org.tenant_id_by_code(:c) as x(id) where x.id is not null").param("c", code).query(UUID.class).optional();
+    }
 }

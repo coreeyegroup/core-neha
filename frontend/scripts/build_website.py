@@ -1,33 +1,63 @@
 # Generates the Vijaya Eye Clinic website pages (static HTML) into frontend/website/.
 # Run: python3 frontend/scripts/build_website.py
+# Content lists (doctors, specialities, insurers, FAQ) are at the top. Do not edit the HTML by hand.
+# Doctor photos: put a JPEG at website/images/doctors/<slug>.jpg (portrait, about 800x500) and re-run.
 import os
-os.chdir(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'website'))
-MARK = '''<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22.5" fill="#0a2540"/><path d="M8 24c4.2-6.6 9.6-10 16-10s11.8 3.4 16 10c-4.2 6.6-9.6 10-16 10S12.2 30.6 8 24z" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><circle cx="24" cy="24" r="6.2" fill="#0066cc"/><circle cx="24" cy="24" r="2.5" fill="#0a2540"/><circle cx="26.4" cy="21.6" r="1.3" fill="#b8862b"/></svg>'''
+from html import escape
+
+ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'website')
+os.chdir(ROOT)
+
+MARK = ('<svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22.5" fill="#0b2a4a"/>'
+        '<path d="M8 24c4.2-6.6 9.6-10 16-10s11.8 3.4 16 10c-4.2 6.6-9.6 10-16 10S12.2 30.6 8 24z" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/>'
+        '<circle cx="24" cy="24" r="6.2" fill="#2fb3dd"/><circle cx="24" cy="24" r="2.6" fill="#04121f"/><circle cx="26.3" cy="21.7" r="1.2" fill="#fff"/></svg>')
+
+
+def icon(paths):
+    return f'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">{paths}</svg>'
+
+
+EYE = '<path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/>'
+ICONS = {
+    'cataract': icon(EYE + '<circle cx="12" cy="12" r="3.6"/><path d="M10.4 10.6a2 2 0 0 1 2-1"/>'),
+    'lasik': icon('<circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="2.4"/><path d="M12 2v4M12 18v4M2 12h4M18 12h4"/>'),
+    'retina': icon('<circle cx="12" cy="12" r="9"/><circle cx="15.5" cy="12" r="1.6"/><path d="M14 12c-3 0-4.5-2-6.5-4.5M14 12c-3 0-4.5 2-6.5 4.5M10.5 9.6 7 11.2M10.5 14.4 7 12.8"/>'),
+    'glaucoma': icon('<path d="M4.2 16.5a8.5 8.5 0 1 1 15.6 0"/><path d="m12 13.5 4-5"/><circle cx="12" cy="13.5" r="1.4"/><path d="M6.5 12h1M16.5 12h1M12 6.5v1"/>'),
+    'children': icon('<circle cx="7" cy="14" r="3.6"/><circle cx="17" cy="14" r="3.6"/><path d="M10.6 13.4c.8-.6 2-.6 2.8 0M3.4 13 2 9.5M20.6 13 22 9.5"/>'),
+    'cornea': icon('<path d="M12 3s6 6.6 6 11a6 6 0 0 1-12 0c0-4.4 6-11 6-11z"/><path d="M9.5 14.5a2.6 2.6 0 0 0 2.5 2.5"/>'),
+}
+I_CLOCK = icon('<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>')
+I_PHONE = icon('<path d="M5 3h3l2 5-2.5 1.5a11 11 0 0 0 7 7L16 14l5 2v3a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z"/>')
+I_CHAT = icon('<path d="M20 11.5a8 8 0 0 1-11.8 7L4 20l1.5-4A8 8 0 1 1 20 11.5z"/><path d="M9 10.5h6M9 13.5h4"/>')
+I_PIN = icon('<path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/>')
+I_LOCK = icon('<rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>')
+I_CAL = icon('<rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/>')
+STAR = '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="m10 1.5 2.6 5.4 5.9.8-4.3 4.1 1 5.9L10 14.9l-5.2 2.8 1-5.9L1.5 7.7l5.9-.8z"/></svg>'
 
 NAV = [('specialities', 'Specialities'), ('doctors', 'Doctors'), ('patients', 'Patients and visitors'), ('contact', 'Contact')]
 
 DOCTORS = [
-    ('VP', 'Dr. Vasant N Patil', 'Founder and Chief Ophthalmologist', 'MBBS, DO, MS (Ophthalmology), FVR', '40+ years',
+    ('vasant-patil', 'VP', 'Dr. Vasant N Patil', 'Founder and Chief Ophthalmologist', 'MBBS, DO, MS (Ophthalmology), FVR', '40+ years',
      'Comprehensive ophthalmology, cataract and glaucoma.'),
-    ('V', 'Dr. Vishwanath', 'Senior Vitreo-Retinal Surgeon', 'MBBS, DO, MS (Ophthalmology), FVR', '25+ years',
+    ('vishwanath', 'V', 'Dr. Vishwanath', 'Senior Vitreo-Retinal Surgeon', 'MBBS, DO, MS (Ophthalmology), FVR', '25+ years',
      'Vitreo-retinal surgery, diabetic retinopathy and macular disorders.'),
-    ('SK', 'Dr. Sunil Kumar M', 'Consultant Ophthalmologist and Phaco Surgeon', 'MBBS, DOMS, DNB', '15+ years',
+    ('sunil-kumar', 'SK', 'Dr. Sunil Kumar M', 'Consultant Ophthalmologist and Phaco Surgeon', 'MBBS, DOMS, DNB', '15+ years',
      'Phacoemulsification cataract surgery and refractive care.'),
-    ('SC', 'Dr. Savitha C S', 'Consultant Ophthalmologist', 'MS (Ophthalmology), FVR', '20+ years',
+    ('savitha', 'SC', 'Dr. Savitha C S', 'Consultant Ophthalmologist', 'MS (Ophthalmology), FVR', '20+ years',
      'Anterior segment, medical retina and diagnostics.'),
-    ('CK', 'Dr. Chandana K M', 'Consultant Ophthalmologist', 'MBBS, MS (Ophthalmology)', '10+ years',
+    ('chandana', 'CK', 'Dr. Chandana K M', 'Consultant Ophthalmologist', 'MBBS, MS (Ophthalmology)', '10+ years',
      'Cornea care and eye examinations for children.'),
-    ('DK', 'Dr. Dhananjaya K H', 'Consultant Cataract, Cornea and Refractive Surgeon', 'MS (Ophthalmology), FPRS', '8+ years',
+    ('dhananjaya', 'DK', 'Dr. Dhananjaya K H', 'Consultant Cataract, Cornea and Refractive Surgeon', 'MS (Ophthalmology), FPRS', '8+ years',
      'Phacoemulsification, cornea and LASIK.'),
 ]
 
 SPECIALITIES = [
     ('cataract', 'Cataract surgery', 'Stitchless micro-incision phacoemulsification as day-care surgery, with monofocal, toric and multifocal lens choices.'),
-    ('lasik', 'LASIK and refractive surgery', 'Laser vision correction planned from corneal topography and thickness, for adults who want to be free of glasses or contact lenses.'),
+    ('lasik', 'LASIK and refractive surgery', 'Laser vision correction planned from corneal topography and thickness, for adults who want to be free of glasses.'),
     ('retina', 'Retina and diabetic eye care', 'Diabetic retinopathy, macular degeneration and retinal detachment, with OCT, angiography and retinal laser.'),
-    ('glaucoma', 'Glaucoma', 'Early detection of the "silent thief of sight" with pressure, nerve and visual field tests, and lifelong management.'),
+    ('glaucoma', 'Glaucoma', 'Early detection with pressure, optic nerve and visual field tests, and careful lifelong management.'),
     ('children', 'Children\'s eye care and squint', 'Refractive errors, lazy eye (amblyopia), squint and digital eye strain, assessed in a child-friendly way.'),
-    ('cornea', 'Cornea, dry eye and eye examinations', 'Complete eye examinations, dry eye and tear-film assessment, pterygium and corneal infections, and in-house spectacles.'),
+    ('cornea', 'Cornea, dry eye and eye examinations', 'Complete eye examinations, dry eye care, pterygium and corneal infections, and in-house spectacles.'),
 ]
 
 INSURERS = ['Star Health Insurance', 'HDFC ERGO', 'ICICI Lombard', 'Bajaj Allianz', 'Niva Bupa', 'Care Health Insurance',
@@ -37,9 +67,9 @@ INSURERS = ['Star Health Insurance', 'HDFC ERGO', 'ICICI Lombard', 'Bajaj Allian
 FACILITIES = [
     ('Micro-incision phacoemulsification', 'Cataract removal through an incision of about 2.2 mm, for a quicker recovery.'),
     ('High-definition OCT', 'Cross-sectional scans of the retina, macula and optic nerve.'),
-    ('Fundus fluorescein angiography (FFA)', 'Maps blood flow in the retina, and leakage from diabetic eye disease.'),
-    ('Automated visual field testing', 'Humphrey field analysis to detect early loss of side vision in glaucoma.'),
-    ('Non-contact tonometry and pachymetry', 'Eye pressure and corneal thickness, measured without touching the eye.'),
+    ('Fundus fluorescein angiography', 'Maps blood flow in the retina, and leakage from diabetic eye disease.'),
+    ('Automated visual fields', 'Humphrey field analysis to detect early loss of side vision in glaucoma.'),
+    ('Tonometry and pachymetry', 'Eye pressure and corneal thickness, measured without touching the eye.'),
     ('Modular operation theatres', 'Sterile suites with HEPA filtration, operating microscopes and autoclave sterilisation.'),
 ]
 
@@ -53,6 +83,44 @@ FAQ = [
     ('Do you see children?', 'Yes: children\'s consultations, screening for refractive errors, treatment for lazy eye (amblyopia) and squint evaluation.'),
 ]
 
+DETAIL = {
+    'cataract': ('A cataract is a clouding of the eye\'s natural lens, most often with age. Vision becomes dim or hazy, colours fade, and lights cause glare, especially at night.',
+                 ['<strong>Assessment:</strong> vision, a slit-lamp examination of the lens, and optical biometry to calculate the power of the lens implant.',
+                  '<strong>Surgery:</strong> stitchless, blade-free micro-incision phacoemulsification as day-care surgery. The cloudy lens is replaced with a clear intraocular lens.',
+                  '<strong>Lens choices:</strong> monofocal lenses for clear distance vision, toric lenses that also correct astigmatism, and multifocal lenses for distance and near, from Zeiss and Alcon. The counsellor explains each option and its cost.',
+                  '<strong>Recovery:</strong> eye drops for a few weeks, a review the next day, and new glasses once the eye has settled.'],
+                 ['Optical biometry', 'Day-care phacoemulsification', 'Monofocal, toric and multifocal lenses', 'Cashless Mediclaim']),
+    'lasik': ('Laser vision correction reshapes the cornea to correct short sight, long sight and astigmatism, for adults whose glasses power has been stable.',
+              ['<strong>Suitability tests:</strong> corneal topography, corneal thickness (pachymetry) and a dilated retina examination.',
+               '<strong>Contact lens wearers:</strong> stop wearing them for the period advised before the tests.',
+               '<strong>Procedure:</strong> a few minutes for each eye under numbing drops; vision usually improves within a day or two.'],
+              ['Corneal topography', 'Pachymetry', 'Dilated retina check', 'Same-day procedure']),
+    'retina': ('The retina is the light-sensitive layer at the back of the eye. Many of its diseases need prompt, specialist care.',
+               ['<strong>Diabetic retinopathy:</strong> diabetes can damage the retina\'s blood vessels without symptoms. Everyone with diabetes should have a dilated retina examination every year.',
+                '<strong>Macular degeneration:</strong> a blurred or distorted patch in the centre of vision, usually after 50.',
+                '<strong>Retinal tears and detachment:</strong> new floaters, flashes of light or a curtain over vision need to be examined the same day.',
+                '<strong>Diagnostics and treatment:</strong> OCT scans, fundus fluorescein angiography, retinal laser and vitreo-retinal surgery.'],
+               ['HD OCT', 'Fundus fluorescein angiography', 'Retinal laser', 'Vitreo-retinal surgery']),
+    'glaucoma': ('Glaucoma damages the optic nerve, usually because the pressure inside the eye is too high. Side vision is lost first, slowly and painlessly. Lost vision cannot be restored, but further loss can usually be prevented.',
+                 ['<strong>Who should be checked:</strong> everyone over 40, and earlier with a family history of glaucoma, diabetes, high myopia or long-term steroid use.',
+                  '<strong>Tests:</strong> eye pressure, examination of the optic nerve, automated visual fields and OCT.',
+                  '<strong>Treatment:</strong> daily eye drops for most people, laser or surgery when needed, and regular reviews for life.'],
+                 ['Non-contact tonometry', 'Humphrey visual fields', 'Optic nerve OCT', 'Lifelong follow-up']),
+    'children': ('Children rarely complain about their eyesight. Early examination protects their vision for life.',
+                 ['<strong>Bring your child if they</strong> hold books close, squint or tilt their head, have a turning eye, rub their eyes often, or have headaches after school or screen time.',
+                  '<strong>We assess</strong> refractive errors, lazy eye (amblyopia), squint and digital eye strain.',
+                  '<strong>Treatment</strong> includes glasses, patching and exercises for amblyopia, and squint correction when needed.'],
+                 ['Vision screening', 'Amblyopia therapy', 'Squint evaluation', 'Spectacles for children']),
+    'cornea': ('A complete eye examination checks your vision, glasses power, eye pressure, and the health of the front and back of the eye.',
+               ['<strong>Dry eye:</strong> tear-film assessment and treatment for gritty, burning or watering eyes.',
+                '<strong>Cornea:</strong> pterygium management and treatment of corneal infections.',
+                '<strong>Spectacles:</strong> your prescription after the doctor\'s examination, with in-house optical dispensing.'],
+               ['Comprehensive examination', 'Dry eye assessment', 'Pterygium care', 'In-house optical']),
+}
+
+LINKS = {'cataract': 'About cataract surgery', 'lasik': 'About LASIK', 'retina': 'About retina care', 'glaucoma': 'About glaucoma',
+         'children': 'About children\'s eye care', 'cornea': 'About eye examinations'}
+
 URGENT = '''<aside class="urgent" aria-labelledby="urgent-title">
           <h3 id="urgent-title">When to seek help immediately</h3>
           <ul>
@@ -61,8 +129,8 @@ URGENT = '''<aside class="urgent" aria-labelledby="urgent-title">
             <li>An injury to the eye, or a chemical splash: rinse with clean water for 15 minutes on the way.</li>
             <li>A painful red eye with headache, nausea or haloes around lights.</li>
           </ul>
-          <p class="muted" style-free>Call the clinic, or go to the nearest emergency department.</p>
-        </aside>'''.replace(' style-free', '')
+          <p>Call the clinic, or go to the nearest emergency department.</p>
+        </aside>'''
 
 CONTACT_FACTS = '''<dl class="facts">
             <div class="row"><dt>Address</dt><dd data-site="address"></dd></div>
@@ -73,10 +141,23 @@ CONTACT_FACTS = '''<dl class="facts">
             <div class="row" data-site-optional><dt>Email</dt><dd><a href="#" data-site="email"></a></dd></div>
           </dl>
           <div class="contact-actions">
-            <a class="button" href="#" data-site="bookingUrl">Book an appointment</a>
-            <a class="button quiet" href="#" data-site="whatsapp" data-keep-text>Message on WhatsApp</a>
-            <a class="button quiet" href="#" data-site="mapUrl">Get directions</a>
+            <a class="button" href="./contact" data-site="bookingUrl">''' + I_CAL + '''Book an appointment</a>
+            <a class="button outline" href="#" data-site="whatsapp" data-keep-text>''' + I_CHAT + '''WhatsApp us</a>
+            <a class="button outline" href="#" data-site="mapUrl">''' + I_PIN + '''Get directions</a>
           </div>'''
+
+BAND = '''    <section class="band" aria-labelledby="band-title">
+      <div class="wrap">
+        <div>
+          <h2 id="band-title">Book your eye examination</h2>
+          <p>Monday to Saturday, 9:00 am to 9:30 pm. Walk-ins are welcome; booking ahead shortens your wait.</p>
+        </div>
+        <div class="actions">
+          <a class="button light" href="./contact" data-site="bookingUrl">''' + I_CAL + '''Book an appointment</a>
+          <a class="button ghost" href="./contact" data-site="phone" data-keep-text>''' + I_PHONE + '''Call the clinic</a>
+        </div>
+      </div>
+    </section>'''
 
 
 def page(file, title, description, current, body):
@@ -88,9 +169,9 @@ def page(file, title, description, current, body):
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>{title}</title>
   <meta name="description" content="{description}">
-  <meta name="theme-color" content="#0a2540">
+  <meta name="theme-color" content="#071d35">
   <link rel="icon" href="./assets/mark.svg" type="image/svg+xml">
-  <link rel="preload" href="./fonts/ibm-plex-serif-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./fonts/source-serif-4-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="./assets/site.css">
   <script src="./assets/site-config.js" defer></script>
   <script src="./assets/site.js" defer></script>
@@ -102,12 +183,12 @@ def page(file, title, description, current, body):
       <span data-site-optional>Appointments <a href="#" data-site="phone"></a></span>
       <span data-site-optional class="hide-small">WhatsApp <a href="#" data-site="whatsapp"></a></span>
       <span data-site-optional class="hide-small" data-site="hoursShort"></span>
-      <a class="push" href="./staff/">Staff login</a>
+      <a class="push" href="./staff/">{I_LOCK}Staff login</a>
     </div>
   </div>
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="./">{MARK}<span><span class="name">Vijaya Eye Clinic</span><span class="est"><b>Est. 1985</b><span class="tag"> &nbsp;Super-speciality eye care, Vijayanagar, Bengaluru</span></span></span></a>
+      <a class="brand" href="./">{MARK}<span><span class="name">Vijaya Eye Clinic</span><span class="tag">Super-speciality eye hospital, Vijayanagar, Bengaluru. Since 1985.</span></span></a>
       <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
       <nav class="nav" id="site-nav" aria-label="Main">
 {links}
@@ -121,7 +202,7 @@ def page(file, title, description, current, body):
   <footer class="site-footer">
     <div class="wrap">
       <div>
-        <p class="fname">Vijaya Eye Clinic</p>
+        <p class="fbrand">{MARK}Vijaya Eye Clinic</p>
         <p>Super-speciality eye care in Vijayanagar, Bengaluru, since 1985.</p>
         <p data-site="address"></p>
       </div>
@@ -130,7 +211,7 @@ def page(file, title, description, current, body):
         <ul>
           <li><a href="./specialities">Specialities</a></li>
           <li><a href="./doctors">Doctors</a></li>
-          <li><a href="./specialities#facilities">Technology</a></li>
+          <li><a href="./specialities#technology">Technology</a></li>
         </ul>
       </div>
       <div>
@@ -143,8 +224,10 @@ def page(file, title, description, current, body):
         </ul>
       </div>
       <div>
-        <h4>Clinic staff</h4>
+        <h4>Contact</h4>
         <ul>
+          <li data-site-optional><a href="#" data-site="phone"></a></li>
+          <li data-site-optional><a href="#" data-site="whatsapp" data-keep-text>WhatsApp</a></li>
           <li><a href="./staff/">Staff login</a></li>
         </ul>
       </div>
@@ -157,29 +240,39 @@ def page(file, title, description, current, body):
     open(file, 'w').write(html)
 
 
-def specialities_grid(link=True):
-    out = []
-    for slug, name, desc in SPECIALITIES:
-        more = f'\n            <a href="./specialities#{slug}">About {name.lower()}</a>' if link else ''
-        out.append(f'''          <div class="speciality">
+def specialities_grid():
+    return '\n'.join(f'''          <article class="speciality">
+            <div class="icon">{ICONS[slug]}</div>
             <h3>{name}</h3>
-            <p>{desc}</p>{more}
-          </div>''')
-    return '\n'.join(out)
+            <p>{desc}</p>
+            <a href="./specialities#{slug}">{LINKS[slug]}</a>
+          </article>''' for slug, name, desc in SPECIALITIES)
 
 
 def doctors_grid():
     out = []
-    for mono, name, role, quals, years, focus in DOCTORS:
+    for slug, mono, name, role, quals, years, focus in DOCTORS:
+        photo = f'images/doctors/{slug}.jpg'
+        img = f'<img src="./{photo}" alt="{escape(name)}" loading="lazy">' if os.path.exists(photo) else f'<span class="monogram" aria-hidden="true">{mono}</span>'
         out.append(f'''          <article class="doctor">
-            <div class="monogram" aria-hidden="true">{mono}</div>
-            <h3>{name}</h3>
-            <p class="role">{role}</p>
-            <p class="quals">{quals}</p>
-            <p class="focus">{focus}</p>
-            <span class="years">{years} in practice</span>
+            <div class="portrait">{img}</div>
+            <div class="body">
+              <h3>{name}</h3>
+              <p class="role">{role}</p>
+              <p class="quals">{quals}</p>
+              <p class="focus">{focus}</p>
+              <span class="years">{years} in practice</span>
+            </div>
           </article>''')
     return '\n'.join(out)
+
+
+def tech_list():
+    return '\n'.join(f'          <li><strong>{n}</strong><span>{d}</span></li>' for n, d in FACILITIES)
+
+
+def insurers(indent='          '):
+    return '\n'.join(f'{indent}<li>{i}</li>' for i in INSURERS)
 
 
 VISIT_STEPS = '''<ol class="steps">
@@ -189,43 +282,63 @@ VISIT_STEPS = '''<ol class="steps">
           <li><h3>Your plan</h3><p>The doctor explains the diagnosis and treatment, your spectacle prescription, or surgery and cashless Mediclaim.</p></li>
         </ol>'''
 
+CHECKLIST = '''<ul class="checklist">
+            <li>Original health insurance card or e-card</li>
+            <li>Government photo ID (Aadhaar or PAN card)</li>
+            <li>Past consultation papers and test reports</li>
+            <li>Policy document with the policy number</li>
+          </ul>'''
+
 # ------------------------------------------------------------------ home
 page('index.html', 'Vijaya Eye Clinic | Super-speciality eye hospital in Vijayanagar, Bengaluru',
      'Vijaya Eye Clinic, Vijayanagar, Bengaluru: cataract, LASIK, retina, glaucoma and children\'s eye care by senior ophthalmologists since 1985. Cashless Mediclaim.',
      'home', f'''    <section class="hero" aria-labelledby="hero-title">
+      <img class="art" src="./assets/iris.svg" alt="">
       <div class="wrap">
         <div>
-          <h1 id="hero-title">Eye care for Bengaluru's families since 1985.</h1>
-          <p class="lead">Senior ophthalmologists for cataract, LASIK, retina, glaucoma and children's eyes, with diagnostics and operation theatres under one roof in Vijayanagar.</p>
+          <p class="place">Vijayanagar, Bengaluru. Caring for eyes since 1985.</p>
+          <h1 id="hero-title">Clear sight, in the care of senior specialists.</h1>
+          <p class="lead">Cataract, LASIK, retina, glaucoma and children's eye care, with advanced diagnostics and modular operation theatres under one roof.</p>
           <div class="actions">
-            <a class="button" href="./contact" data-site="bookingUrl">Book an appointment</a>
-            <a class="button quiet" href="./contact" data-site="phone" data-keep-text>Call the clinic</a>
+            <a class="button" href="./contact" data-site="bookingUrl">{I_CAL}Book an appointment</a>
+            <a class="button ghost" href="./contact" data-site="phone" data-keep-text>{I_PHONE}Call the clinic</a>
           </div>
-          <ul class="credentials">
-            <li><strong>40+ years</strong><span>of eye care in Vijayanagar</span></li>
-            <li><strong>4.9 on Google</strong><span>from more than 2,700 reviews</span></li>
-            <li><strong>Cashless</strong><span>Mediclaim with 16 insurers and TPAs</span></li>
-          </ul>
         </div>
-        <figure class="chart" aria-label="A Snellen eye chart, from the letter E at 6/60 down to the 6/6 line">
-          <ol aria-hidden="true">
-            <li class="l1"><span>E</span><small>6/60</small></li>
-            <li class="l2"><span>F P</span><small>6/36</small></li>
-            <li class="l3"><span>T O Z</span><small>6/24</small></li>
-            <li class="l4"><span>L P E D</span><small>6/18</small></li>
-            <li class="l5"><span>P E C F D</span><small>6/12</small></li>
-            <li class="l6"><span>E D F C Z P</span><small>6/6</small></li>
-          </ol>
-          <figcaption>6/6 is normal distance vision. Every consultation begins with a vision test.</figcaption>
-        </figure>
+        <aside class="desk" aria-labelledby="desk-title">
+          <header>
+            <h2 id="desk-title">Appointment desk</h2>
+            <p>Walk-ins welcome. Call ahead to confirm the doctor's timings.</p>
+          </header>
+          <dl>
+            <div class="row" data-site-optional>{I_CLOCK}<div><dt>Timings</dt><dd data-site="hours"></dd></div></div>
+            <div class="row" data-site-optional>{I_PHONE}<div><dt>Appointments</dt><dd><a href="#" data-site="phone"></a></dd></div></div>
+            <div class="row" data-site-optional>{I_CHAT}<div><dt>Mobile and WhatsApp</dt><dd><a href="#" data-site="mobile"></a></dd></div></div>
+            <div class="row">{I_PIN}<div><dt>Address</dt><dd data-site="address"></dd></div></div>
+          </dl>
+          <div class="desk-actions">
+            <a class="button" href="./contact" data-site="bookingUrl">Book online</a>
+            <a class="button outline" href="#" data-site="mapUrl">Directions</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="trust" aria-label="About the clinic">
+      <div class="wrap">
+        <ul>
+          <li><strong>Since 1985</strong><span>Four decades of eye care in West Bengaluru</span></li>
+          <li><strong>4.9<span class="stars">{STAR * 5}</span></strong><span>Google rating from more than 2,700 reviews</span></li>
+          <li><strong>6 specialists</strong><span>Cataract, retina, cornea, glaucoma and refractive surgeons</span></li>
+          <li><strong>Cashless</strong><span>Mediclaim with 16 insurers and TPAs</span></li>
+        </ul>
       </div>
     </section>
 
     <section class="section" aria-labelledby="spec-title">
       <div class="wrap">
         <div class="section-head">
-          <h2 id="spec-title">Specialities</h2>
-          <p>Each patient is examined by a senior specialist after a complete work-up of vision and eye pressure.</p>
+          <div><span class="rule"></span><h2 id="spec-title">Specialities</h2></div>
+          <p>Every patient is examined by a senior specialist after a complete work-up of vision and eye pressure.</p>
         </div>
         <div class="specialities">
 {specialities_grid()}
@@ -233,10 +346,24 @@ page('index.html', 'Vijaya Eye Clinic | Super-speciality eye hospital in Vijayan
       </div>
     </section>
 
-    <section class="section alt" aria-labelledby="doc-title">
+    <section class="section dark" aria-labelledby="tech-title">
+      <div class="wrap tech">
+        <div class="intro">
+          <span class="rule"></span>
+          <h2 id="tech-title">Diagnostics and surgery under one roof</h2>
+          <p>Accurate diagnosis comes first. Our imaging and testing equipment lets the doctor stage a condition precisely and plan surgery with confidence.</p>
+          <p class="note"><strong>Operation theatres</strong> are run to NABH guidelines, with HEPA filtration and autoclave sterilisation.</p>
+        </div>
+        <ul>
+{tech_list()}
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="doc-title">
       <div class="wrap">
         <div class="section-head">
-          <h2 id="doc-title">Our doctors</h2>
+          <div><span class="rule"></span><h2 id="doc-title">Our doctors</h2></div>
           <a class="more" href="./doctors">All doctors and their areas of care</a>
         </div>
         <div class="doctors">
@@ -245,32 +372,39 @@ page('index.html', 'Vijaya Eye Clinic | Super-speciality eye hospital in Vijayan
       </div>
     </section>
 
-    <section class="section" aria-labelledby="visit-title">
+    <section class="section tint" aria-labelledby="visit-title">
       <div class="wrap">
         <div class="section-head">
-          <h2 id="visit-title">Your visit</h2>
+          <div><span class="rule"></span><h2 id="visit-title">Your visit</h2></div>
           <p>Personal attention from senior consultants, explained clearly, without hurried referrals.</p>
         </div>
         {VISIT_STEPS}
       </div>
     </section>
 
-    <section class="section alt" aria-labelledby="ins-title">
-      <div class="wrap split">
+    <section class="section" aria-labelledby="ins-title">
+      <div class="wrap insurance">
         <div>
+          <span class="rule"></span>
           <h2 id="ins-title">Cashless Mediclaim</h2>
-          <p>Our Mediclaim desk prepares the documents and the pre-authorisation with your insurer or TPA, so that you can focus on your treatment.</p>
-          <p><a href="./patients#insurance">What to bring for cashless treatment</a></p>
+          <p class="lead">Our Mediclaim desk prepares the documents and the pre-authorisation with your insurer or TPA, so that you can focus on your treatment. Bring:</p>
+          {CHECKLIST}
         </div>
-        <ul class="insurers">
-{chr(10).join(f"          <li>{i}</li>" for i in INSURERS)}
-        </ul>
+        <div>
+          <ul class="insurers">
+{insurers()}
+          </ul>
+          <p class="insurers-note">Coverage depends on your policy. Cash, UPI and cards are also accepted.</p>
+        </div>
       </div>
     </section>
+
+{BAND}
 
     <section class="section" aria-labelledby="visit-us-title">
       <div class="wrap contact-grid">
         <div>
+          <span class="rule"></span>
           <h2 id="visit-us-title">Visit us</h2>
           {CONTACT_FACTS}
         </div>
@@ -279,48 +413,31 @@ page('index.html', 'Vijaya Eye Clinic | Super-speciality eye hospital in Vijayan
     </section>''')
 
 # ------------------------------------------------------------------ specialities
-detail = {
-    'cataract': '''<p>A cataract is a clouding of the eye's natural lens, most often with age. Vision becomes dim or hazy, colours fade, and lights cause glare, especially at night.</p>
-        <ul>
-          <li><strong>Assessment:</strong> vision, a slit-lamp examination of the lens, and optical biometry to calculate the power of the lens implant.</li>
-          <li><strong>Surgery:</strong> stitchless, blade-free micro-incision phacoemulsification (MICS) as day-care surgery. The cloudy lens is replaced with a clear intraocular lens.</li>
-          <li><strong>Lens choices:</strong> monofocal lenses for clear distance vision, toric lenses that also correct astigmatism, and multifocal lenses for distance and near, from Zeiss and Alcon. The counsellor explains each option and its cost.</li>
-          <li><strong>Recovery:</strong> eye drops for a few weeks, a review the next day, and new glasses once the eye has settled.</li>
-        </ul>''',
-    'lasik': '''<p>Laser vision correction reshapes the cornea to correct short sight, long sight and astigmatism, for adults whose glasses power has been stable.</p>
-        <ul>
-          <li><strong>Suitability tests:</strong> corneal topography, corneal thickness (pachymetry) and a dilated retina examination.</li>
-          <li><strong>Contact lens wearers:</strong> stop wearing them for the period advised before the tests.</li>
-          <li><strong>Procedure:</strong> a few minutes for each eye under numbing drops; vision usually improves within a day or two.</li>
-        </ul>''',
-    'retina': '''<p>The retina is the light-sensitive layer at the back of the eye. Many of its diseases need prompt, specialist care.</p>
-        <ul>
-          <li><strong>Diabetic retinopathy:</strong> diabetes can damage the retina's blood vessels without symptoms. Everyone with diabetes should have a dilated retina examination every year.</li>
-          <li><strong>Macular degeneration:</strong> a blurred or distorted patch in the centre of vision, usually after 50.</li>
-          <li><strong>Retinal tears and detachment:</strong> new floaters, flashes of light or a curtain over vision need to be examined the same day.</li>
-          <li><strong>Diagnostics and treatment:</strong> OCT scans, fundus fluorescein angiography, retinal laser and vitreo-retinal surgery.</li>
-        </ul>''',
-    'glaucoma': '''<p>Glaucoma damages the optic nerve, usually because the pressure inside the eye is too high. Side vision is lost first, slowly and painlessly, which is why it is called the silent thief of sight. Lost vision cannot be restored, but further loss can usually be prevented.</p>
-        <ul>
-          <li><strong>Who should be checked:</strong> everyone over 40, and earlier with a family history of glaucoma, diabetes, high myopia or long-term steroid use.</li>
-          <li><strong>Tests:</strong> eye pressure, examination of the optic nerve, automated visual fields and OCT.</li>
-          <li><strong>Treatment:</strong> daily eye drops for most people, laser or surgery when needed, and regular reviews for life.</li>
-        </ul>''',
-    'children': '''<p>Children rarely complain about their eyesight. Early examination protects their vision for life.</p>
-        <ul>
-          <li><strong>Bring your child if they</strong> hold books close, squint or tilt their head, have a turning eye, rub their eyes often, or have headaches after school or screen time.</li>
-          <li><strong>We assess</strong> refractive errors, lazy eye (amblyopia), squint and digital eye strain.</li>
-          <li><strong>Treatment</strong> includes glasses, patching and exercises for amblyopia, and squint correction when needed.</li>
-        </ul>''',
-    'cornea': '''<p>A complete eye examination checks your vision, glasses power, eye pressure, and the health of the front and back of the eye.</p>
-        <ul>
-          <li><strong>Dry eye:</strong> tear-film assessment and treatment for gritty, burning or watering eyes.</li>
-          <li><strong>Cornea:</strong> pterygium management and treatment of corneal infections.</li>
-          <li><strong>Spectacles:</strong> your prescription after the doctor's examination, with in-house optical dispensing.</li>
-        </ul>''',
-}
-spec_body = '\n'.join(f'''        <h2 id="{slug}">{name}</h2>
-        {detail[slug]}''' for slug, name, _ in SPECIALITIES)
+topics = []
+for slug, name, _ in SPECIALITIES:
+    intro, points, glance = DETAIL[slug]
+    pts = '\n'.join(f'              <li>{p}</li>' for p in points)
+    gl = '\n'.join(f'              <li>{g}</li>' for g in glance)
+    topics.append(f'''        <article class="topic" id="{slug}">
+          <div class="icon">{ICONS[slug]}</div>
+          <div>
+            <h2>{name}</h2>
+            <div class="topic-body">
+              <div>
+                <p>{intro}</p>
+                <ul>
+{pts}
+                </ul>
+              </div>
+              <aside class="glance">
+                <h3>At a glance</h3>
+                <ul>
+{gl}
+                </ul>
+              </aside>
+            </div>
+          </div>
+        </article>''')
 toc = ''.join(f'<a href="#{slug}">{name}</a>' for slug, name, _ in SPECIALITIES)
 page('specialities.html', 'Specialities | Vijaya Eye Clinic, Bengaluru',
      'Cataract surgery, LASIK, retina and diabetic eye care, glaucoma, children\'s eye care and squint, cornea and dry eye at Vijaya Eye Clinic, Bengaluru.',
@@ -329,25 +446,27 @@ page('specialities.html', 'Specialities | Vijaya Eye Clinic, Bengaluru',
         <p class="crumbs"><a href="./">Home</a> / Specialities</p>
         <h1>Specialities</h1>
         <p>What each condition is, the signs to watch for, and how it is diagnosed and treated. Your doctor will advise what is right for your eyes.</p>
-        <nav class="toc" aria-label="On this page">{toc}<a href="#facilities">Technology</a></nav>
+        <nav class="toc" aria-label="On this page">{toc}<a href="#technology">Technology</a></nav>
       </div>
     </div>
     <section class="section">
-      <div class="wrap prose">
-{spec_body}
+      <div class="wrap">
+{chr(10).join(topics)}
       </div>
     </section>
-    <section class="section alt" id="facilities" aria-labelledby="fac-title">
-      <div class="wrap split">
-        <div>
-          <h2 id="fac-title">Technology and facilities</h2>
+    <section class="section dark" id="technology" aria-labelledby="tech-title">
+      <div class="wrap tech">
+        <div class="intro">
+          <span class="rule"></span>
+          <h2 id="tech-title">Technology and facilities</h2>
           <p>Diagnostics for accurate staging and surgical planning, and operation theatres run to NABH guidelines.</p>
         </div>
-        <ul class="facility-list">
-{chr(10).join(f"          <li><strong>{n}</strong><span>{d}</span></li>" for n, d in FACILITIES)}
+        <ul>
+{tech_list()}
         </ul>
       </div>
-    </section>''')
+    </section>
+{BAND}''')
 
 # ------------------------------------------------------------------ doctors
 page('doctors.html', 'Doctors | Vijaya Eye Clinic, Bengaluru',
@@ -365,7 +484,8 @@ page('doctors.html', 'Doctors | Vijaya Eye Clinic, Bengaluru',
 {doctors_grid()}
         </div>
       </div>
-    </section>''')
+    </section>
+{BAND}''')
 
 # ------------------------------------------------------------------ patients
 faq = '\n'.join(f'''          <details>
@@ -384,14 +504,18 @@ page('patients.html', 'Patients and visitors | Vijaya Eye Clinic, Bengaluru',
     </div>
     <section class="section" id="visit" aria-labelledby="v-title">
       <div class="wrap">
-        <h2 id="v-title">Your visit</h2>
+        <div class="section-head">
+          <div><span class="rule"></span><h2 id="v-title">Your visit</h2></div>
+          <p>Allow one to two hours. If your pupils are dilated, bring someone to accompany you.</p>
+        </div>
         {VISIT_STEPS}
       </div>
     </section>
-    <section class="section alt">
-      <div class="wrap split">
-        <div class="prose">
-          <h2 id="bring">What to bring</h2>
+    <section class="section tint">
+      <div class="wrap two-col">
+        <div class="prose" id="bring">
+          <span class="rule"></span>
+          <h2>What to bring</h2>
           <ul>
             <li>Your current glasses, and contact lens details if you wear them.</li>
             <li>Earlier eye reports and prescriptions, and your patient number if you have visited before.</li>
@@ -399,8 +523,9 @@ page('patients.html', 'Patients and visitors | Vijaya Eye Clinic, Bengaluru',
             <li>Someone to accompany you if your pupils may be dilated: vision stays blurred for a few hours.</li>
           </ul>
         </div>
-        <div class="prose">
-          <h2 id="surgery">Surgery day</h2>
+        <div class="prose" id="surgery">
+          <span class="rule"></span>
+          <h2>Surgery day</h2>
           <ul>
             <li>Follow the fasting instructions you are given; take your usual medicines unless the doctor advised otherwise.</li>
             <li>Come with an adult who can take you home, without make-up around the eyes.</li>
@@ -411,40 +536,34 @@ page('patients.html', 'Patients and visitors | Vijaya Eye Clinic, Bengaluru',
       </div>
     </section>
     <section class="section" id="insurance" aria-labelledby="i-title">
-      <div class="wrap split">
+      <div class="wrap insurance">
         <div>
+          <span class="rule"></span>
           <h2 id="i-title">Cashless Mediclaim</h2>
-          <p>Tell reception or the counsellor at the start that you are insured. Our Mediclaim desk handles the documents and the pre-authorisation with your insurer or TPA.</p>
-          <div class="panel">
-            <h3>Bring for cashless processing</h3>
-            <ul>
-              <li>Original health insurance card or e-card</li>
-              <li>Government photo ID (Aadhaar or PAN card)</li>
-              <li>Past consultation papers and test reports</li>
-              <li>Policy document with the policy number</li>
-            </ul>
-          </div>
+          <p class="lead">Tell reception or the counsellor at the start that you are insured. Our Mediclaim desk handles the documents and the pre-authorisation with your insurer or TPA. Bring:</p>
+          {CHECKLIST}
         </div>
         <div>
-          <h3>Insurers and TPAs</h3>
           <ul class="insurers">
-{chr(10).join(f"            <li>{i}</li>" for i in INSURERS)}
+{insurers()}
           </ul>
-          <p class="note">Coverage depends on your policy. Payment by cash, UPI and card is also accepted.</p>
+          <p class="insurers-note">Coverage depends on your policy. Cash, UPI and cards are also accepted.</p>
         </div>
       </div>
     </section>
-    <section class="section alt" id="faq" aria-labelledby="f-title">
-      <div class="wrap split">
+    <section class="section tint" id="faq" aria-labelledby="f-title">
+      <div class="wrap insurance">
         <div>
+          <span class="rule"></span>
           <h2 id="f-title">Questions</h2>
-          <p>Anything else? Call or message the clinic.</p>
+          <p class="lead">Anything else? Call or message the clinic.</p>
         </div>
         <div class="faq">
 {faq}
         </div>
       </div>
-    </section>''')
+    </section>
+{BAND}''')
 
 # ------------------------------------------------------------------ contact
 page('contact.html', 'Contact and directions | Vijaya Eye Clinic, Bengaluru',
@@ -453,7 +572,7 @@ page('contact.html', 'Contact and directions | Vijaya Eye Clinic, Bengaluru',
       <div class="wrap">
         <p class="crumbs"><a href="./">Home</a> / Contact</p>
         <h1>Contact and directions</h1>
-        <p>Five minutes from Vijayanagar Metro Station. BMTC buses from Majestic, Market and Rajajinagar stop in front of the clinic. Patients come from across West Bengaluru.</p>
+        <p>Five minutes from Vijayanagar Metro Station. BMTC buses from Majestic, Market and Rajajinagar stop in front of the clinic.</p>
       </div>
     </div>
     <section class="section">
@@ -464,13 +583,15 @@ page('contact.html', 'Contact and directions | Vijaya Eye Clinic, Bengaluru',
         {URGENT}
       </div>
     </section>
-    <section class="section alt">
-      <div class="wrap split">
-        <div>
-          <h2>Clinic staff</h2>
-          <p>Doctors, optometrists, nurses, counsellors and office staff sign in to the clinic system here.</p>
+    <section class="section tint">
+      <div class="wrap">
+        <div class="staff-box">
+          <div>
+            <h2>Clinic staff</h2>
+            <p>Doctors, optometrists, nurses, counsellors and office staff sign in to the clinic system here.</p>
+          </div>
+          <a class="button" href="./staff/">{I_LOCK}Staff login</a>
         </div>
-        <div><a class="button" href="./staff/">Staff login</a></div>
       </div>
     </section>''')
 

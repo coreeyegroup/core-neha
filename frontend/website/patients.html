@@ -5,9 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Patients and visitors | Vijaya Eye Clinic, Bengaluru</title>
   <meta name="description" content="Your visit to Vijaya Eye Clinic: what to bring, the consultation, surgery day, cashless Mediclaim and common questions.">
-  <meta name="theme-color" content="#0a2540">
+  <meta name="theme-color" content="#071d35">
   <link rel="icon" href="./assets/mark.svg" type="image/svg+xml">
-  <link rel="preload" href="./fonts/ibm-plex-serif-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./fonts/source-serif-4-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="./assets/site.css">
   <script src="./assets/site-config.js" defer></script>
   <script src="./assets/site.js" defer></script>
@@ -19,12 +19,12 @@
       <span data-site-optional>Appointments <a href="#" data-site="phone"></a></span>
       <span data-site-optional class="hide-small">WhatsApp <a href="#" data-site="whatsapp"></a></span>
       <span data-site-optional class="hide-small" data-site="hoursShort"></span>
-      <a class="push" href="./staff/">Staff login</a>
+      <a class="push" href="./staff/"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="10.5" width="14" height="10" rx="2"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/></svg>Staff login</a>
     </div>
   </div>
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="./"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22.5" fill="#0a2540"/><path d="M8 24c4.2-6.6 9.6-10 16-10s11.8 3.4 16 10c-4.2 6.6-9.6 10-16 10S12.2 30.6 8 24z" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><circle cx="24" cy="24" r="6.2" fill="#0066cc"/><circle cx="24" cy="24" r="2.5" fill="#0a2540"/><circle cx="26.4" cy="21.6" r="1.3" fill="#b8862b"/></svg><span><span class="name">Vijaya Eye Clinic</span><span class="est"><b>Est. 1985</b><span class="tag"> &nbsp;Super-speciality eye care, Vijayanagar, Bengaluru</span></span></span></a>
+      <a class="brand" href="./"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22.5" fill="#0b2a4a"/><path d="M8 24c4.2-6.6 9.6-10 16-10s11.8 3.4 16 10c-4.2 6.6-9.6 10-16 10S12.2 30.6 8 24z" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><circle cx="24" cy="24" r="6.2" fill="#2fb3dd"/><circle cx="24" cy="24" r="2.6" fill="#04121f"/><circle cx="26.3" cy="21.7" r="1.2" fill="#fff"/></svg><span><span class="name">Vijaya Eye Clinic</span><span class="tag">Super-speciality eye hospital, Vijayanagar, Bengaluru. Since 1985.</span></span></a>
       <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
       <nav class="nav" id="site-nav" aria-label="Main">
         <a href="./specialities">Specialities</a>
@@ -46,7 +46,10 @@
     </div>
     <section class="section" id="visit" aria-labelledby="v-title">
       <div class="wrap">
-        <h2 id="v-title">Your visit</h2>
+        <div class="section-head">
+          <div><span class="rule"></span><h2 id="v-title">Your visit</h2></div>
+          <p>Allow one to two hours. If your pupils are dilated, bring someone to accompany you.</p>
+        </div>
         <ol class="steps">
           <li><h3>Call or message</h3><p>Call or WhatsApp to confirm the doctor's timings, or tell reception you are on your way. Walk-ins are welcome.</p></li>
           <li><h3>Registration and tests</h3><p>Register at the front desk; an optometrist checks your vision, glasses power and eye pressure.</p></li>
@@ -55,10 +58,11 @@
         </ol>
       </div>
     </section>
-    <section class="section alt">
-      <div class="wrap split">
-        <div class="prose">
-          <h2 id="bring">What to bring</h2>
+    <section class="section tint">
+      <div class="wrap two-col">
+        <div class="prose" id="bring">
+          <span class="rule"></span>
+          <h2>What to bring</h2>
           <ul>
             <li>Your current glasses, and contact lens details if you wear them.</li>
             <li>Earlier eye reports and prescriptions, and your patient number if you have visited before.</li>
@@ -66,8 +70,9 @@
             <li>Someone to accompany you if your pupils may be dilated: vision stays blurred for a few hours.</li>
           </ul>
         </div>
-        <div class="prose">
-          <h2 id="surgery">Surgery day</h2>
+        <div class="prose" id="surgery">
+          <span class="rule"></span>
+          <h2>Surgery day</h2>
           <ul>
             <li>Follow the fasting instructions you are given; take your usual medicines unless the doctor advised otherwise.</li>
             <li>Come with an adult who can take you home, without make-up around the eyes.</li>
@@ -78,49 +83,47 @@
       </div>
     </section>
     <section class="section" id="insurance" aria-labelledby="i-title">
-      <div class="wrap split">
+      <div class="wrap insurance">
         <div>
+          <span class="rule"></span>
           <h2 id="i-title">Cashless Mediclaim</h2>
-          <p>Tell reception or the counsellor at the start that you are insured. Our Mediclaim desk handles the documents and the pre-authorisation with your insurer or TPA.</p>
-          <div class="panel">
-            <h3>Bring for cashless processing</h3>
-            <ul>
-              <li>Original health insurance card or e-card</li>
-              <li>Government photo ID (Aadhaar or PAN card)</li>
-              <li>Past consultation papers and test reports</li>
-              <li>Policy document with the policy number</li>
-            </ul>
-          </div>
+          <p class="lead">Tell reception or the counsellor at the start that you are insured. Our Mediclaim desk handles the documents and the pre-authorisation with your insurer or TPA. Bring:</p>
+          <ul class="checklist">
+            <li>Original health insurance card or e-card</li>
+            <li>Government photo ID (Aadhaar or PAN card)</li>
+            <li>Past consultation papers and test reports</li>
+            <li>Policy document with the policy number</li>
+          </ul>
         </div>
         <div>
-          <h3>Insurers and TPAs</h3>
           <ul class="insurers">
-            <li>Star Health Insurance</li>
-            <li>HDFC ERGO</li>
-            <li>ICICI Lombard</li>
-            <li>Bajaj Allianz</li>
-            <li>Niva Bupa</li>
-            <li>Care Health Insurance</li>
-            <li>United India Insurance</li>
-            <li>National Insurance</li>
-            <li>The Oriental Insurance</li>
-            <li>The New India Assurance</li>
-            <li>ManipalCigna</li>
-            <li>Medi Assist TPA</li>
-            <li>Vidal Health TPA</li>
-            <li>Paramount Health</li>
-            <li>Heritage Health</li>
-            <li>Family Health Plan (FHPL)</li>
+          <li>Star Health Insurance</li>
+          <li>HDFC ERGO</li>
+          <li>ICICI Lombard</li>
+          <li>Bajaj Allianz</li>
+          <li>Niva Bupa</li>
+          <li>Care Health Insurance</li>
+          <li>United India Insurance</li>
+          <li>National Insurance</li>
+          <li>The Oriental Insurance</li>
+          <li>The New India Assurance</li>
+          <li>ManipalCigna</li>
+          <li>Medi Assist TPA</li>
+          <li>Vidal Health TPA</li>
+          <li>Paramount Health</li>
+          <li>Heritage Health</li>
+          <li>Family Health Plan (FHPL)</li>
           </ul>
-          <p class="note">Coverage depends on your policy. Payment by cash, UPI and card is also accepted.</p>
+          <p class="insurers-note">Coverage depends on your policy. Cash, UPI and cards are also accepted.</p>
         </div>
       </div>
     </section>
-    <section class="section alt" id="faq" aria-labelledby="f-title">
-      <div class="wrap split">
+    <section class="section tint" id="faq" aria-labelledby="f-title">
+      <div class="wrap insurance">
         <div>
+          <span class="rule"></span>
           <h2 id="f-title">Questions</h2>
-          <p>Anything else? Call or message the clinic.</p>
+          <p class="lead">Anything else? Call or message the clinic.</p>
         </div>
         <div class="faq">
           <details>
@@ -154,11 +157,23 @@
         </div>
       </div>
     </section>
+    <section class="band" aria-labelledby="band-title">
+      <div class="wrap">
+        <div>
+          <h2 id="band-title">Book your eye examination</h2>
+          <p>Monday to Saturday, 9:00 am to 9:30 pm. Walk-ins are welcome; booking ahead shortens your wait.</p>
+        </div>
+        <div class="actions">
+          <a class="button light" href="./contact" data-site="bookingUrl"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>Book an appointment</a>
+          <a class="button ghost" href="./contact" data-site="phone" data-keep-text><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h3l2 5-2.5 1.5a11 11 0 0 0 7 7L16 14l5 2v3a2 2 0 0 1-2 2A17 17 0 0 1 3 5a2 2 0 0 1 2-2z"/></svg>Call the clinic</a>
+        </div>
+      </div>
+    </section>
   </main>
   <footer class="site-footer">
     <div class="wrap">
       <div>
-        <p class="fname">Vijaya Eye Clinic</p>
+        <p class="fbrand"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22.5" fill="#0b2a4a"/><path d="M8 24c4.2-6.6 9.6-10 16-10s11.8 3.4 16 10c-4.2 6.6-9.6 10-16 10S12.2 30.6 8 24z" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><circle cx="24" cy="24" r="6.2" fill="#2fb3dd"/><circle cx="24" cy="24" r="2.6" fill="#04121f"/><circle cx="26.3" cy="21.7" r="1.2" fill="#fff"/></svg>Vijaya Eye Clinic</p>
         <p>Super-speciality eye care in Vijayanagar, Bengaluru, since 1985.</p>
         <p data-site="address"></p>
       </div>
@@ -167,7 +182,7 @@
         <ul>
           <li><a href="./specialities">Specialities</a></li>
           <li><a href="./doctors">Doctors</a></li>
-          <li><a href="./specialities#facilities">Technology</a></li>
+          <li><a href="./specialities#technology">Technology</a></li>
         </ul>
       </div>
       <div>
@@ -180,8 +195,10 @@
         </ul>
       </div>
       <div>
-        <h4>Clinic staff</h4>
+        <h4>Contact</h4>
         <ul>
+          <li data-site-optional><a href="#" data-site="phone"></a></li>
+          <li data-site-optional><a href="#" data-site="whatsapp" data-keep-text>WhatsApp</a></li>
           <li><a href="./staff/">Staff login</a></li>
         </ul>
       </div>

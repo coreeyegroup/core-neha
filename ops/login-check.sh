@@ -43,4 +43,11 @@ ls -lt "$CN_SECRETS/onboarding" 2>/dev/null | sed -n '2,5p' | awk '{print "  " $
 echo "== recent errors (last 60 minutes)"
 "$cn" logs --since 60m --no-color backend 2>&1 | grep -E '"level":"(ERROR|WARN)"|ERROR|Exception' | tail -8 | cut -c1-300 | sed 's/^/  backend: /'
 "$cn" logs --since 60m --no-color keycloak 2>&1 | grep -E 'LOGIN_ERROR|ERROR|"level":"WARN"' | tail -8 | cut -c1-300 | sed 's/^/  keycloak: /'
+echo "== failed sign-ins: reason and login id typed (last 6 hours)"
+"$cn" logs --since 6h --no-color keycloak 2>&1 | grep 'LOGIN_ERROR' | tail -10 \
+  | sed -E 's/.*"timestamp":"([^.]*)[^"]*".*/\1 &/' \
+  | awk '{ t=$1; e=""; u="";
+           if (match($0, /error=[^,]*/)) e=substr($0, RSTART, RLENGTH);
+           if (match($0, /username=[^,]*/)) u=substr($0, RSTART, RLENGTH);
+           gsub(/\\"/, "", e); gsub(/\\"/, "", u); print "  " t, e, u }'
 echo "== done"

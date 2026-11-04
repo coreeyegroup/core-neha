@@ -66,7 +66,8 @@ public class BootstrapService {
                     "Bootstrap needs exactly two administrators, so neither can approve their own access");
         }
         if (admins.get(0).email().equalsIgnoreCase(admins.get(1).email())
-                || admins.get(0).username().equals(admins.get(1).username())) {
+                || (admins.get(0).username() != null
+                        && admins.get(0).username().equalsIgnoreCase(admins.get(1).username()))) {
             throw new RuleViolationException("bootstrap.distinct-administrators", "The two administrators must be different people");
         }
         boolean exists = jdbc.sql("select exists(select 1 from iam.login_identity li where li.subject in (:a, :b))")

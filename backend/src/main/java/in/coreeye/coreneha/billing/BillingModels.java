@@ -78,7 +78,7 @@ public final class BillingModels {
                                   @NotNull Integer expectedVersion) {
     }
 
-    public record Decision(boolean approve, @Size(max = 500) String note, @NotNull Integer expectedVersion) {
+    public record ApprovalDecision(boolean approve, @Size(max = 500) String note, @NotNull Integer expectedVersion) {
     }
 
     public record CollectPayment(@NotBlank @Pattern(regexp = "CASH|CARD|UPI|INSURANCE|CORPORATE") String mode,

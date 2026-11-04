@@ -5,8 +5,12 @@ import { createServer } from 'node:http';
 import { readFile } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 
+import { clinicRoute, personaMe } from './clinic-mock.mjs';
+
 const port = Number(process.argv[2] ?? 4173);
 let signedIn = !process.argv.includes('--signed-out');
+// --persona=<username>: sign in as one of the Vijay Eye Clinic staff (see clinic-mock.mjs).
+const persona = process.argv.find((a) => a.startsWith('--persona='))?.slice('--persona='.length);
 const dist = new URL('../dist/', import.meta.url).pathname;
 const T = '0195f000-0000-7000-8000-000000000001';
 const id = (n) => `0195f000-0000-7000-8000-${String(n).padStart(12, '0')}`;
@@ -19,7 +23,7 @@ const allPerms = ['org.structure.read', 'org.structure.manage', 'org.centre.crea
 const me = {
   userId: id(1), username: 'asha.admin', displayName: 'Asha Admin', tenantId: T, tenantName: 'Neha Health Group (demonstration)', demoTenant: true,
   tenantPermissions: allPerms, centres: centres.map((c) => ({ centreId: c.id, code: c.code, name: c.name, permissions: allPerms.filter((p) => !['org.structure.manage', 'workforce.position.define', 'iam.role.read', 'iam.role.draft', 'iam.role.approve'].includes(p)) })),
-  pendingApprovals: 1, responsibilities: [],
+  pendingApprovals: 1, responsibilities: [], postings: [],
 };
 const depts = [
   ['RECEPTION', 'Reception and front office', 'ADMINISTRATIVE'], ['OPHTHALMOLOGY', 'Ophthalmology', 'CLINICAL'], ['OPTOMETRY', 'Optometry', 'CLINICAL'],
@@ -83,7 +87,10 @@ createServer(async (req, res) => {
   if (url.pathname.startsWith('/core-neha/api/')) {
     const path = url.pathname.replace('/core-neha/api', '');
     if (!signedIn) { res.writeHead(401, { 'Content-Type': 'application/problem+json' }); return res.end('{"status":401}'); }
-    const body = routes[`${req.method} ${path}`]?.() ?? dynamic(req.method, path);
+    // A test can also choose the persona per browser with a mock_persona cookie.
+    const who = /(?:^|; )mock_persona=([^;]+)/.exec(req.headers.cookie ?? '')?.[1] ?? persona;
+    const body = who && req.method === 'GET' && path === '/v1/me' ? personaMe(who, T)
+      : clinicRoute(req.method, path, url.searchParams) ?? routes[`${req.method} ${path}`]?.() ?? dynamic(req.method, path);
     if (body === undefined) { res.writeHead(404); return res.end('{"status":404,"code":"not-found","detail":"Not found"}'); }
     const status = body.__status ?? 200;
     res.writeHead(status, { 'Content-Type': 'application/json', 'Set-Cookie': 'XSRF-TOKEN=mock-token; Path=/core-neha' });

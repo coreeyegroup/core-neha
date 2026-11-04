@@ -109,13 +109,13 @@ class ClinicSeedTest extends PostgresTestBase {
 
             // A discount needs someone other than the requester; payment waits for the decision
             BillingModels.BillView pending = billing.pendingDiscounts(supervisor, centre).getFirst();
-            assertThatThrownBy(() -> billing.decideDiscount(reception, pending.id(), new BillingModels.Decision(true, null, pending.version())))
+            assertThatThrownBy(() -> billing.decideDiscount(reception, pending.id(), new BillingModels.ApprovalDecision(true, null, pending.version())))
                     .isInstanceOf(AccessDeniedException.class);
             assertThatThrownBy(() -> billing.collect(reception, pending.id(),
                     new BillingModels.CollectPayment("CASH", pending.netAmount(), null, pending.version())))
                     .isInstanceOf(RuleViolationException.class);
             BillingModels.BillView approved = billing.decideDiscount(supervisor, pending.id(),
-                    new BillingModels.Decision(true, "Senior citizen", pending.version())).bill();
+                    new BillingModels.ApprovalDecision(true, "Senior citizen", pending.version())).bill();
             assertThat(approved.discountAmount()).isEqualByComparingTo("300");
             BillingModels.BillView paid = billing.collect(reception, approved.id(),
                     new BillingModels.CollectPayment("CASH", approved.balance(), null, approved.version())).bill();
@@ -142,9 +142,9 @@ class ClinicSeedTest extends PostgresTestBase {
             BillingModels.DayCloseView submitted = accounts.submit(accountant, centre,
                     new BillingModels.SubmitDayClose(BusinessTime.today(), preview.systemCash(), null));
             assertThat(submitted.variance()).isEqualByComparingTo(BigDecimal.ZERO);
-            assertThatThrownBy(() -> accounts.decide(accountant, submitted.id(), new BillingModels.Decision(true, null, submitted.version())))
+            assertThatThrownBy(() -> accounts.decide(accountant, submitted.id(), new BillingModels.ApprovalDecision(true, null, submitted.version())))
                     .isInstanceOf(AccessDeniedException.class);
-            assertThat(accounts.decide(manager, submitted.id(), new BillingModels.Decision(true, "Counted", submitted.version())).status())
+            assertThat(accounts.decide(manager, submitted.id(), new BillingModels.ApprovalDecision(true, "Counted", submitted.version())).status())
                     .isEqualTo("APPROVED");
             assertThat(accounts.collections(manager, centre, null, null).collected()).isPositive();
             return null;

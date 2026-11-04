@@ -94,7 +94,7 @@ class BillingController {
     }
 
     @PostMapping("/bills/{billId}/discount/decision")
-    BillDetail decideDiscount(@PathVariable UUID billId, @Valid @RequestBody BillingModels.Decision body) {
+    BillDetail decideDiscount(@PathVariable UUID billId, @Valid @RequestBody BillingModels.ApprovalDecision body) {
         return billing.decideDiscount(actor.require(), billId, body);
     }
 
@@ -137,7 +137,7 @@ class BillingController {
     }
 
     @PostMapping("/day-closes/{dayCloseId}/decision")
-    DayCloseView decideDayClose(@PathVariable UUID dayCloseId, @Valid @RequestBody BillingModels.Decision body) {
+    DayCloseView decideDayClose(@PathVariable UUID dayCloseId, @Valid @RequestBody BillingModels.ApprovalDecision body) {
         return accounts.decide(actor.require(), dayCloseId, body);
     }
 }

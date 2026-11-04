@@ -5,6 +5,24 @@
  * OpenAPI spec version: v0
  */
 import { apiFetch } from '../http';
+export interface LineInput {
+  /**
+     * @minimum 1
+     * @maximum 999
+     */
+  quantity: number;
+  tariffItemId: string;
+}
+
+export interface AddLines {
+  expectedVersion: number;
+  /**
+     * @minItems 0
+     * @maxItems 50
+     */
+  lines: LineInput[];
+}
+
 export interface AddPosting {
   establishmentId: string;
   /**
@@ -14,6 +32,46 @@ export interface AddPosting {
   fte?: number;
   validFrom?: string;
   validTo?: string;
+}
+
+export interface AmountRow {
+  amount?: number;
+  count?: number;
+  label?: string;
+}
+
+export interface AppointmentView {
+  appointmentDate?: string;
+  cancelReason?: string;
+  centreId?: string;
+  consultantName?: string;
+  consultantPersonId?: string;
+  createdAt?: string;
+  createdByName?: string;
+  id?: string;
+  patientAge?: number;
+  patientId?: string;
+  patientMobile?: string;
+  patientName?: string;
+  patientSex?: string;
+  patientUhid?: string;
+  reason?: string;
+  slotTime?: string;
+  source?: string;
+  status?: string;
+  version?: number;
+  visitId?: string;
+  visitType?: string;
+}
+
+export interface ApprovalDecision {
+  approve?: boolean;
+  expectedVersion: number;
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  note?: string;
 }
 
 export interface AssignResponsibility {
@@ -50,6 +108,133 @@ export interface AssignmentView {
   validTo?: string;
   version?: number;
   viaBootstrap?: boolean;
+}
+
+export interface BillView {
+  balance?: number;
+  billDate?: string;
+  billNo?: string;
+  cancelReason?: string;
+  centreId?: string;
+  centreName?: string;
+  createdAt?: string;
+  createdByName?: string;
+  discountAmount?: number;
+  discountDecidedByName?: string;
+  discountDecisionNote?: string;
+  discountReason?: string;
+  discountRequested?: number;
+  discountRequestedByName?: string;
+  discountStatus?: string;
+  grossAmount?: number;
+  id?: string;
+  netAmount?: number;
+  paidAmount?: number;
+  patientId?: string;
+  patientName?: string;
+  patientUhid?: string;
+  status?: string;
+  surgeryRef?: string;
+  taxAmount?: number;
+  version?: number;
+  visitRef?: string;
+}
+
+export interface BillLineView {
+  amount?: number;
+  category?: string;
+  description?: string;
+  gstRate?: number;
+  id?: string;
+  quantity?: number;
+  tariffItemId?: string;
+  taxAmount?: number;
+  unitPrice?: number;
+}
+
+export interface PaymentView {
+  amount?: number;
+  businessDate?: string;
+  id?: string;
+  mode?: string;
+  receivedAt?: string;
+  receivedByName?: string;
+  reference?: string;
+}
+
+export interface BillDetail {
+  bill?: BillView;
+  lines?: BillLineView[];
+  payments?: PaymentView[];
+}
+
+export interface BillSummary {
+  balance?: number;
+  billNo?: string;
+  discountStatus?: string;
+  id?: string;
+  netAmount?: number;
+  paidAmount?: number;
+  status?: string;
+}
+
+export interface BookAppointment {
+  appointmentDate: string;
+  consultantPersonId?: string;
+  patientId: string;
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  reason?: string;
+  slotTime: string;
+  /**
+     * @minLength 1
+     * @pattern WALK_IN|PHONE|ONLINE|REFERRAL
+     */
+  source: string;
+  /**
+     * @minLength 1
+     * @pattern NEW|REVIEW|POST_OP
+     */
+  visitType: string;
+}
+
+export interface CancelAppointment {
+  expectedVersion: number;
+  noShow?: boolean;
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  reason: string;
+}
+
+export interface CancelBill {
+  expectedVersion: number;
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  reason: string;
+}
+
+export interface CancelSurgery {
+  expectedVersion: number;
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  reason: string;
+}
+
+export interface CancelVisit {
+  expectedVersion: number;
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  reason: string;
 }
 
 export interface CentreAccess {
@@ -94,6 +279,57 @@ export interface ChangeUserStatus {
   reason: string;
 }
 
+export interface CheckInAppointment {
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  chiefComplaint?: string;
+  consultantPersonId?: string;
+  expectedVersion: number;
+}
+
+export interface Checkout {
+  expectedVersion: number;
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  noChargeReason?: string;
+}
+
+export interface ClinicBoard {
+  appointmentsArrived?: number;
+  appointmentsBooked?: number;
+  appointmentsCancelled?: number;
+  averageWaitMinutes?: number;
+  cancelled?: number;
+  centreId?: string;
+  completed?: number;
+  date?: string;
+  longestWaitMinutes?: number;
+  newPatients?: number;
+  surgeriesAdvised?: number;
+  surgeriesCompletedToday?: number;
+  surgeriesReadyToday?: number;
+  surgeriesToSchedule?: number;
+  surgeriesToday?: number;
+  surgeriesUpcoming?: number;
+  visits?: number;
+  waitingCheckout?: number;
+  waitingConsultation?: number;
+  waitingCounselling?: number;
+  waitingOptometry?: number;
+}
+
+export interface ClinicianView {
+  departmentCode?: string;
+  departmentName?: string;
+  name?: string;
+  personId?: string;
+  positionTitle?: string;
+}
+
 export interface CloneRole {
   /**
      * @minLength 1
@@ -111,6 +347,107 @@ export interface CloneRole {
      */
   name: string;
   sourceRoleId: string;
+}
+
+export interface CollectPayment {
+  /** @minimum 0.01 */
+  amount: number;
+  expectedVersion: number;
+  /**
+     * @minLength 1
+     * @pattern CASH|CARD|UPI|INSURANCE|CORPORATE
+     */
+  mode: string;
+  /**
+     * @minLength 0
+     * @maxLength 100
+     */
+  reference?: string;
+}
+
+export interface DayRow {
+  billed?: number;
+  bills?: number;
+  collected?: number;
+  date?: string;
+}
+
+export interface CollectionReport {
+  billed?: number;
+  bills?: number;
+  byCategory?: AmountRow[];
+  byCollector?: AmountRow[];
+  byDay?: DayRow[];
+  byMode?: AmountRow[];
+  centreId?: string;
+  collected?: number;
+  discounts?: number;
+  from?: string;
+  outstanding?: number;
+  outstandingBills?: BillView[];
+  pendingDiscounts?: number;
+  to?: string;
+}
+
+export interface ConsultationView {
+  advice?: string;
+  anteriorSegmentLe?: string;
+  anteriorSegmentRe?: string;
+  consultantName?: string;
+  consultantPersonId?: string;
+  diagnosis?: string;
+  diagnosisCode?: string;
+  diagnosisEye?: string;
+  followUpDays?: number;
+  glassesPrescribed?: boolean;
+  history?: string;
+  medications?: string;
+  posteriorSegmentLe?: string;
+  posteriorSegmentRe?: string;
+  recordedAt?: string;
+  recordedByName?: string;
+  surgeryAdvised?: boolean;
+  surgeryEye?: string;
+  surgeryProcedure?: string;
+  surgeryUrgency?: string;
+  version?: number;
+  visitId?: string;
+}
+
+export interface Counsel {
+  /**
+     * @minLength 1
+     * @pattern ACCEPTED|DECLINED|UNDECIDED
+     */
+  decision: string;
+  /** @minimum 0 */
+  estimatedCost?: number;
+  expectedVersion: number;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  insurerName?: string;
+  /**
+     * @minLength 0
+     * @maxLength 4000
+     */
+  notes?: string;
+  packageItemId?: string;
+  /** @pattern ^$|SELF_PAY|INSURANCE|CORPORATE|GOVERNMENT_SCHEME */
+  paymentPlan?: string;
+  preferredDate?: string;
+}
+
+export interface CreateBill {
+  /**
+     * @minItems 0
+     * @maxItems 50
+     */
+  lines: LineInput[];
+  patientId: string;
+  surgeryRef?: string;
+  visitRef?: string;
 }
 
 export interface CreateCentre {
@@ -241,6 +578,30 @@ export interface CreateRole {
   permissions: string[];
 }
 
+export interface CreateTariffItem {
+  /**
+     * @minLength 1
+     * @pattern REGISTRATION|CONSULTATION|INVESTIGATION|PROCEDURE|SURGERY_PACKAGE|OPTICAL|PHARMACY|OTHER
+     */
+  category: string;
+  /**
+     * @minLength 1
+     * @pattern ^[A-Z][A-Z0-9_]{1,39}$
+     */
+  code: string;
+  gstRate: number;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  name: string;
+  /**
+     * @minimum 0
+     * @maximum 9999999
+     */
+  price: number;
+}
+
 export interface CreateUser {
   personId: string;
   /**
@@ -248,6 +609,36 @@ export interface CreateUser {
      * @pattern ^[a-z0-9][a-z0-9._-]{2,59}$
      */
   username: string;
+}
+
+export interface DayCloseView {
+  businessDate?: string;
+  centreId?: string;
+  countedCash?: number;
+  decidedAt?: string;
+  decidedByName?: string;
+  decisionNote?: string;
+  id?: string;
+  notes?: string;
+  status?: string;
+  submittedAt?: string;
+  submittedByName?: string;
+  systemCard?: number;
+  systemCash?: number;
+  systemOther?: number;
+  systemUpi?: number;
+  variance?: number;
+  version?: number;
+}
+
+export interface DayClosePreview {
+  businessDate?: string;
+  existing?: DayCloseView;
+  payments?: number;
+  systemCard?: number;
+  systemCash?: number;
+  systemOther?: number;
+  systemUpi?: number;
 }
 
 export interface Decision {
@@ -427,6 +818,45 @@ export interface Explanation {
   scopeType?: string;
 }
 
+export interface VisitView {
+  cancelReason?: string;
+  centreId?: string;
+  centreName?: string;
+  checkedInAt?: string;
+  chiefComplaint?: string;
+  completedAt?: string;
+  consultantName?: string;
+  consultantPersonId?: string;
+  consultationDoneAt?: string;
+  counsellingDoneAt?: string;
+  id?: string;
+  noChargeReason?: string;
+  optometryDoneAt?: string;
+  patientAge?: number;
+  patientId?: string;
+  patientMobile?: string;
+  patientName?: string;
+  patientSex?: string;
+  patientUhid?: string;
+  stage?: string;
+  surgeryAdvised?: boolean;
+  tokenNo?: number;
+  version?: number;
+  visitDate?: string;
+  visitType?: string;
+  waitingMinutes?: number;
+}
+
+export interface HistoryVisit {
+  bcvaLe?: string;
+  bcvaRe?: string;
+  diagnosis?: string;
+  diagnosisCode?: string;
+  iopLe?: number;
+  iopRe?: number;
+  visit?: VisitView;
+}
+
 export interface LegalEntityView {
   code?: string;
   id?: string;
@@ -444,11 +874,19 @@ export interface LevelView {
   version?: number;
 }
 
+export interface MyPosting {
+  centreId?: string;
+  centreName?: string;
+  departmentName?: string;
+  positionTitle?: string;
+}
+
 export interface Me {
   centres?: CentreAccess[];
   demoTenant?: boolean;
   displayName?: string;
   pendingApprovals?: number;
+  postings?: MyPosting[];
   responsibilities?: ResponsibilityView[];
   tenantId?: string;
   tenantName?: string;
@@ -466,6 +904,151 @@ export interface NodeView {
   parentId?: string;
   path?: string;
   status?: string;
+  version?: number;
+}
+
+export interface Operation {
+  /** @pattern ^$|TOPICAL|PERIBULBAR|RETROBULBAR|SUBTENON|GENERAL */
+  anaesthesia?: string;
+  complete?: boolean;
+  /**
+     * @minLength 0
+     * @maxLength 2000
+     */
+  complications?: string;
+  expectedVersion: number;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  iolImplanted?: string;
+  /**
+     * @minLength 0
+     * @maxLength 8000
+     */
+  operativeNotes?: string;
+  /**
+     * @minLength 0
+     * @maxLength 4000
+     */
+  postOpInstructions?: string;
+}
+
+export interface OptometryView {
+  addLe?: number;
+  addRe?: number;
+  axisLe?: number;
+  axisRe?: number;
+  bcvaLe?: string;
+  bcvaRe?: string;
+  colourVision?: string;
+  cylLe?: number;
+  cylRe?: number;
+  iopLe?: number;
+  iopMethod?: string;
+  iopRe?: number;
+  nearLe?: string;
+  nearRe?: string;
+  notes?: string;
+  pgvaLe?: string;
+  pgvaRe?: string;
+  recordedAt?: string;
+  recordedByName?: string;
+  sphLe?: number;
+  sphRe?: number;
+  ucvaLe?: string;
+  ucvaRe?: string;
+  version?: number;
+  visitId?: string;
+}
+
+export interface SurgeryView {
+  advisedByName?: string;
+  anaesthesia?: string;
+  biometryDone?: boolean;
+  cancelReason?: string;
+  centreId?: string;
+  completedAt?: string;
+  complications?: string;
+  consentSigned?: boolean;
+  counselledAt?: string;
+  counselledByName?: string;
+  counsellingNotes?: string;
+  createdAt?: string;
+  diagnosis?: string;
+  estimatedCost?: number;
+  eye?: string;
+  fitnessCleared?: boolean;
+  id?: string;
+  insurerName?: string;
+  iolImplanted?: string;
+  iolPower?: string;
+  operatedByName?: string;
+  operativeNotes?: string;
+  otRoom?: string;
+  packageItemId?: string;
+  packageName?: string;
+  patientAge?: number;
+  patientId?: string;
+  patientMobile?: string;
+  patientName?: string;
+  patientSex?: string;
+  patientUhid?: string;
+  paymentPlan?: string;
+  postOpInstructions?: string;
+  preOpBloodSugar?: string;
+  preOpBp?: string;
+  preOpNotes?: string;
+  preferredDate?: string;
+  preparedAt?: string;
+  preparedByName?: string;
+  procedureName?: string;
+  pupilDilated?: boolean;
+  siteMarked?: boolean;
+  slotTime?: string;
+  startedAt?: string;
+  status?: string;
+  surgeonName?: string;
+  surgeonPersonId?: string;
+  surgeryDate?: string;
+  urgency?: string;
+  version?: number;
+  visitId?: string;
+}
+
+export interface PatientEyeHistory {
+  clinicalVisible?: boolean;
+  patientId?: string;
+  surgeries?: SurgeryView[];
+  upcomingAppointments?: AppointmentView[];
+  visits?: HistoryVisit[];
+}
+
+export interface PatientView {
+  abhaNumber?: string;
+  addressLine?: string;
+  ageYears?: number;
+  birthDate?: string;
+  birthDateEstimated?: boolean;
+  city?: string;
+  createdAt?: string;
+  demo?: boolean;
+  email?: string;
+  emergencyContactName?: string;
+  emergencyContactPhone?: string;
+  familyName?: string;
+  fullName?: string;
+  givenName?: string;
+  guardianName?: string;
+  id?: string;
+  mobile?: string;
+  pincode?: string;
+  registeredCentreId?: string;
+  registeredCentreName?: string;
+  sex?: string;
+  state?: string;
+  status?: string;
+  uhid?: string;
   version?: number;
 }
 
@@ -515,6 +1098,108 @@ export interface PositionView {
   version?: number;
 }
 
+export interface PreOp {
+  biometryDone?: boolean;
+  consentSigned?: boolean;
+  expectedVersion: number;
+  fitnessCleared?: boolean;
+  /**
+     * @minLength 0
+     * @maxLength 50
+     */
+  iolPower?: string;
+  /**
+     * @minLength 0
+     * @maxLength 20
+     */
+  preOpBloodSugar?: string;
+  /**
+     * @minLength 0
+     * @maxLength 20
+     */
+  preOpBp?: string;
+  /**
+     * @minLength 0
+     * @maxLength 2000
+     */
+  preOpNotes?: string;
+  pupilDilated?: boolean;
+  ready?: boolean;
+  siteMarked?: boolean;
+}
+
+export interface RegisterPatient {
+  /** @pattern ^[0-9]{2}-[0-9]{4}-[0-9]{4}-[0-9]{4}$ */
+  abhaNumber?: string;
+  /**
+     * @minLength 0
+     * @maxLength 300
+     */
+  addressLine?: string;
+  /**
+     * @minimum 0
+     * @maximum 120
+     */
+  ageYears?: number;
+  birthDate?: string;
+  centreId: string;
+  /**
+     * @minLength 0
+     * @maxLength 100
+     */
+  city?: string;
+  confirmNotDuplicate?: boolean;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  email?: string;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  emergencyContactName?: string;
+  /**
+     * @minLength 0
+     * @maxLength 20
+     */
+  emergencyContactPhone?: string;
+  /**
+     * @minLength 0
+     * @maxLength 100
+     */
+  familyName?: string;
+  /**
+     * @minLength 0
+     * @maxLength 100
+     */
+  givenName: string;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  guardianName?: string;
+  /** @pattern ^[0-9+][0-9 -]{6,19}$ */
+  mobile?: string;
+  /** @pattern ^[0-9]{6}$ */
+  pincode?: string;
+  /**
+     * @minLength 1
+     * @pattern FEMALE|MALE|OTHER|UNKNOWN
+     */
+  sex: string;
+  /**
+     * @minLength 0
+     * @maxLength 100
+     */
+  state?: string;
+}
+
+export interface RemoveLine {
+  expectedVersion: number;
+  lineId: string;
+}
+
 export interface RequestAssignment {
   /** @pattern ACCESS|AUTHORITY */
   kind: string;
@@ -531,6 +1216,17 @@ export interface RequestAssignment {
   userId: string;
   validFrom?: string;
   validTo?: string;
+}
+
+export interface RequestDiscount {
+  /** @minimum 0.01 */
+  amount: number;
+  expectedVersion: number;
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  reason: string;
 }
 
 export interface ResponsibilityTypeView {
@@ -595,6 +1291,205 @@ export interface RoleDetail {
   versions?: RoleVersionView[];
 }
 
+export interface SaveConsultation {
+  /**
+     * @minLength 0
+     * @maxLength 2000
+     */
+  advice?: string;
+  /**
+     * @minLength 0
+     * @maxLength 2000
+     */
+  anteriorSegmentLe?: string;
+  /**
+     * @minLength 0
+     * @maxLength 2000
+     */
+  anteriorSegmentRe?: string;
+  complete?: boolean;
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  diagnosis?: string;
+  /** @pattern ^$|^[A-Z][0-9]{2}(\.[0-9A-Z]{1,4})?$ */
+  diagnosisCode?: string;
+  /** @pattern ^$|RE|LE|BE */
+  diagnosisEye?: string;
+  expectedVersion?: number;
+  /**
+     * @minimum 0
+     * @maximum 730
+     */
+  followUpDays?: number;
+  glassesPrescribed?: boolean;
+  /**
+     * @minLength 0
+     * @maxLength 4000
+     */
+  history?: string;
+  /**
+     * @minLength 0
+     * @maxLength 4000
+     */
+  medications?: string;
+  /**
+     * @minLength 0
+     * @maxLength 2000
+     */
+  posteriorSegmentLe?: string;
+  /**
+     * @minLength 0
+     * @maxLength 2000
+     */
+  posteriorSegmentRe?: string;
+  surgeryAdvised?: boolean;
+  /** @pattern ^$|RE|LE|BE */
+  surgeryEye?: string;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  surgeryProcedure?: string;
+  /** @pattern ^$|ROUTINE|SOON|URGENT */
+  surgeryUrgency?: string;
+}
+
+export interface SaveOptometry {
+  /**
+     * @minimum 0
+     * @maximum 4
+     */
+  addLe?: number;
+  /**
+     * @minimum 0
+     * @maximum 4
+     */
+  addRe?: number;
+  /**
+     * @minimum 0
+     * @maximum 180
+     */
+  axisLe?: number;
+  /**
+     * @minimum 0
+     * @maximum 180
+     */
+  axisRe?: number;
+  /** @pattern ^$|^(6/(5|6|7\.5|9|12|18|24|36|60)P?|[1-5]/60|CF|HM|PL|PR|NPL|N(5|6|8|10|12|18|24|36))$ */
+  bcvaLe?: string;
+  /** @pattern ^$|^(6/(5|6|7\.5|9|12|18|24|36|60)P?|[1-5]/60|CF|HM|PL|PR|NPL|N(5|6|8|10|12|18|24|36))$ */
+  bcvaRe?: string;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  colourVision?: string;
+  complete?: boolean;
+  /**
+     * @minimum -10
+     * @maximum 10
+     */
+  cylLe?: number;
+  /**
+     * @minimum -10
+     * @maximum 10
+     */
+  cylRe?: number;
+  expectedVersion?: number;
+  /**
+     * @minimum 0
+     * @maximum 80
+     */
+  iopLe?: number;
+  /** @pattern ^$|NCT|APPLANATION|TONOPEN|ICARE */
+  iopMethod?: string;
+  /**
+     * @minimum 0
+     * @maximum 80
+     */
+  iopRe?: number;
+  /** @pattern ^$|^(6/(5|6|7\.5|9|12|18|24|36|60)P?|[1-5]/60|CF|HM|PL|PR|NPL|N(5|6|8|10|12|18|24|36))$ */
+  nearLe?: string;
+  /** @pattern ^$|^(6/(5|6|7\.5|9|12|18|24|36|60)P?|[1-5]/60|CF|HM|PL|PR|NPL|N(5|6|8|10|12|18|24|36))$ */
+  nearRe?: string;
+  /**
+     * @minLength 0
+     * @maxLength 2000
+     */
+  notes?: string;
+  /** @pattern ^$|^(6/(5|6|7\.5|9|12|18|24|36|60)P?|[1-5]/60|CF|HM|PL|PR|NPL|N(5|6|8|10|12|18|24|36))$ */
+  pgvaLe?: string;
+  /** @pattern ^$|^(6/(5|6|7\.5|9|12|18|24|36|60)P?|[1-5]/60|CF|HM|PL|PR|NPL|N(5|6|8|10|12|18|24|36))$ */
+  pgvaRe?: string;
+  /**
+     * @minimum -30
+     * @maximum 30
+     */
+  sphLe?: number;
+  /**
+     * @minimum -30
+     * @maximum 30
+     */
+  sphRe?: number;
+  /** @pattern ^$|^(6/(5|6|7\.5|9|12|18|24|36|60)P?|[1-5]/60|CF|HM|PL|PR|NPL|N(5|6|8|10|12|18|24|36))$ */
+  ucvaLe?: string;
+  /** @pattern ^$|^(6/(5|6|7\.5|9|12|18|24|36|60)P?|[1-5]/60|CF|HM|PL|PR|NPL|N(5|6|8|10|12|18|24|36))$ */
+  ucvaRe?: string;
+}
+
+export interface ScheduleSurgery {
+  expectedVersion: number;
+  /**
+     * @minLength 0
+     * @maxLength 50
+     */
+  otRoom?: string;
+  slotTime: string;
+  surgeonPersonId: string;
+  surgeryDate: string;
+}
+
+export interface StartVisit {
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  chiefComplaint?: string;
+  consultantPersonId?: string;
+  patientId: string;
+  /**
+     * @minLength 1
+     * @pattern NEW|REVIEW|POST_OP
+     */
+  visitType: string;
+}
+
+export interface SubmitDayClose {
+  businessDate: string;
+  /** @minimum 0 */
+  countedCash: number;
+  /**
+     * @minLength 0
+     * @maxLength 1000
+     */
+  notes?: string;
+}
+
+export interface TariffItemView {
+  category?: string;
+  centreId?: string;
+  code?: string;
+  gstRate?: number;
+  id?: string;
+  name?: string;
+  price?: number;
+  status?: string;
+  updatedAt?: string;
+  version?: number;
+}
+
 export interface UpdateDraft {
   /**
      * @minLength 0
@@ -604,6 +1499,92 @@ export interface UpdateDraft {
   expectedVersion: number;
   /** @minItems 1 */
   permissions: string[];
+}
+
+export interface UpdatePatient {
+  /** @pattern ^[0-9]{2}-[0-9]{4}-[0-9]{4}-[0-9]{4}$ */
+  abhaNumber?: string;
+  /**
+     * @minLength 0
+     * @maxLength 300
+     */
+  addressLine?: string;
+  /**
+     * @minimum 0
+     * @maximum 120
+     */
+  ageYears?: number;
+  birthDate?: string;
+  /**
+     * @minLength 0
+     * @maxLength 100
+     */
+  city?: string;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  email?: string;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  emergencyContactName?: string;
+  /**
+     * @minLength 0
+     * @maxLength 20
+     */
+  emergencyContactPhone?: string;
+  expectedVersion: number;
+  /**
+     * @minLength 0
+     * @maxLength 100
+     */
+  familyName?: string;
+  /**
+     * @minLength 0
+     * @maxLength 100
+     */
+  givenName: string;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  guardianName?: string;
+  /** @pattern ^[0-9+][0-9 -]{6,19}$ */
+  mobile?: string;
+  /** @pattern ^[0-9]{6}$ */
+  pincode?: string;
+  /**
+     * @minLength 1
+     * @pattern FEMALE|MALE|OTHER|UNKNOWN
+     */
+  sex: string;
+  /**
+     * @minLength 0
+     * @maxLength 100
+     */
+  state?: string;
+}
+
+export interface UpdateTariffItem {
+  expectedVersion: number;
+  gstRate: number;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  name: string;
+  /**
+     * @minimum 0
+     * @maximum 9999999
+     */
+  price: number;
+  /**
+     * @minLength 1
+     * @pattern ACTIVE|RETIRED
+     */
+  status: string;
 }
 
 export interface UserCreated {
@@ -620,6 +1601,16 @@ export interface VersionImpact {
   roleVersionId?: string;
 }
 
+export interface VisitChart {
+  bills?: BillSummary[];
+  clinicalVisible?: boolean;
+  consultation?: ConsultationView;
+  optometry?: OptometryView;
+  previousVisits?: VisitView[];
+  surgery?: SurgeryView;
+  visit?: VisitView;
+}
+
 export type SearchParams = {
 actorUserId?: string;
 objectType?: string;
@@ -632,8 +1623,54 @@ beforeId?: number;
 limit?: number;
 };
 
+export type AppointmentsParams = {
+date?: string;
+};
+
+export type BillsParams = {
+from?: string;
+to?: string;
+status?: string;
+};
+
+export type ClinicBoardParams = {
+date?: string;
+};
+
+export type CliniciansParams = {
+department?: string;
+};
+
+export type CollectionsParams = {
+from?: string;
+to?: string;
+};
+
+export type DayClosePreviewParams = {
+date?: string;
+};
+
 export type CentreDepartmentsParams = {
 includeRetired?: boolean;
+};
+
+export type SurgeriesParams = {
+view?: string;
+date?: string;
+};
+
+export type TariffParams = {
+includeRetired?: boolean;
+};
+
+export type VisitsParams = {
+date?: string;
+stage?: string;
+};
+
+export type SearchPatientsParams = {
+q?: string;
+limit?: number;
 };
 
 export type ExplainParams = {
@@ -641,6 +1678,78 @@ permission: string;
 scopeType: string;
 scopeId: string;
 };
+
+export const getCancelAppointmentUrl = (appointmentId: string,) => {
+
+
+
+
+  return `/v1/appointments/${appointmentId}/cancel`
+}
+
+export const cancelAppointment = async (appointmentId: string,
+    cancelAppointmentBody: CancelAppointment, options?: Parameters<typeof apiFetch>[1]): Promise<AppointmentView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<AppointmentView>(getCancelAppointmentUrl(appointmentId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(cancelAppointmentBody)
+  }
+);}
+
+
+
+export const getCheckInAppointmentUrl = (appointmentId: string,) => {
+
+
+
+
+  return `/v1/appointments/${appointmentId}/check-in`
+}
+
+export const checkInAppointment = async (appointmentId: string,
+    checkInAppointmentBody: CheckInAppointment, options?: Parameters<typeof apiFetch>[1]): Promise<VisitView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<VisitView>(getCheckInAppointmentUrl(appointmentId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(checkInAppointmentBody)
+  }
+);}
+
+
 
 export const getPendingUrl = () => {
 
@@ -834,6 +1943,243 @@ export const search = async (params?: SearchParams, options?: Parameters<typeof 
 
 
 
+export const getBillUrl = (billId: string,) => {
+
+
+
+
+  return `/v1/bills/${billId}`
+}
+
+export const bill = async (billId: string, options?: Parameters<typeof apiFetch>[1]): Promise<BillDetail> => {
+
+  return apiFetch<BillDetail>(getBillUrl(billId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCancelBillUrl = (billId: string,) => {
+
+
+
+
+  return `/v1/bills/${billId}/cancel`
+}
+
+export const cancelBill = async (billId: string,
+    cancelBillBody: CancelBill, options?: Parameters<typeof apiFetch>[1]): Promise<BillDetail> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<BillDetail>(getCancelBillUrl(billId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(cancelBillBody)
+  }
+);}
+
+
+
+export const getRequestDiscountUrl = (billId: string,) => {
+
+
+
+
+  return `/v1/bills/${billId}/discount`
+}
+
+export const requestDiscount = async (billId: string,
+    requestDiscountBody: RequestDiscount, options?: Parameters<typeof apiFetch>[1]): Promise<BillDetail> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<BillDetail>(getRequestDiscountUrl(billId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(requestDiscountBody)
+  }
+);}
+
+
+
+export const getDecideDiscountUrl = (billId: string,) => {
+
+
+
+
+  return `/v1/bills/${billId}/discount/decision`
+}
+
+export const decideDiscount = async (billId: string,
+    approvalDecision: ApprovalDecision, options?: Parameters<typeof apiFetch>[1]): Promise<BillDetail> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<BillDetail>(getDecideDiscountUrl(billId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(approvalDecision)
+  }
+);}
+
+
+
+export const getAddBillLinesUrl = (billId: string,) => {
+
+
+
+
+  return `/v1/bills/${billId}/lines`
+}
+
+export const addBillLines = async (billId: string,
+    addLines: AddLines, options?: Parameters<typeof apiFetch>[1]): Promise<BillDetail> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<BillDetail>(getAddBillLinesUrl(billId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(addLines)
+  }
+);}
+
+
+
+export const getCollectPaymentUrl = (billId: string,) => {
+
+
+
+
+  return `/v1/bills/${billId}/payments`
+}
+
+export const collectPayment = async (billId: string,
+    collectPaymentBody: CollectPayment, options?: Parameters<typeof apiFetch>[1]): Promise<BillDetail> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<BillDetail>(getCollectPaymentUrl(billId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(collectPaymentBody)
+  }
+);}
+
+
+
+export const getRemoveBillLineUrl = (billId: string,) => {
+
+
+
+
+  return `/v1/bills/${billId}/remove-line`
+}
+
+export const removeBillLine = async (billId: string,
+    removeLine: RemoveLine, options?: Parameters<typeof apiFetch>[1]): Promise<BillDetail> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<BillDetail>(getRemoveBillLineUrl(billId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(removeLine)
+  }
+);}
+
+
+
 export const getCentresUrl = () => {
 
 
@@ -901,6 +2247,315 @@ export const getCentreUrl = (centreId: string,) => {
 export const centre = async (centreId: string, options?: Parameters<typeof apiFetch>[1]): Promise<CentreView> => {
 
   return apiFetch<CentreView>(getCentreUrl(centreId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getAppointmentsUrl = (centreId: string,
+    params?: AppointmentsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/centres/${centreId}/appointments?${stringifiedParams}` : `/v1/centres/${centreId}/appointments`
+}
+
+export const appointments = async (centreId: string,
+    params?: AppointmentsParams, options?: Parameters<typeof apiFetch>[1]): Promise<AppointmentView[]> => {
+
+  return apiFetch<AppointmentView[]>(getAppointmentsUrl(centreId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getBookAppointmentUrl = (centreId: string,) => {
+
+
+
+
+  return `/v1/centres/${centreId}/appointments`
+}
+
+export const bookAppointment = async (centreId: string,
+    bookAppointmentBody: BookAppointment, options?: Parameters<typeof apiFetch>[1]): Promise<AppointmentView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<AppointmentView>(getBookAppointmentUrl(centreId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(bookAppointmentBody)
+  }
+);}
+
+
+
+export const getBillsUrl = (centreId: string,
+    params?: BillsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/centres/${centreId}/bills?${stringifiedParams}` : `/v1/centres/${centreId}/bills`
+}
+
+export const bills = async (centreId: string,
+    params?: BillsParams, options?: Parameters<typeof apiFetch>[1]): Promise<BillView[]> => {
+
+  return apiFetch<BillView[]>(getBillsUrl(centreId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateBillUrl = (centreId: string,) => {
+
+
+
+
+  return `/v1/centres/${centreId}/bills`
+}
+
+export const createBill = async (centreId: string,
+    createBillBody: CreateBill, options?: Parameters<typeof apiFetch>[1]): Promise<BillDetail> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<BillDetail>(getCreateBillUrl(centreId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(createBillBody)
+  }
+);}
+
+
+
+export const getClinicBoardUrl = (centreId: string,
+    params?: ClinicBoardParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/centres/${centreId}/clinic-board?${stringifiedParams}` : `/v1/centres/${centreId}/clinic-board`
+}
+
+export const clinicBoard = async (centreId: string,
+    params?: ClinicBoardParams, options?: Parameters<typeof apiFetch>[1]): Promise<ClinicBoard> => {
+
+  return apiFetch<ClinicBoard>(getClinicBoardUrl(centreId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCliniciansUrl = (centreId: string,
+    params?: CliniciansParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/centres/${centreId}/clinicians?${stringifiedParams}` : `/v1/centres/${centreId}/clinicians`
+}
+
+export const clinicians = async (centreId: string,
+    params?: CliniciansParams, options?: Parameters<typeof apiFetch>[1]): Promise<ClinicianView[]> => {
+
+  return apiFetch<ClinicianView[]>(getCliniciansUrl(centreId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCollectionsUrl = (centreId: string,
+    params?: CollectionsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/centres/${centreId}/collections?${stringifiedParams}` : `/v1/centres/${centreId}/collections`
+}
+
+export const collections = async (centreId: string,
+    params?: CollectionsParams, options?: Parameters<typeof apiFetch>[1]): Promise<CollectionReport> => {
+
+  return apiFetch<CollectionReport>(getCollectionsUrl(centreId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getDayClosesUrl = (centreId: string,) => {
+
+
+
+
+  return `/v1/centres/${centreId}/day-closes`
+}
+
+export const dayCloses = async (centreId: string, options?: Parameters<typeof apiFetch>[1]): Promise<DayCloseView[]> => {
+
+  return apiFetch<DayCloseView[]>(getDayClosesUrl(centreId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSubmitDayCloseUrl = (centreId: string,) => {
+
+
+
+
+  return `/v1/centres/${centreId}/day-closes`
+}
+
+export const submitDayClose = async (centreId: string,
+    submitDayCloseBody: SubmitDayClose, options?: Parameters<typeof apiFetch>[1]): Promise<DayCloseView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<DayCloseView>(getSubmitDayCloseUrl(centreId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(submitDayCloseBody)
+  }
+);}
+
+
+
+export const getDayClosePreviewUrl = (centreId: string,
+    params?: DayClosePreviewParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/centres/${centreId}/day-closes/preview?${stringifiedParams}` : `/v1/centres/${centreId}/day-closes/preview`
+}
+
+export const dayClosePreview = async (centreId: string,
+    params?: DayClosePreviewParams, options?: Parameters<typeof apiFetch>[1]): Promise<DayClosePreview> => {
+
+  return apiFetch<DayClosePreview>(getDayClosePreviewUrl(centreId,params),
   {
     ...options,
     method: 'GET'
@@ -1038,6 +2693,27 @@ export const retireImpact = async (centreId: string,
 
 
 
+export const getPendingDiscountsUrl = (centreId: string,) => {
+
+
+
+
+  return `/v1/centres/${centreId}/discounts/pending`
+}
+
+export const pendingDiscounts = async (centreId: string, options?: Parameters<typeof apiFetch>[1]): Promise<BillView[]> => {
+
+  return apiFetch<BillView[]>(getPendingDiscountsUrl(centreId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
 export const getEstablishmentsUrl = (centreId: string,) => {
 
 
@@ -1090,6 +2766,242 @@ return apiFetch<EstablishmentView>(getEstablishUrl(centreId),
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
     body: JSON.stringify(establishBody)
+  }
+);}
+
+
+
+export const getSurgeriesUrl = (centreId: string,
+    params?: SurgeriesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/centres/${centreId}/surgeries?${stringifiedParams}` : `/v1/centres/${centreId}/surgeries`
+}
+
+export const surgeries = async (centreId: string,
+    params?: SurgeriesParams, options?: Parameters<typeof apiFetch>[1]): Promise<SurgeryView[]> => {
+
+  return apiFetch<SurgeryView[]>(getSurgeriesUrl(centreId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getTariffUrl = (centreId: string,
+    params?: TariffParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/centres/${centreId}/tariff?${stringifiedParams}` : `/v1/centres/${centreId}/tariff`
+}
+
+export const tariff = async (centreId: string,
+    params?: TariffParams, options?: Parameters<typeof apiFetch>[1]): Promise<TariffItemView[]> => {
+
+  return apiFetch<TariffItemView[]>(getTariffUrl(centreId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateTariffItemUrl = (centreId: string,) => {
+
+
+
+
+  return `/v1/centres/${centreId}/tariff`
+}
+
+export const createTariffItem = async (centreId: string,
+    createTariffItemBody: CreateTariffItem, options?: Parameters<typeof apiFetch>[1]): Promise<TariffItemView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<TariffItemView>(getCreateTariffItemUrl(centreId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(createTariffItemBody)
+  }
+);}
+
+
+
+export const getUpdateTariffItemUrl = (centreId: string,
+    itemId: string,) => {
+
+
+
+
+  return `/v1/centres/${centreId}/tariff/${itemId}`
+}
+
+export const updateTariffItem = async (centreId: string,
+    itemId: string,
+    updateTariffItemBody: UpdateTariffItem, options?: Parameters<typeof apiFetch>[1]): Promise<TariffItemView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<TariffItemView>(getUpdateTariffItemUrl(centreId,itemId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(updateTariffItemBody)
+  }
+);}
+
+
+
+export const getVisitsUrl = (centreId: string,
+    params?: VisitsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/centres/${centreId}/visits?${stringifiedParams}` : `/v1/centres/${centreId}/visits`
+}
+
+export const visits = async (centreId: string,
+    params?: VisitsParams, options?: Parameters<typeof apiFetch>[1]): Promise<VisitView[]> => {
+
+  return apiFetch<VisitView[]>(getVisitsUrl(centreId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getStartWalkInVisitUrl = (centreId: string,) => {
+
+
+
+
+  return `/v1/centres/${centreId}/visits`
+}
+
+export const startWalkInVisit = async (centreId: string,
+    startVisit: StartVisit, options?: Parameters<typeof apiFetch>[1]): Promise<VisitView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<VisitView>(getStartWalkInVisitUrl(centreId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(startVisit)
+  }
+);}
+
+
+
+export const getDecideDayCloseUrl = (dayCloseId: string,) => {
+
+
+
+
+  return `/v1/day-closes/${dayCloseId}/decision`
+}
+
+export const decideDayClose = async (dayCloseId: string,
+    approvalDecision: ApprovalDecision, options?: Parameters<typeof apiFetch>[1]): Promise<DayCloseView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<DayCloseView>(getDecideDayCloseUrl(dayCloseId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(approvalDecision)
   }
 );}
 
@@ -1330,6 +3242,168 @@ export const getMeUrl = () => {
 export const me = async ( options?: Parameters<typeof apiFetch>[1]): Promise<Me> => {
 
   return apiFetch<Me>(getMeUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSearchPatientsUrl = (params?: SearchPatientsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/patients?${stringifiedParams}` : `/v1/patients`
+}
+
+export const searchPatients = async (params?: SearchPatientsParams, options?: Parameters<typeof apiFetch>[1]): Promise<PatientView[]> => {
+
+  return apiFetch<PatientView[]>(getSearchPatientsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getRegisterPatientUrl = () => {
+
+
+
+
+  return `/v1/patients`
+}
+
+export const registerPatient = async (registerPatientBody: RegisterPatient, options?: Parameters<typeof apiFetch>[1]): Promise<PatientView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<PatientView>(getRegisterPatientUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(registerPatientBody)
+  }
+);}
+
+
+
+export const getPatientUrl = (patientId: string,) => {
+
+
+
+
+  return `/v1/patients/${patientId}`
+}
+
+export const patient = async (patientId: string, options?: Parameters<typeof apiFetch>[1]): Promise<PatientView> => {
+
+  return apiFetch<PatientView>(getPatientUrl(patientId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getUpdatePatientUrl = (patientId: string,) => {
+
+
+
+
+  return `/v1/patients/${patientId}`
+}
+
+export const updatePatient = async (patientId: string,
+    updatePatientBody: UpdatePatient, options?: Parameters<typeof apiFetch>[1]): Promise<PatientView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<PatientView>(getUpdatePatientUrl(patientId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(updatePatientBody)
+  }
+);}
+
+
+
+export const getPatientBillsUrl = (patientId: string,) => {
+
+
+
+
+  return `/v1/patients/${patientId}/bills`
+}
+
+export const patientBills = async (patientId: string, options?: Parameters<typeof apiFetch>[1]): Promise<BillView[]> => {
+
+  return apiFetch<BillView[]>(getPatientBillsUrl(patientId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getPatientEyeHistoryUrl = (patientId: string,) => {
+
+
+
+
+  return `/v1/patients/${patientId}/eye-history`
+}
+
+export const patientEyeHistory = async (patientId: string, options?: Parameters<typeof apiFetch>[1]): Promise<PatientEyeHistory> => {
+
+  return apiFetch<PatientEyeHistory>(getPatientEyeHistoryUrl(patientId),
   {
     ...options,
     method: 'GET'
@@ -1970,6 +4044,228 @@ return apiFetch<RoleDetail>(getDraftVersionUrl(roleId),
 
 
 
+export const getSurgeryUrl = (surgeryId: string,) => {
+
+
+
+
+  return `/v1/surgeries/${surgeryId}`
+}
+
+export const surgery = async (surgeryId: string, options?: Parameters<typeof apiFetch>[1]): Promise<SurgeryView> => {
+
+  return apiFetch<SurgeryView>(getSurgeryUrl(surgeryId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSurgeryBillsUrl = (surgeryId: string,) => {
+
+
+
+
+  return `/v1/surgeries/${surgeryId}/bills`
+}
+
+export const surgeryBills = async (surgeryId: string, options?: Parameters<typeof apiFetch>[1]): Promise<BillSummary[]> => {
+
+  return apiFetch<BillSummary[]>(getSurgeryBillsUrl(surgeryId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCancelSurgeryUrl = (surgeryId: string,) => {
+
+
+
+
+  return `/v1/surgeries/${surgeryId}/cancel`
+}
+
+export const cancelSurgery = async (surgeryId: string,
+    cancelSurgeryBody: CancelSurgery, options?: Parameters<typeof apiFetch>[1]): Promise<SurgeryView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<SurgeryView>(getCancelSurgeryUrl(surgeryId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(cancelSurgeryBody)
+  }
+);}
+
+
+
+export const getCounselSurgeryUrl = (surgeryId: string,) => {
+
+
+
+
+  return `/v1/surgeries/${surgeryId}/counselling`
+}
+
+export const counselSurgery = async (surgeryId: string,
+    counsel: Counsel, options?: Parameters<typeof apiFetch>[1]): Promise<SurgeryView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<SurgeryView>(getCounselSurgeryUrl(surgeryId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(counsel)
+  }
+);}
+
+
+
+export const getSaveSurgeryOperationUrl = (surgeryId: string,) => {
+
+
+
+
+  return `/v1/surgeries/${surgeryId}/operation`
+}
+
+export const saveSurgeryOperation = async (surgeryId: string,
+    operation: Operation, options?: Parameters<typeof apiFetch>[1]): Promise<SurgeryView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<SurgeryView>(getSaveSurgeryOperationUrl(surgeryId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(operation)
+  }
+);}
+
+
+
+export const getSaveSurgeryPreOpUrl = (surgeryId: string,) => {
+
+
+
+
+  return `/v1/surgeries/${surgeryId}/pre-op`
+}
+
+export const saveSurgeryPreOp = async (surgeryId: string,
+    preOp: PreOp, options?: Parameters<typeof apiFetch>[1]): Promise<SurgeryView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<SurgeryView>(getSaveSurgeryPreOpUrl(surgeryId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(preOp)
+  }
+);}
+
+
+
+export const getScheduleSurgeryUrl = (surgeryId: string,) => {
+
+
+
+
+  return `/v1/surgeries/${surgeryId}/schedule`
+}
+
+export const scheduleSurgery = async (surgeryId: string,
+    scheduleSurgeryBody: ScheduleSurgery, options?: Parameters<typeof apiFetch>[1]): Promise<SurgeryView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<SurgeryView>(getScheduleSurgeryUrl(surgeryId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(scheduleSurgeryBody)
+  }
+);}
+
+
+
 export const getUsersUrl = () => {
 
 
@@ -2165,5 +4461,170 @@ return apiFetch<UserView>(getEnableUrl(userId),
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
     body: JSON.stringify(changeUserStatus)
+  }
+);}
+
+
+
+export const getVisitChartUrl = (visitId: string,) => {
+
+
+
+
+  return `/v1/visits/${visitId}`
+}
+
+export const visitChart = async (visitId: string, options?: Parameters<typeof apiFetch>[1]): Promise<VisitChart> => {
+
+  return apiFetch<VisitChart>(getVisitChartUrl(visitId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCancelVisitUrl = (visitId: string,) => {
+
+
+
+
+  return `/v1/visits/${visitId}/cancel`
+}
+
+export const cancelVisit = async (visitId: string,
+    cancelVisitBody: CancelVisit, options?: Parameters<typeof apiFetch>[1]): Promise<VisitView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<VisitView>(getCancelVisitUrl(visitId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(cancelVisitBody)
+  }
+);}
+
+
+
+export const getCheckoutVisitUrl = (visitId: string,) => {
+
+
+
+
+  return `/v1/visits/${visitId}/checkout`
+}
+
+export const checkoutVisit = async (visitId: string,
+    checkout: Checkout, options?: Parameters<typeof apiFetch>[1]): Promise<VisitView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<VisitView>(getCheckoutVisitUrl(visitId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(checkout)
+  }
+);}
+
+
+
+export const getSaveConsultationUrl = (visitId: string,) => {
+
+
+
+
+  return `/v1/visits/${visitId}/consultation`
+}
+
+export const saveConsultation = async (visitId: string,
+    saveConsultationBody: SaveConsultation, options?: Parameters<typeof apiFetch>[1]): Promise<VisitChart> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<VisitChart>(getSaveConsultationUrl(visitId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(saveConsultationBody)
+  }
+);}
+
+
+
+export const getSaveOptometryUrl = (visitId: string,) => {
+
+
+
+
+  return `/v1/visits/${visitId}/optometry`
+}
+
+export const saveOptometry = async (visitId: string,
+    saveOptometryBody: SaveOptometry, options?: Parameters<typeof apiFetch>[1]): Promise<VisitChart> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<VisitChart>(getSaveOptometryUrl(visitId),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(saveOptometryBody)
   }
 );}

@@ -4,11 +4,18 @@ export interface NavItem {
   /** Shown only if the permission is held at some scope; the server still checks every action. */
   permission?: string;
   anyOf?: string[];
-  group: 'Workspace' | 'Organisation' | 'People' | 'Access';
+  group: 'Workspace' | 'Clinic' | 'Organisation' | 'People' | 'Access';
 }
 
 export const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Overview', group: 'Workspace' },
+  { to: '/reception', label: 'Reception desk', anyOf: ['opd.checkin', 'opd.appointment.manage'], group: 'Clinic' },
+  { to: '/optometry', label: 'Optometry', permission: 'eye.optometry.record', group: 'Clinic' },
+  { to: '/consultation', label: 'Consultation', permission: 'eye.consultation.record', group: 'Clinic' },
+  { to: '/counselling', label: 'Surgery counselling', anyOf: ['eye.counselling.record', 'eye.surgery.schedule'], group: 'Clinic' },
+  { to: '/ot', label: 'Operation theatre', anyOf: ['eye.surgery.prepare', 'eye.surgery.operate'], group: 'Clinic' },
+  { to: '/accounts', label: 'Accounts', anyOf: ['billing.report.read', 'billing.dayclose.submit', 'billing.dayclose.approve', 'billing.tariff.manage'], group: 'Clinic' },
+  { to: '/patients', label: 'Patient database', permission: 'patient.read', group: 'Clinic' },
   { to: '/centres', label: 'Centres', permission: 'org.centre.read', group: 'Organisation' },
   { to: '/organisation', label: 'Hierarchy and legal entities', permission: 'org.structure.read', group: 'Organisation' },
   { to: '/departments', label: 'Department library', permission: 'org.structure.read', group: 'Organisation' },

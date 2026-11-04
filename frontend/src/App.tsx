@@ -20,6 +20,13 @@ import { Roles } from './pages/Roles';
 import { SignedOut, SignIn } from './pages/SignIn';
 import { UserDetail } from './pages/UserDetail';
 import { Users } from './pages/Users';
+import { AccountsDesk } from './pages/clinic/AccountsDesk';
+import { BillPage } from './pages/clinic/BillPage';
+import { ConsultationDesk, OptometryDesk } from './pages/clinic/ClinicalDesks';
+import { PatientRecord, Patients } from './pages/clinic/Patients';
+import { ReceptionDesk } from './pages/clinic/ReceptionDesk';
+import { CounsellingDesk, OtDesk, SurgeryPage } from './pages/clinic/Surgery';
+import { VisitChartPage } from './pages/clinic/VisitChart';
 
 const router = createBrowserRouter(
   [
@@ -28,6 +35,17 @@ const router = createBrowserRouter(
       element: <AppShell />,
       children: [
         { index: true, element: <Overview /> },
+        { path: 'reception', element: <ReceptionDesk /> },
+        { path: 'optometry', element: <OptometryDesk /> },
+        { path: 'consultation', element: <ConsultationDesk /> },
+        { path: 'counselling', element: <CounsellingDesk /> },
+        { path: 'ot', element: <OtDesk /> },
+        { path: 'accounts', element: <AccountsDesk /> },
+        { path: 'patients', element: <Patients /> },
+        { path: 'patients/:patientId', element: <PatientRecord /> },
+        { path: 'visits/:visitId', element: <VisitChartPage /> },
+        { path: 'bills/:billId', element: <BillPage /> },
+        { path: 'surgeries/:surgeryId', element: <SurgeryPage /> },
         { path: 'centres', element: <Centres /> },
         { path: 'centres/:centreId', element: <CentreWorkspace /> },
         { path: 'organisation', element: <Organisation /> },

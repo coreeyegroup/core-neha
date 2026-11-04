@@ -159,7 +159,7 @@ public class AccountsService {
     }
 
     @Transactional
-    public DayCloseView decide(Actor actor, UUID dayCloseId, BillingModels.Decision cmd) {
+    public DayCloseView decide(Actor actor, UUID dayCloseId, BillingModels.ApprovalDecision cmd) {
         DayCloseView current = row(dayCloseId);
         Scope scope = Scope.centre(current.centreId());
         access.require(actor, Permission.BILLING_DAYCLOSE_APPROVE, scope, "billing.dayclose.decide", "day_close", dayCloseId.toString());

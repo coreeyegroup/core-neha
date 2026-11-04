@@ -1,6 +1,27 @@
 {
   "components": {
     "schemas": {
+      "AddLines": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/LineInput"
+            },
+            "maxItems": 50,
+            "minItems": 0,
+            "type": "array"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "lines"
+        ],
+        "type": "object"
+      },
       "AddPosting": {
         "properties": {
           "establishmentId": {
@@ -23,6 +44,119 @@
         },
         "required": [
           "establishmentId"
+        ],
+        "type": "object"
+      },
+      "AmountRow": {
+        "properties": {
+          "amount": {
+            "type": "number"
+          },
+          "count": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "label": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "AppointmentView": {
+        "properties": {
+          "appointmentDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "cancelReason": {
+            "type": "string"
+          },
+          "centreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "consultantName": {
+            "type": "string"
+          },
+          "consultantPersonId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "createdByName": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "patientAge": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "patientId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "patientMobile": {
+            "type": "string"
+          },
+          "patientName": {
+            "type": "string"
+          },
+          "patientSex": {
+            "type": "string"
+          },
+          "patientUhid": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "slotTime": {
+            "format": "time-local",
+            "type": "string"
+          },
+          "source": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "version": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "visitId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "visitType": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ApprovalDecision": {
+        "properties": {
+          "approve": {
+            "type": "boolean"
+          },
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "note": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion"
         ],
         "type": "object"
       },
@@ -147,6 +281,300 @@
         },
         "type": "object"
       },
+      "BillDetail": {
+        "properties": {
+          "bill": {
+            "$ref": "#/components/schemas/BillView"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/BillLineView"
+            },
+            "type": "array"
+          },
+          "payments": {
+            "items": {
+              "$ref": "#/components/schemas/PaymentView"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "BillLineView": {
+        "properties": {
+          "amount": {
+            "type": "number"
+          },
+          "category": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "gstRate": {
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "quantity": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "tariffItemId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "taxAmount": {
+            "type": "number"
+          },
+          "unitPrice": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "BillSummary": {
+        "properties": {
+          "balance": {
+            "type": "number"
+          },
+          "billNo": {
+            "type": "string"
+          },
+          "discountStatus": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "netAmount": {
+            "type": "number"
+          },
+          "paidAmount": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "BillView": {
+        "properties": {
+          "balance": {
+            "type": "number"
+          },
+          "billDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "billNo": {
+            "type": "string"
+          },
+          "cancelReason": {
+            "type": "string"
+          },
+          "centreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "centreName": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "createdByName": {
+            "type": "string"
+          },
+          "discountAmount": {
+            "type": "number"
+          },
+          "discountDecidedByName": {
+            "type": "string"
+          },
+          "discountDecisionNote": {
+            "type": "string"
+          },
+          "discountReason": {
+            "type": "string"
+          },
+          "discountRequested": {
+            "type": "number"
+          },
+          "discountRequestedByName": {
+            "type": "string"
+          },
+          "discountStatus": {
+            "type": "string"
+          },
+          "grossAmount": {
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "netAmount": {
+            "type": "number"
+          },
+          "paidAmount": {
+            "type": "number"
+          },
+          "patientId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "patientName": {
+            "type": "string"
+          },
+          "patientUhid": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "surgeryRef": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "taxAmount": {
+            "type": "number"
+          },
+          "version": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "visitRef": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "BookAppointment": {
+        "properties": {
+          "appointmentDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "consultantPersonId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "patientId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          },
+          "slotTime": {
+            "format": "time-local",
+            "type": "string"
+          },
+          "source": {
+            "minLength": 1,
+            "pattern": "WALK_IN|PHONE|ONLINE|REFERRAL",
+            "type": "string"
+          },
+          "visitType": {
+            "minLength": 1,
+            "pattern": "NEW|REVIEW|POST_OP",
+            "type": "string"
+          }
+        },
+        "required": [
+          "appointmentDate",
+          "patientId",
+          "slotTime",
+          "source",
+          "visitType"
+        ],
+        "type": "object"
+      },
+      "CancelAppointment": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "noShow": {
+            "type": "boolean"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "reason"
+        ],
+        "type": "object"
+      },
+      "CancelBill": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "reason"
+        ],
+        "type": "object"
+      },
+      "CancelSurgery": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "reason"
+        ],
+        "type": "object"
+      },
+      "CancelVisit": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "reason"
+        ],
+        "type": "object"
+      },
       "CentreAccess": {
         "properties": {
           "centreId": {
@@ -266,6 +694,154 @@
         ],
         "type": "object"
       },
+      "CheckInAppointment": {
+        "properties": {
+          "chiefComplaint": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          },
+          "consultantPersonId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "expectedVersion"
+        ],
+        "type": "object"
+      },
+      "Checkout": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "noChargeReason": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion"
+        ],
+        "type": "object"
+      },
+      "ClinicBoard": {
+        "properties": {
+          "appointmentsArrived": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "appointmentsBooked": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "appointmentsCancelled": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "averageWaitMinutes": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "cancelled": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "centreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "completed": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "date": {
+            "format": "date",
+            "type": "string"
+          },
+          "longestWaitMinutes": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "newPatients": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "surgeriesAdvised": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "surgeriesCompletedToday": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "surgeriesReadyToday": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "surgeriesToSchedule": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "surgeriesToday": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "surgeriesUpcoming": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "visits": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "waitingCheckout": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "waitingConsultation": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "waitingCounselling": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "waitingOptometry": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "ClinicianView": {
+        "properties": {
+          "departmentCode": {
+            "type": "string"
+          },
+          "departmentName": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "personId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "positionTitle": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "CloneRole": {
         "properties": {
           "code": {
@@ -292,6 +868,250 @@
           "code",
           "name",
           "sourceRoleId"
+        ],
+        "type": "object"
+      },
+      "CollectPayment": {
+        "properties": {
+          "amount": {
+            "minimum": 0.01,
+            "type": "number"
+          },
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "mode": {
+            "minLength": 1,
+            "pattern": "CASH|CARD|UPI|INSURANCE|CORPORATE",
+            "type": "string"
+          },
+          "reference": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "expectedVersion",
+          "mode"
+        ],
+        "type": "object"
+      },
+      "CollectionReport": {
+        "properties": {
+          "billed": {
+            "type": "number"
+          },
+          "bills": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "byCategory": {
+            "items": {
+              "$ref": "#/components/schemas/AmountRow"
+            },
+            "type": "array"
+          },
+          "byCollector": {
+            "items": {
+              "$ref": "#/components/schemas/AmountRow"
+            },
+            "type": "array"
+          },
+          "byDay": {
+            "items": {
+              "$ref": "#/components/schemas/DayRow"
+            },
+            "type": "array"
+          },
+          "byMode": {
+            "items": {
+              "$ref": "#/components/schemas/AmountRow"
+            },
+            "type": "array"
+          },
+          "centreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "collected": {
+            "type": "number"
+          },
+          "discounts": {
+            "type": "number"
+          },
+          "from": {
+            "format": "date",
+            "type": "string"
+          },
+          "outstanding": {
+            "type": "number"
+          },
+          "outstandingBills": {
+            "items": {
+              "$ref": "#/components/schemas/BillView"
+            },
+            "type": "array"
+          },
+          "pendingDiscounts": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "to": {
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ConsultationView": {
+        "properties": {
+          "advice": {
+            "type": "string"
+          },
+          "anteriorSegmentLe": {
+            "type": "string"
+          },
+          "anteriorSegmentRe": {
+            "type": "string"
+          },
+          "consultantName": {
+            "type": "string"
+          },
+          "consultantPersonId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "diagnosis": {
+            "type": "string"
+          },
+          "diagnosisCode": {
+            "type": "string"
+          },
+          "diagnosisEye": {
+            "type": "string"
+          },
+          "followUpDays": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "glassesPrescribed": {
+            "type": "boolean"
+          },
+          "history": {
+            "type": "string"
+          },
+          "medications": {
+            "type": "string"
+          },
+          "posteriorSegmentLe": {
+            "type": "string"
+          },
+          "posteriorSegmentRe": {
+            "type": "string"
+          },
+          "recordedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "recordedByName": {
+            "type": "string"
+          },
+          "surgeryAdvised": {
+            "type": "boolean"
+          },
+          "surgeryEye": {
+            "type": "string"
+          },
+          "surgeryProcedure": {
+            "type": "string"
+          },
+          "surgeryUrgency": {
+            "type": "string"
+          },
+          "version": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "visitId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "Counsel": {
+        "properties": {
+          "decision": {
+            "minLength": 1,
+            "pattern": "ACCEPTED|DECLINED|UNDECIDED",
+            "type": "string"
+          },
+          "estimatedCost": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "insurerName": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "notes": {
+            "maxLength": 4000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "packageItemId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "paymentPlan": {
+            "pattern": "^$|SELF_PAY|INSURANCE|CORPORATE|GOVERNMENT_SCHEME",
+            "type": "string"
+          },
+          "preferredDate": {
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "decision",
+          "expectedVersion"
+        ],
+        "type": "object"
+      },
+      "CreateBill": {
+        "properties": {
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/LineInput"
+            },
+            "maxItems": 50,
+            "minItems": 0,
+            "type": "array"
+          },
+          "patientId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "surgeryRef": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "visitRef": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lines",
+          "patientId"
         ],
         "type": "object"
       },
@@ -499,6 +1319,41 @@
         ],
         "type": "object"
       },
+      "CreateTariffItem": {
+        "properties": {
+          "category": {
+            "minLength": 1,
+            "pattern": "REGISTRATION|CONSULTATION|INVESTIGATION|PROCEDURE|SURGERY_PACKAGE|OPTICAL|PHARMACY|OTHER",
+            "type": "string"
+          },
+          "code": {
+            "minLength": 1,
+            "pattern": "^[A-Z][A-Z0-9_]{1,39}$",
+            "type": "string"
+          },
+          "gstRate": {
+            "type": "number"
+          },
+          "name": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "price": {
+            "maximum": 9999999,
+            "minimum": 0,
+            "type": "number"
+          }
+        },
+        "required": [
+          "category",
+          "code",
+          "gstRate",
+          "name",
+          "price"
+        ],
+        "type": "object"
+      },
       "CreateUser": {
         "properties": {
           "personId": {
@@ -515,6 +1370,115 @@
           "personId",
           "username"
         ],
+        "type": "object"
+      },
+      "DayClosePreview": {
+        "properties": {
+          "businessDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "existing": {
+            "$ref": "#/components/schemas/DayCloseView"
+          },
+          "payments": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "systemCard": {
+            "type": "number"
+          },
+          "systemCash": {
+            "type": "number"
+          },
+          "systemOther": {
+            "type": "number"
+          },
+          "systemUpi": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
+      "DayCloseView": {
+        "properties": {
+          "businessDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "centreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "countedCash": {
+            "type": "number"
+          },
+          "decidedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "decidedByName": {
+            "type": "string"
+          },
+          "decisionNote": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "submittedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "submittedByName": {
+            "type": "string"
+          },
+          "systemCard": {
+            "type": "number"
+          },
+          "systemCash": {
+            "type": "number"
+          },
+          "systemOther": {
+            "type": "number"
+          },
+          "systemUpi": {
+            "type": "number"
+          },
+          "variance": {
+            "type": "number"
+          },
+          "version": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "DayRow": {
+        "properties": {
+          "billed": {
+            "type": "number"
+          },
+          "bills": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "collected": {
+            "type": "number"
+          },
+          "date": {
+            "format": "date",
+            "type": "string"
+          }
+        },
         "type": "object"
       },
       "Decision": {
@@ -852,6 +1816,34 @@
         },
         "type": "object"
       },
+      "HistoryVisit": {
+        "properties": {
+          "bcvaLe": {
+            "type": "string"
+          },
+          "bcvaRe": {
+            "type": "string"
+          },
+          "diagnosis": {
+            "type": "string"
+          },
+          "diagnosisCode": {
+            "type": "string"
+          },
+          "iopLe": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "iopRe": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "visit": {
+            "$ref": "#/components/schemas/VisitView"
+          }
+        },
+        "type": "object"
+      },
       "LegalEntityView": {
         "properties": {
           "code": {
@@ -900,6 +1892,25 @@
         },
         "type": "object"
       },
+      "LineInput": {
+        "properties": {
+          "quantity": {
+            "format": "int32",
+            "maximum": 999,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "tariffItemId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "quantity",
+          "tariffItemId"
+        ],
+        "type": "object"
+      },
       "Me": {
         "properties": {
           "centres": {
@@ -917,6 +1928,12 @@
           "pendingApprovals": {
             "format": "int32",
             "type": "integer"
+          },
+          "postings": {
+            "items": {
+              "$ref": "#/components/schemas/MyPosting"
+            },
+            "type": "array"
           },
           "responsibilities": {
             "items": {
@@ -942,6 +1959,24 @@
             "type": "string"
           },
           "username": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "MyPosting": {
+        "properties": {
+          "centreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "centreName": {
+            "type": "string"
+          },
+          "departmentName": {
+            "type": "string"
+          },
+          "positionTitle": {
             "type": "string"
           }
         },
@@ -979,6 +2014,277 @@
           "version": {
             "format": "int32",
             "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "Operation": {
+        "properties": {
+          "anaesthesia": {
+            "pattern": "^$|TOPICAL|PERIBULBAR|RETROBULBAR|SUBTENON|GENERAL",
+            "type": "string"
+          },
+          "complete": {
+            "type": "boolean"
+          },
+          "complications": {
+            "maxLength": 2000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "iolImplanted": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "operativeNotes": {
+            "maxLength": 8000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "postOpInstructions": {
+            "maxLength": 4000,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion"
+        ],
+        "type": "object"
+      },
+      "OptometryView": {
+        "properties": {
+          "addLe": {
+            "type": "number"
+          },
+          "addRe": {
+            "type": "number"
+          },
+          "axisLe": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "axisRe": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "bcvaLe": {
+            "type": "string"
+          },
+          "bcvaRe": {
+            "type": "string"
+          },
+          "colourVision": {
+            "type": "string"
+          },
+          "cylLe": {
+            "type": "number"
+          },
+          "cylRe": {
+            "type": "number"
+          },
+          "iopLe": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "iopMethod": {
+            "type": "string"
+          },
+          "iopRe": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "nearLe": {
+            "type": "string"
+          },
+          "nearRe": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "pgvaLe": {
+            "type": "string"
+          },
+          "pgvaRe": {
+            "type": "string"
+          },
+          "recordedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "recordedByName": {
+            "type": "string"
+          },
+          "sphLe": {
+            "type": "number"
+          },
+          "sphRe": {
+            "type": "number"
+          },
+          "ucvaLe": {
+            "type": "string"
+          },
+          "ucvaRe": {
+            "type": "string"
+          },
+          "version": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "visitId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "PatientEyeHistory": {
+        "properties": {
+          "clinicalVisible": {
+            "type": "boolean"
+          },
+          "patientId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "surgeries": {
+            "items": {
+              "$ref": "#/components/schemas/SurgeryView"
+            },
+            "type": "array"
+          },
+          "upcomingAppointments": {
+            "items": {
+              "$ref": "#/components/schemas/AppointmentView"
+            },
+            "type": "array"
+          },
+          "visits": {
+            "items": {
+              "$ref": "#/components/schemas/HistoryVisit"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "PatientView": {
+        "properties": {
+          "abhaNumber": {
+            "type": "string"
+          },
+          "addressLine": {
+            "type": "string"
+          },
+          "ageYears": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "birthDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "birthDateEstimated": {
+            "type": "boolean"
+          },
+          "city": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "demo": {
+            "type": "boolean"
+          },
+          "email": {
+            "type": "string"
+          },
+          "emergencyContactName": {
+            "type": "string"
+          },
+          "emergencyContactPhone": {
+            "type": "string"
+          },
+          "familyName": {
+            "type": "string"
+          },
+          "fullName": {
+            "type": "string"
+          },
+          "givenName": {
+            "type": "string"
+          },
+          "guardianName": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "mobile": {
+            "type": "string"
+          },
+          "pincode": {
+            "type": "string"
+          },
+          "registeredCentreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "registeredCentreName": {
+            "type": "string"
+          },
+          "sex": {
+            "type": "string"
+          },
+          "state": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "uhid": {
+            "type": "string"
+          },
+          "version": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "PaymentView": {
+        "properties": {
+          "amount": {
+            "type": "number"
+          },
+          "businessDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "mode": {
+            "type": "string"
+          },
+          "receivedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "receivedByName": {
+            "type": "string"
+          },
+          "reference": {
+            "type": "string"
           }
         },
         "type": "object"
@@ -1135,6 +2441,163 @@
         },
         "type": "object"
       },
+      "PreOp": {
+        "properties": {
+          "biometryDone": {
+            "type": "boolean"
+          },
+          "consentSigned": {
+            "type": "boolean"
+          },
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "fitnessCleared": {
+            "type": "boolean"
+          },
+          "iolPower": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string"
+          },
+          "preOpBloodSugar": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string"
+          },
+          "preOpBp": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string"
+          },
+          "preOpNotes": {
+            "maxLength": 2000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "pupilDilated": {
+            "type": "boolean"
+          },
+          "ready": {
+            "type": "boolean"
+          },
+          "siteMarked": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "expectedVersion"
+        ],
+        "type": "object"
+      },
+      "RegisterPatient": {
+        "properties": {
+          "abhaNumber": {
+            "pattern": "^[0-9]{2}-[0-9]{4}-[0-9]{4}-[0-9]{4}$",
+            "type": "string"
+          },
+          "addressLine": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string"
+          },
+          "ageYears": {
+            "format": "int32",
+            "maximum": 120,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "birthDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "centreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "city": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "confirmNotDuplicate": {
+            "type": "boolean"
+          },
+          "email": {
+            "format": "email",
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "emergencyContactName": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "emergencyContactPhone": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string"
+          },
+          "familyName": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "givenName": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "guardianName": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "mobile": {
+            "pattern": "^[0-9+][0-9 -]{6,19}$",
+            "type": "string"
+          },
+          "pincode": {
+            "pattern": "^[0-9]{6}$",
+            "type": "string"
+          },
+          "sex": {
+            "minLength": 1,
+            "pattern": "FEMALE|MALE|OTHER|UNKNOWN",
+            "type": "string"
+          },
+          "state": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "centreId",
+          "givenName",
+          "sex"
+        ],
+        "type": "object"
+      },
+      "RemoveLine": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "lineId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "lineId"
+        ],
+        "type": "object"
+      },
       "RequestAssignment": {
         "properties": {
           "kind": {
@@ -1181,6 +2644,29 @@
           "scopeId",
           "scopeType",
           "userId"
+        ],
+        "type": "object"
+      },
+      "RequestDiscount": {
+        "properties": {
+          "amount": {
+            "minimum": 0.01,
+            "type": "number"
+          },
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "amount",
+          "expectedVersion",
+          "reason"
         ],
         "type": "object"
       },
@@ -1410,6 +2896,235 @@
         },
         "type": "object"
       },
+      "SaveConsultation": {
+        "properties": {
+          "advice": {
+            "maxLength": 2000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "anteriorSegmentLe": {
+            "maxLength": 2000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "anteriorSegmentRe": {
+            "maxLength": 2000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "complete": {
+            "type": "boolean"
+          },
+          "diagnosis": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          },
+          "diagnosisCode": {
+            "pattern": "^$|^[A-Z][0-9]{2}(\\.[0-9A-Z]{1,4})?$",
+            "type": "string"
+          },
+          "diagnosisEye": {
+            "pattern": "^$|RE|LE|BE",
+            "type": "string"
+          },
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "followUpDays": {
+            "format": "int32",
+            "maximum": 730,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "glassesPrescribed": {
+            "type": "boolean"
+          },
+          "history": {
+            "maxLength": 4000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "medications": {
+            "maxLength": 4000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "posteriorSegmentLe": {
+            "maxLength": 2000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "posteriorSegmentRe": {
+            "maxLength": 2000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "surgeryAdvised": {
+            "type": "boolean"
+          },
+          "surgeryEye": {
+            "pattern": "^$|RE|LE|BE",
+            "type": "string"
+          },
+          "surgeryProcedure": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "surgeryUrgency": {
+            "pattern": "^$|ROUTINE|SOON|URGENT",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "SaveOptometry": {
+        "properties": {
+          "addLe": {
+            "maximum": 4,
+            "minimum": 0,
+            "type": "number"
+          },
+          "addRe": {
+            "maximum": 4,
+            "minimum": 0,
+            "type": "number"
+          },
+          "axisLe": {
+            "format": "int32",
+            "maximum": 180,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "axisRe": {
+            "format": "int32",
+            "maximum": 180,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "bcvaLe": {
+            "pattern": "^$|^(6/(5|6|7\\.5|9|12|18|24|36|60)P?|[1-5]/60|CF|HM|PL|PR|NPL|N(5|6|8|10|12|18|24|36))$",
+            "type": "string"
+          },
+          "bcvaRe": {
+            "pattern": "^$|^(6/(5|6|7\\.5|9|12|18|24|36|60)P?|[1-5]/60|CF|HM|PL|PR|NPL|N(5|6|8|10|12|18|24|36))$",
+            "type": "string"
+          },
+          "colourVision": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "complete": {
+            "type": "boolean"
+          },
+          "cylLe": {
+            "maximum": 10,
+            "minimum": -10,
+            "type": "number"
+          },
+          "cylRe": {
+            "maximum": 10,
+            "minimum": -10,
+            "type": "number"
+          },
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "iopLe": {
+            "format": "int32",
+            "maximum": 80,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "iopMethod": {
+            "pattern": "^$|NCT|APPLANATION|TONOPEN|ICARE",
+            "type": "string"
+          },
+          "iopRe": {
+            "format": "int32",
+            "maximum": 80,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "nearLe": {
+            "pattern": "^$|^(6/(5|6|7\\.5|9|12|18|24|36|60)P?|[1-5]/60|CF|HM|PL|PR|NPL|N(5|6|8|10|12|18|24|36))$",
+            "type": "string"
+          },
+          "nearRe": {
+            "pattern": "^$|^(6/(5|6|7\\.5|9|12|18|24|36|60)P?|[1-5]/60|CF|HM|PL|PR|NPL|N(5|6|8|10|12|18|24|36))$",
+            "type": "string"
+          },
+          "notes": {
+            "maxLength": 2000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "pgvaLe": {
+            "pattern": "^$|^(6/(5|6|7\\.5|9|12|18|24|36|60)P?|[1-5]/60|CF|HM|PL|PR|NPL|N(5|6|8|10|12|18|24|36))$",
+            "type": "string"
+          },
+          "pgvaRe": {
+            "pattern": "^$|^(6/(5|6|7\\.5|9|12|18|24|36|60)P?|[1-5]/60|CF|HM|PL|PR|NPL|N(5|6|8|10|12|18|24|36))$",
+            "type": "string"
+          },
+          "sphLe": {
+            "maximum": 30,
+            "minimum": -30,
+            "type": "number"
+          },
+          "sphRe": {
+            "maximum": 30,
+            "minimum": -30,
+            "type": "number"
+          },
+          "ucvaLe": {
+            "pattern": "^$|^(6/(5|6|7\\.5|9|12|18|24|36|60)P?|[1-5]/60|CF|HM|PL|PR|NPL|N(5|6|8|10|12|18|24|36))$",
+            "type": "string"
+          },
+          "ucvaRe": {
+            "pattern": "^$|^(6/(5|6|7\\.5|9|12|18|24|36|60)P?|[1-5]/60|CF|HM|PL|PR|NPL|N(5|6|8|10|12|18|24|36))$",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ScheduleSurgery": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "otRoom": {
+            "maxLength": 50,
+            "minLength": 0,
+            "type": "string"
+          },
+          "slotTime": {
+            "format": "time-local",
+            "type": "string"
+          },
+          "surgeonPersonId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "surgeryDate": {
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "slotTime",
+          "surgeonPersonId",
+          "surgeryDate"
+        ],
+        "type": "object"
+      },
       "ScopeGrant": {
         "properties": {
           "scopeId": {
@@ -1428,6 +3143,268 @@
           },
           "viaRole": {
             "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "StartVisit": {
+        "properties": {
+          "chiefComplaint": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          },
+          "consultantPersonId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "patientId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "visitType": {
+            "minLength": 1,
+            "pattern": "NEW|REVIEW|POST_OP",
+            "type": "string"
+          }
+        },
+        "required": [
+          "patientId",
+          "visitType"
+        ],
+        "type": "object"
+      },
+      "SubmitDayClose": {
+        "properties": {
+          "businessDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "countedCash": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "notes": {
+            "maxLength": 1000,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "businessDate",
+          "countedCash"
+        ],
+        "type": "object"
+      },
+      "SurgeryView": {
+        "properties": {
+          "advisedByName": {
+            "type": "string"
+          },
+          "anaesthesia": {
+            "type": "string"
+          },
+          "biometryDone": {
+            "type": "boolean"
+          },
+          "cancelReason": {
+            "type": "string"
+          },
+          "centreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "completedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "complications": {
+            "type": "string"
+          },
+          "consentSigned": {
+            "type": "boolean"
+          },
+          "counselledAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "counselledByName": {
+            "type": "string"
+          },
+          "counsellingNotes": {
+            "type": "string"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "diagnosis": {
+            "type": "string"
+          },
+          "estimatedCost": {
+            "type": "number"
+          },
+          "eye": {
+            "type": "string"
+          },
+          "fitnessCleared": {
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "insurerName": {
+            "type": "string"
+          },
+          "iolImplanted": {
+            "type": "string"
+          },
+          "iolPower": {
+            "type": "string"
+          },
+          "operatedByName": {
+            "type": "string"
+          },
+          "operativeNotes": {
+            "type": "string"
+          },
+          "otRoom": {
+            "type": "string"
+          },
+          "packageItemId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "packageName": {
+            "type": "string"
+          },
+          "patientAge": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "patientId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "patientMobile": {
+            "type": "string"
+          },
+          "patientName": {
+            "type": "string"
+          },
+          "patientSex": {
+            "type": "string"
+          },
+          "patientUhid": {
+            "type": "string"
+          },
+          "paymentPlan": {
+            "type": "string"
+          },
+          "postOpInstructions": {
+            "type": "string"
+          },
+          "preOpBloodSugar": {
+            "type": "string"
+          },
+          "preOpBp": {
+            "type": "string"
+          },
+          "preOpNotes": {
+            "type": "string"
+          },
+          "preferredDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "preparedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "preparedByName": {
+            "type": "string"
+          },
+          "procedureName": {
+            "type": "string"
+          },
+          "pupilDilated": {
+            "type": "boolean"
+          },
+          "siteMarked": {
+            "type": "boolean"
+          },
+          "slotTime": {
+            "format": "time-local",
+            "type": "string"
+          },
+          "startedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "surgeonName": {
+            "type": "string"
+          },
+          "surgeonPersonId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "surgeryDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "urgency": {
+            "type": "string"
+          },
+          "version": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "visitId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "TariffItemView": {
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "centreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "gstRate": {
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "version": {
+            "format": "int32",
+            "type": "integer"
           }
         },
         "type": "object"
@@ -1455,6 +3432,127 @@
         "required": [
           "expectedVersion",
           "permissions"
+        ],
+        "type": "object"
+      },
+      "UpdatePatient": {
+        "properties": {
+          "abhaNumber": {
+            "pattern": "^[0-9]{2}-[0-9]{4}-[0-9]{4}-[0-9]{4}$",
+            "type": "string"
+          },
+          "addressLine": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string"
+          },
+          "ageYears": {
+            "format": "int32",
+            "maximum": 120,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "birthDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "city": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "email": {
+            "format": "email",
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "emergencyContactName": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "emergencyContactPhone": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string"
+          },
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "familyName": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "givenName": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "guardianName": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "mobile": {
+            "pattern": "^[0-9+][0-9 -]{6,19}$",
+            "type": "string"
+          },
+          "pincode": {
+            "pattern": "^[0-9]{6}$",
+            "type": "string"
+          },
+          "sex": {
+            "minLength": 1,
+            "pattern": "FEMALE|MALE|OTHER|UNKNOWN",
+            "type": "string"
+          },
+          "state": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "givenName",
+          "sex"
+        ],
+        "type": "object"
+      },
+      "UpdateTariffItem": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "gstRate": {
+            "type": "number"
+          },
+          "name": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "price": {
+            "maximum": 9999999,
+            "minimum": 0,
+            "type": "number"
+          },
+          "status": {
+            "minLength": 1,
+            "pattern": "ACTIVE|RETIRED",
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "gstRate",
+          "name",
+          "price",
+          "status"
         ],
         "type": "object"
       },
@@ -1535,6 +3633,135 @@
           }
         },
         "type": "object"
+      },
+      "VisitChart": {
+        "properties": {
+          "bills": {
+            "items": {
+              "$ref": "#/components/schemas/BillSummary"
+            },
+            "type": "array"
+          },
+          "clinicalVisible": {
+            "type": "boolean"
+          },
+          "consultation": {
+            "$ref": "#/components/schemas/ConsultationView"
+          },
+          "optometry": {
+            "$ref": "#/components/schemas/OptometryView"
+          },
+          "previousVisits": {
+            "items": {
+              "$ref": "#/components/schemas/VisitView"
+            },
+            "type": "array"
+          },
+          "surgery": {
+            "$ref": "#/components/schemas/SurgeryView"
+          },
+          "visit": {
+            "$ref": "#/components/schemas/VisitView"
+          }
+        },
+        "type": "object"
+      },
+      "VisitView": {
+        "properties": {
+          "cancelReason": {
+            "type": "string"
+          },
+          "centreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "centreName": {
+            "type": "string"
+          },
+          "checkedInAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "chiefComplaint": {
+            "type": "string"
+          },
+          "completedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "consultantName": {
+            "type": "string"
+          },
+          "consultantPersonId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "consultationDoneAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "counsellingDoneAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "noChargeReason": {
+            "type": "string"
+          },
+          "optometryDoneAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "patientAge": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "patientId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "patientMobile": {
+            "type": "string"
+          },
+          "patientName": {
+            "type": "string"
+          },
+          "patientSex": {
+            "type": "string"
+          },
+          "patientUhid": {
+            "type": "string"
+          },
+          "stage": {
+            "type": "string"
+          },
+          "surgeryAdvised": {
+            "type": "boolean"
+          },
+          "tokenNo": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "version": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "visitDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "visitType": {
+            "type": "string"
+          },
+          "waitingMinutes": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
       }
     }
   },
@@ -1544,6 +3771,88 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/v1/appointments/{appointmentId}/cancel": {
+      "post": {
+        "operationId": "cancelAppointment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "appointmentId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelAppointment"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
+    "/v1/appointments/{appointmentId}/check-in": {
+      "post": {
+        "operationId": "checkInAppointment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "appointmentId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CheckInAppointment"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisitView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
     "/v1/approvals": {
       "get": {
         "operationId": "pending",
@@ -1822,6 +4131,283 @@
         ]
       }
     },
+    "/v1/bills/{billId}": {
+      "get": {
+        "operationId": "bill",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "billId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillDetail"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      }
+    },
+    "/v1/bills/{billId}/cancel": {
+      "post": {
+        "operationId": "cancelBill",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "billId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelBill"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillDetail"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      }
+    },
+    "/v1/bills/{billId}/discount": {
+      "post": {
+        "operationId": "requestDiscount",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "billId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestDiscount"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillDetail"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      }
+    },
+    "/v1/bills/{billId}/discount/decision": {
+      "post": {
+        "operationId": "decideDiscount",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "billId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprovalDecision"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillDetail"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      }
+    },
+    "/v1/bills/{billId}/lines": {
+      "post": {
+        "operationId": "addBillLines",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "billId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AddLines"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillDetail"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      }
+    },
+    "/v1/bills/{billId}/payments": {
+      "post": {
+        "operationId": "collectPayment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "billId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CollectPayment"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillDetail"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      }
+    },
+    "/v1/bills/{billId}/remove-line": {
+      "post": {
+        "operationId": "removeBillLine",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "billId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RemoveLine"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillDetail"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      }
+    },
     "/v1/centres": {
       "get": {
         "operationId": "centres",
@@ -1901,6 +4487,431 @@
         },
         "tags": [
           "org-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/appointments": {
+      "get": {
+        "operationId": "appointments",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date",
+            "required": false,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AppointmentView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      },
+      "post": {
+        "operationId": "bookAppointment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BookAppointment"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppointmentView"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/bills": {
+      "get": {
+        "operationId": "bills",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BillView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      },
+      "post": {
+        "operationId": "createBill",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateBill"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BillDetail"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/clinic-board": {
+      "get": {
+        "operationId": "clinicBoard",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date",
+            "required": false,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClinicBoard"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/clinicians": {
+      "get": {
+        "operationId": "clinicians",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "department",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ClinicianView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/collections": {
+      "get": {
+        "operationId": "collections",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CollectionReport"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/day-closes": {
+      "get": {
+        "operationId": "dayCloses",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DayCloseView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      },
+      "post": {
+        "operationId": "submitDayClose",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SubmitDayClose"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DayCloseView"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/day-closes/preview": {
+      "get": {
+        "operationId": "dayClosePreview",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date",
+            "required": false,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DayClosePreview"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "billing-controller"
         ]
       }
     },
@@ -2076,6 +5087,40 @@
         ]
       }
     },
+    "/v1/centres/{centreId}/discounts/pending": {
+      "get": {
+        "operationId": "pendingDiscounts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BillView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      }
+    },
     "/v1/centres/{centreId}/establishments": {
       "get": {
         "operationId": "establishments",
@@ -2146,6 +5191,320 @@
         },
         "tags": [
           "workforce-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/surgeries": {
+      "get": {
+        "operationId": "surgeries",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "view",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date",
+            "required": false,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SurgeryView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/tariff": {
+      "get": {
+        "operationId": "tariff",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "includeRetired",
+            "required": false,
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TariffItemView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      },
+      "post": {
+        "operationId": "createTariffItem",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTariffItem"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TariffItemView"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/tariff/{itemId}": {
+      "put": {
+        "operationId": "updateTariffItem",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "itemId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTariffItem"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TariffItemView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/visits": {
+      "get": {
+        "operationId": "visits",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date",
+            "required": false,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "stage",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/VisitView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      },
+      "post": {
+        "operationId": "startWalkInVisit",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StartVisit"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisitView"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
+    "/v1/day-closes/{dayCloseId}/decision": {
+      "post": {
+        "operationId": "decideDayClose",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "dayCloseId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ApprovalDecision"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DayCloseView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "billing-controller"
         ]
       }
     },
@@ -2370,6 +5729,211 @@
         },
         "tags": [
           "iam-controller"
+        ]
+      }
+    },
+    "/v1/patients": {
+      "get": {
+        "operationId": "searchPatients",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "format": "int32",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PatientView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "patient-controller"
+        ]
+      },
+      "post": {
+        "operationId": "registerPatient",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterPatient"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientView"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "patient-controller"
+        ]
+      }
+    },
+    "/v1/patients/{patientId}": {
+      "get": {
+        "operationId": "patient",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "patientId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "patient-controller"
+        ]
+      },
+      "put": {
+        "operationId": "updatePatient",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "patientId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdatePatient"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "patient-controller"
+        ]
+      }
+    },
+    "/v1/patients/{patientId}/bills": {
+      "get": {
+        "operationId": "patientBills",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "patientId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BillView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "billing-controller"
+        ]
+      }
+    },
+    "/v1/patients/{patientId}/eye-history": {
+      "get": {
+        "operationId": "patientEyeHistory",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "patientId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatientEyeHistory"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
         ]
       }
     },
@@ -3040,6 +6604,276 @@
         ]
       }
     },
+    "/v1/surgeries/{surgeryId}": {
+      "get": {
+        "operationId": "surgery",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "surgeryId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurgeryView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
+    "/v1/surgeries/{surgeryId}/bills": {
+      "get": {
+        "operationId": "surgeryBills",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "surgeryId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BillSummary"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
+    "/v1/surgeries/{surgeryId}/cancel": {
+      "post": {
+        "operationId": "cancelSurgery",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "surgeryId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelSurgery"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurgeryView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
+    "/v1/surgeries/{surgeryId}/counselling": {
+      "post": {
+        "operationId": "counselSurgery",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "surgeryId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Counsel"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurgeryView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
+    "/v1/surgeries/{surgeryId}/operation": {
+      "put": {
+        "operationId": "saveSurgeryOperation",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "surgeryId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Operation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurgeryView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
+    "/v1/surgeries/{surgeryId}/pre-op": {
+      "put": {
+        "operationId": "saveSurgeryPreOp",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "surgeryId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PreOp"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurgeryView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
+    "/v1/surgeries/{surgeryId}/schedule": {
+      "post": {
+        "operationId": "scheduleSurgery",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "surgeryId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ScheduleSurgery"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SurgeryView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
     "/v1/users": {
       "get": {
         "operationId": "users",
@@ -3291,6 +7125,201 @@
         },
         "tags": [
           "iam-controller"
+        ]
+      }
+    },
+    "/v1/visits/{visitId}": {
+      "get": {
+        "operationId": "visitChart",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "visitId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisitChart"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
+    "/v1/visits/{visitId}/cancel": {
+      "post": {
+        "operationId": "cancelVisit",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "visitId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelVisit"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisitView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
+    "/v1/visits/{visitId}/checkout": {
+      "post": {
+        "operationId": "checkoutVisit",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "visitId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Checkout"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisitView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
+    "/v1/visits/{visitId}/consultation": {
+      "put": {
+        "operationId": "saveConsultation",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "visitId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveConsultation"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisitChart"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
+        ]
+      }
+    },
+    "/v1/visits/{visitId}/optometry": {
+      "put": {
+        "operationId": "saveOptometry",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "visitId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveOptometry"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VisitChart"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "eye-controller"
         ]
       }
     }

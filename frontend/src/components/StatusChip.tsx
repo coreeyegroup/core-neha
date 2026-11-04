@@ -13,10 +13,28 @@ const COLOURS: Record<string, ChipProps['color']> = {
   REJECTED: 'error',
   DENIED: 'error',
   FAILED: 'error',
+  BOOKED: 'info',
+  CHECKED_IN: 'success',
+  NO_SHOW: 'default',
+  CANCELLED: 'default',
+  OPEN: 'warning',
+  PAID: 'success',
+  ADVISED: 'info',
+  ACCEPTED: 'primary',
+  DECLINED: 'default',
+  SCHEDULED: 'info',
+  READY: 'warning',
+  COMPLETED: 'success',
+  SUBMITTED: 'warning',
+  APPROVED: 'success',
 };
 
 const LABELS: Record<string, string> = {
   PENDING_APPROVAL: 'Pending approval',
+  CHECKED_IN: 'Arrived',
+  NO_SHOW: 'No-show',
+  READY: 'Ready for theatre',
+  ACCEPTED: 'Accepted, to schedule',
 };
 
 /** One status dimension per chip, with text (never colour alone). */

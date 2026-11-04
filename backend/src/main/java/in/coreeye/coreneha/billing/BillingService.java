@@ -254,7 +254,7 @@ public class BillingService implements BillingDirectory {
     }
 
     @Transactional
-    public BillDetail decideDiscount(Actor actor, UUID billId, BillingModels.Decision cmd) {
+    public BillDetail decideDiscount(Actor actor, UUID billId, BillingModels.ApprovalDecision cmd) {
         BillView bill = billRow(billId);
         Scope scope = Scope.centre(bill.centreId());
         access.require(actor, Permission.BILLING_DISCOUNT_APPROVE, scope, "billing.discount.decide", "bill", billId.toString());

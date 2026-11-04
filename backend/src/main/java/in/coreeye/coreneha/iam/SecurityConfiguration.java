@@ -92,7 +92,7 @@ class SecurityConfiguration {
             request.getSession().setAttribute(AUTHENTICATED_AT, Instant.now().toEpochMilli());
             audit.recordIndependently(new AuditEntry(null, null, "subject:" + authentication.getName(), "iam.login",
                     "login_identity", authentication.getName(), null, AuditOutcome.SUCCESS, null, Instant.now(), Map.of()));
-            response.sendRedirect(props.publicBaseUrl() + "/");
+            response.sendRedirect(props.publicBaseUrl() + "/staff/");
         };
     }
 
@@ -100,13 +100,14 @@ class SecurityConfiguration {
         return (request, response, exception) -> {
             audit.recordIndependently(new AuditEntry(null, null, "anonymous", "iam.login", "login_identity", null, null,
                     AuditOutcome.FAILED, exception.getClass().getSimpleName(), Instant.now(), Map.of()));
-            response.sendRedirect(props.publicBaseUrl() + "/signed-out?reason=login-failed");
+            response.sendRedirect(props.publicBaseUrl() + "/staff/signed-out?reason=login-failed");
         };
     }
 
     /** Ends the application session, then the identity-provider session, then returns to the signed-out page. */
     private static LogoutSuccessHandler logoutSuccessHandler(CoreNehaProperties props, AuditLog audit) {
         return (HttpServletRequest request, HttpServletResponse response, Authentication authentication) -> {
+            // Registered post-logout address; the gateway forwards it to the staff application's signed-out page.
             String signedOut = props.publicBaseUrl() + "/signed-out";
             if (authentication != null) {
                 audit.recordIndependently(new AuditEntry(null, null, "subject:" + authentication.getName(), "iam.logout",

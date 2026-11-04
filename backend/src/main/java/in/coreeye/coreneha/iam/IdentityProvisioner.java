@@ -17,4 +17,10 @@ public interface IdentityProvisioner {
     void enable(String subject);
 
     void delete(String subject);
+
+    /**
+     * Required: the authenticator is asked for at every sign-in (set up at the next sign-in if missing).
+     * Not required: existing authenticators are removed and sign-in needs the password only.
+     */
+    void setOneTimeCodeRequired(String subject, boolean required);
 }

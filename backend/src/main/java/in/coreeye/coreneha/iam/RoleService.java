@@ -185,6 +185,21 @@ public class RoleService {
             throw new RuleViolationException("iam.self-approval", "You cannot decide a role version you drafted or submitted");
         }
         if (approve) {
+            // The approver must not widen their own access: refuse if they hold this role and the version adds permissions.
+            boolean holdsRole = jdbc.sql("select exists(select 1 from iam.role_assignment where role_id = :r and user_id = :u"
+                            + " and kind = 'ACCESS' and status in ('ACTIVE', 'PENDING_APPROVAL'))")
+                    .param("r", roleId).param("u", actor.userId()).query(Boolean.class).single();
+            List<String> added = jdbc.sql("select g.permission_code from iam.role_version_grant g where g.role_version_id = :v"
+                            + " except select g.permission_code from iam.role_version_grant g"
+                            + " join iam.role_version rv on rv.id = g.role_version_id where rv.role_id = :r and rv.status = 'PUBLISHED'")
+                    .param("v", versionId).param("r", roleId).query(String.class).list();
+            if (holdsRole && !added.isEmpty()) {
+                audit.recordIndependently(AuditEntry.denied(actor, action, "role_version", versionId.toString(), tenant(actor),
+                        "self-benefit refused: the approver holds this role and the version adds " + added));
+                throw new RuleViolationException("iam.role.version.self-benefit",
+                        "You hold this role and this version adds permissions (" + String.join(", ", added)
+                                + "); someone who does not hold the role must approve it");
+            }
             jdbc.sql("update iam.role_version set status = 'SUPERSEDED', version = version + 1 where role_id = :r and status = 'PUBLISHED'")
                     .param("r", roleId).update();
         }

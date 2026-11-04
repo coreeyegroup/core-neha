@@ -676,6 +676,27 @@
         },
         "type": "object"
       },
+      "ChangeMfa": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "reason": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "reason"
+        ],
+        "type": "object"
+      },
       "ChangeUserStatus": {
         "properties": {
           "expectedVersion": {
@@ -1816,6 +1837,44 @@
         },
         "type": "object"
       },
+      "HelpChapter": {
+        "properties": {
+          "body": {
+            "type": "string"
+          },
+          "book": {
+            "type": "string"
+          },
+          "order": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "HelpLibrary": {
+        "properties": {
+          "administrator": {
+            "type": "boolean"
+          },
+          "chapters": {
+            "items": {
+              "$ref": "#/components/schemas/HelpChapter"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
       "HistoryVisit": {
         "properties": {
           "bcvaLe": {
@@ -1941,6 +2000,12 @@
             },
             "type": "array"
           },
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/MyRole"
+            },
+            "type": "array"
+          },
           "tenantId": {
             "format": "uuid",
             "type": "string"
@@ -1977,6 +2042,24 @@
             "type": "string"
           },
           "positionTitle": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "MyRole": {
+        "properties": {
+          "kind": {
+            "type": "string"
+          },
+          "roleName": {
+            "type": "string"
+          },
+          "scopeName": {
+            "type": "string"
+          },
+          "validTo": {
+            "format": "date",
             "type": "string"
           }
         },
@@ -3583,6 +3666,9 @@
           "loginLinked": {
             "type": "boolean"
           },
+          "mfaRequired": {
+            "type": "boolean"
+          },
           "personId": {
             "format": "uuid",
             "type": "string"
@@ -3636,6 +3722,9 @@
       },
       "VisitChart": {
         "properties": {
+          "billingVisible": {
+            "type": "boolean"
+          },
           "bills": {
             "items": {
               "$ref": "#/components/schemas/BillSummary"
@@ -5559,6 +5648,26 @@
         ]
       }
     },
+    "/v1/help": {
+      "get": {
+        "operationId": "helpLibrary",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HelpLibrary"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "help-controller"
+        ]
+      }
+    },
     "/v1/hierarchy/levels": {
       "get": {
         "operationId": "levels",
@@ -7106,6 +7215,47 @@
             "application/json": {
               "schema": {
                 "$ref": "#/components/schemas/ChangeUserStatus"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "iam-controller"
+        ]
+      }
+    },
+    "/v1/users/{userId}/mfa": {
+      "post": {
+        "operationId": "changeUserMfa",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "userId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChangeMfa"
               }
             }
           },

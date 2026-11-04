@@ -22,6 +22,7 @@ export function Users() {
           { key: 'username', header: 'Username', render: (r) => r.username, value: (r) => r.username },
           { key: 'name', header: 'Person', render: (r) => r.personName, value: (r) => r.personName },
           { key: 'login', header: 'Login', render: (r) => (r.loginLinked ? 'Linked' : 'Not linked'), value: (r) => String(r.loginLinked) },
+          { key: 'mfa', header: 'One-time code', render: (r) => (r.mfaRequired === false ? 'Off' : 'Required'), value: (r) => String(r.mfaRequired) },
           { key: 'status', header: 'Status', render: (r) => <StatusChip status={r.status} />, value: (r) => r.status },
         ]}
       />

@@ -156,7 +156,10 @@ public class EffectiveAccessService {
                         p.positionTitle(), p.departmentName()))
                 .toList();
         return new Me(actor.userId(), actor.username(), user.personName(), actor.tenantId(), (String) tenant[0],
-                (Boolean) tenant[1], tenantPermissions, centres, pending, responsibilities.forPersonRows(user.personId()), postings);
+                (Boolean) tenant[1], tenantPermissions, centres, pending, responsibilities.forPersonRows(user.personId()), postings,
+                assignmentsOf(actor.userId()).stream().filter(a -> "ACTIVE".equals(a.status()))
+                        .map(a -> new IamModels.MyRole(a.roleName() == null ? "All roles" : a.roleName(), a.kind(), a.scopeName(), a.validTo()))
+                        .toList());
     }
 
     private void checkMaySee(Actor actor, UserView user, String action) {

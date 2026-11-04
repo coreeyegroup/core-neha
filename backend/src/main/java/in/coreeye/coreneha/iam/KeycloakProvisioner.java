@@ -76,6 +76,36 @@ class KeycloakProvisioner implements IdentityProvisioner {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
+    public void setOneTimeCodeRequired(String subject, boolean required) {
+        Map<String, Object> user = http.get().uri(admin("/users/" + subject)).headers(h -> h.setBearerAuth(token()))
+                .retrieve().body(Map.class);
+        List<Map<String, Object>> credentials = http.get().uri(admin("/users/" + subject + "/credentials"))
+                .headers(h -> h.setBearerAuth(token())).retrieve().body(List.class);
+        java.util.Set<String> actions = new java.util.LinkedHashSet<>(
+                user == null || user.get("requiredActions") == null ? List.of() : (List<String>) user.get("requiredActions"));
+        boolean hasOtp = credentials != null && credentials.stream().anyMatch(c -> "otp".equals(c.get("type")));
+        if (required) {
+            if (!hasOtp) {
+                actions.add("CONFIGURE_TOTP");
+            }
+        } else {
+            actions.remove("CONFIGURE_TOTP");
+            if (credentials != null) {
+                for (Map<String, Object> c : credentials) {
+                    if ("otp".equals(c.get("type"))) {
+                        http.delete().uri(admin("/users/" + subject + "/credentials/" + c.get("id")))
+                                .headers(h -> h.setBearerAuth(token())).retrieve().toBodilessEntity();
+                    }
+                }
+            }
+        }
+        http.put().uri(admin("/users/" + subject)).headers(h -> h.setBearerAuth(token()))
+                .contentType(MediaType.APPLICATION_JSON).body(Map.of("requiredActions", List.copyOf(actions)))
+                .retrieve().toBodilessEntity();
+    }
+
+    @Override
     public void delete(String subject) {
         http.delete().uri(admin("/users/" + subject)).headers(h -> h.setBearerAuth(token())).retrieve().toBodilessEntity();
     }

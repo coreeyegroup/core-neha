@@ -163,7 +163,7 @@ public final class EyeModels {
 
     /** The visit as every department sees it. Clinical sections are null unless the viewer may read them. */
     public record VisitChart(VisitView visit, boolean clinicalVisible, OptometryView optometry, ConsultationView consultation,
-                             SurgeryView surgery, List<BillSummary> bills, List<VisitView> previousVisits) {
+                             SurgeryView surgery, boolean billingVisible, List<BillSummary> bills, List<VisitView> previousVisits) {
     }
 
     public record HistoryVisit(VisitView visit, String diagnosis, String diagnosisCode, String bcvaRe, String bcvaLe,

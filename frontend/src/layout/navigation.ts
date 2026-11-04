@@ -25,9 +25,8 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/roles', label: 'Roles', permission: 'iam.role.read', group: 'Access' },
   { to: '/approvals', label: 'Approvals', anyOf: ['iam.assignment.approve', 'iam.role.approve'], group: 'Access' },
   { to: '/audit', label: 'Audit trail', permission: 'audit.read', group: 'Access' },
-  { to: '/help/manual/getting-started', label: 'Operation manual', group: 'Help' },
-  { to: '/help/developer/overview', label: 'Developer guide', group: 'Help' },
-  { to: '/help', label: 'Search the help', group: 'Help' },
+  { to: '/help/developer/overview', label: 'Developer guide', permission: 'iam.role.approve', group: 'Help' },
+  { to: '/help', label: 'Help centre', group: 'Help' },
 ];
 
 export function visibleItems(hasAnywhere: (p: string) => boolean): NavItem[] {

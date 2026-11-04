@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-label="Vijaya Eye Clinic">
+  <path d="M3 24c5.5-9 12.6-14 21-14s15.5 5 21 14c-5.5 9-12.6 14-21 14S8.5 33 3 24z" fill="none" stroke="#0066cc" stroke-width="3" stroke-linejoin="round"/>
+  <circle cx="24" cy="24" r="8.5" fill="#0066cc"/>
+  <circle cx="24" cy="24" r="3.4" fill="#0e2a47"/>
+  <circle cx="27.2" cy="20.8" r="1.8" fill="#f2a900"/>
+</svg>

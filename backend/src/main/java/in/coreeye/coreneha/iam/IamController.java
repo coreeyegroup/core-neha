@@ -70,6 +70,11 @@ class IamController {
         return users.disable(actor.require(), userId, body);
     }
 
+    @PostMapping("/users/{userId}/mfa")
+    UserView changeUserMfa(@PathVariable UUID userId, @Valid @RequestBody IamModels.ChangeMfa body) {
+        return users.changeMfa(actor.require(), userId, body);
+    }
+
     @PostMapping("/users/{userId}/enable")
     UserView enable(@PathVariable UUID userId, @Valid @RequestBody IamModels.ChangeUserStatus body) {
         return users.enable(actor.require(), userId, body);

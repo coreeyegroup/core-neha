@@ -4,11 +4,13 @@ import { defineConfig } from 'vitest/config';
 // The base path is the public path prefix (ADR-0004); set at build time from CORE_NEHA_BASE_PATH.
 const basePath = (process.env.CORE_NEHA_BASE_PATH ?? '/core-neha').replace(/\/$/, '');
 
+// The staff application lives at <base>/staff/; the public website is served at <base>/.
 export default defineConfig({
-  base: `${basePath}/`,
+  base: `${basePath}/staff/`,
   plugins: [react()],
   define: {
     __BASE_PATH__: JSON.stringify(basePath),
+    __APP_BASE__: JSON.stringify(`${basePath}/staff`),
   },
   build: {
     sourcemap: false,

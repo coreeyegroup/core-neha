@@ -14,7 +14,9 @@ done
 echo "== routes through the gateway (127.0.0.1:$P)"
 expect "gateway health"                         "http://127.0.0.1:$P/__gateway_health" 200
 expect "$B redirects to $B/"                    "http://127.0.0.1:$P$B" 308
-expect "staff application page"                 "http://127.0.0.1:$P$B/" 200
+expect "public website page"                    "http://127.0.0.1:$P$B/" 200
+expect "staff application page"                 "http://127.0.0.1:$P$B/staff/" 200
+expect "account console closed"                 "http://127.0.0.1:$P$B/auth/realms/core-neha/account" 403
 expect "API refuses requests without login"     "http://127.0.0.1:$P$B/api/v1/me" 401
 expect "OIDC discovery, realm core-neha"        "http://127.0.0.1:$P$B/auth/realms/core-neha/.well-known/openid-configuration" 200
 expect "admin console blocked publicly"         "http://127.0.0.1:$P$B/auth/admin/" 403

@@ -8,7 +8,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? [['list'], ['html', { open: 'never' }]] : 'list',
   use: {
-    baseURL: 'http://localhost:4173/core-neha/',
+    baseURL: 'http://localhost:4173/core-neha/staff/',
     trace: 'retain-on-failure',
     // Optional: a pre-installed Chromium (PW_CHROMIUM_PATH); CI installs the matching browser instead.
     launchOptions: process.env.PW_CHROMIUM_PATH ? { executablePath: process.env.PW_CHROMIUM_PATH } : {},
@@ -17,5 +17,5 @@ export default defineConfig({
     { name: 'desktop', use: { ...devices['Desktop Chrome'] } },
     { name: 'phone', use: { ...devices['Pixel 7'] } },
   ],
-  webServer: { command: 'node e2e/mock-server.mjs 4173', url: 'http://localhost:4173/core-neha/', reuseExistingServer: !process.env.CI },
+  webServer: { command: 'node e2e/mock-server.mjs 4173', url: 'http://localhost:4173/core-neha/staff/', reuseExistingServer: !process.env.CI },
 });

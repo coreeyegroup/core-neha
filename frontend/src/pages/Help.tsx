@@ -1,22 +1,24 @@
-import { Box, Button, Divider, Link, List, ListItemButton, ListItemText, ListSubheader, Paper, Stack, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, Chip, Divider, Link, List, ListItemButton, ListItemText, ListSubheader, Paper, Stack, TextField, Typography } from '@mui/material';
 import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink, useLocation, useParams } from 'react-router';
 
+import { useSession } from '../auth/session';
 import { PageHeader } from '../components/PageHeader';
-import { BOOKS, chaptersOf, findChapter, search, type BookId } from '../help/content';
+import { ProblemAlert } from '../components/ProblemAlert';
+import { BOOKS, chaptersOf, search, useHelp, type BookId, type Chapter } from '../help/content';
 import { Markdown } from '../help/Markdown';
 
 function SearchBox({ value, onChange }: { value: string; onChange: (v: string) => void }) {
   return (
     <Box>
-      <TextField value={value} onChange={(e) => onChange(e.target.value)} placeholder="Search the help: e.g. discount, add a centre, day close, permission"
-      slotProps={{ htmlInput: { 'aria-label': 'Search the help' } }} sx={{ width: { xs: '100%', md: 560 }, mb: 2 }} />
+      <TextField value={value} onChange={(e) => onChange(e.target.value)} placeholder="Search your help: e.g. check in, discount, day close"
+        slotProps={{ htmlInput: { 'aria-label': 'Search the help' } }} sx={{ width: { xs: '100%', md: 560 }, mb: 2 }} />
     </Box>
   );
 }
 
-function Results({ query }: { query: string }) {
-  const hits = useMemo(() => search(query), [query]);
+function Results({ chapters, query }: { chapters: Chapter[]; query: string }) {
+  const hits = useMemo(() => search(chapters, query), [chapters, query]);
   return (
     <Paper sx={{ p: 2, mb: 3 }}>
       <Typography variant="h3" gutterBottom>{hits.length === 0 ? 'Nothing found' : `${hits.length} result${hits.length === 1 ? '' : 's'}`}</Typography>
@@ -36,23 +38,59 @@ function Results({ query }: { query: string }) {
   );
 }
 
-/** The knowledge centre: operation manual and developer guide, with search. */
+/** What the signed-in person does in the system: positions, roles and responsibilities. */
+function YourWork() {
+  const { me } = useSession();
+  const postings = me.postings ?? [];
+  const roles = (me.roles ?? []).filter((r) => r.kind === 'ACCESS');
+  const responsibilities = me.responsibilities ?? [];
+  return (
+    <Paper sx={{ p: 2, mb: 3 }}>
+      <Typography variant="h3" gutterBottom>Your work in the system</Typography>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2 }}>
+        <Box>
+          <Typography variant="body2" color="text.secondary" gutterBottom>Positions</Typography>
+          {postings.length === 0 && <Typography variant="body2">None recorded.</Typography>}
+          {postings.map((p, i) => <Typography key={i} variant="body2">{p.positionTitle}{p.departmentName ? `, ${p.departmentName}` : ''} at {p.centreName}</Typography>)}
+        </Box>
+        <Box>
+          <Typography variant="body2" color="text.secondary" gutterBottom>Roles (what you may do)</Typography>
+          {roles.length === 0 && <Typography variant="body2">No access yet. Ask your administrator.</Typography>}
+          {roles.map((r, i) => <Typography key={i} variant="body2">{r.roleName} at {r.scopeName}{r.validTo ? ` until ${r.validTo}` : ''}</Typography>)}
+        </Box>
+        <Box>
+          <Typography variant="body2" color="text.secondary" gutterBottom>Responsibilities (accountability, no access)</Typography>
+          {responsibilities.length === 0 && <Typography variant="body2">None.</Typography>}
+          <Stack direction="row" sx={{ flexWrap: 'wrap', gap: 0.5 }}>
+            {responsibilities.map((r) => <Chip key={r.id} size="small" label={`${r.name} · ${r.scopeName}`} />)}
+          </Stack>
+        </Box>
+      </Box>
+    </Paper>
+  );
+}
+
+/** The knowledge centre: only the chapters for the signed-in person's work. */
 export function HelpHome() {
   const [q, setQ] = useState('');
+  const help = useHelp();
+  const chapters = help.data?.chapters ?? [];
+  const books = (Object.keys(BOOKS) as BookId[]).filter((b) => chaptersOf(chapters, b).length > 0);
   return (
     <>
-      <PageHeader title="Help centre" subtitle="The operation manual for everyone who uses the system, and the developer guide for the people who build and run it." />
+      <PageHeader title="Help centre" subtitle="The chapters for your position and roles. Ask your administrator if you need help with something you do not see here." />
+      <YourWork />
       <SearchBox value={q} onChange={setQ} />
-      {q.trim().length > 1 && <Results query={q} />}
-      {(Object.keys(BOOKS) as BookId[]).map((book) => (
+      <ProblemAlert error={help.error} />
+      {q.trim().length > 1 && <Results chapters={chapters} query={q} />}
+      {books.map((book) => (
         <Box key={book} sx={{ mb: 4 }}>
           <Typography variant="h2">{BOOKS[book].title}</Typography>
           <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>{BOOKS[book].description}</Typography>
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', lg: 'repeat(3, 1fr)' }, gap: 1.5 }}>
-            {chaptersOf(book).map((c, i) => (
+            {chaptersOf(chapters, book).map((c) => (
               <Paper key={c.slug} component={RouterLink} to={`/help/${book}/${c.slug}`}
                 sx={{ p: 2, textDecoration: 'none', color: 'inherit', '&:hover': { bgcolor: 'action.hover' } }}>
-                <Typography variant="caption" color="text.secondary">{i + 1}</Typography>
                 <Typography variant="h3">{c.title}</Typography>
                 <Typography variant="body2" color="text.secondary">{c.summary}</Typography>
               </Paper>
@@ -67,8 +105,10 @@ export function HelpHome() {
 export function HelpChapter() {
   const { book = '', slug = '' } = useParams();
   const { hash } = useLocation();
-  const chapter = findChapter(book, slug);
-  const chapters = chaptersOf((book as BookId) in BOOKS ? (book as BookId) : 'manual');
+  const help = useHelp();
+  const all = help.data?.chapters ?? [];
+  const chapter = all.find((c) => c.book === book && c.slug === slug);
+  const chapters = chaptersOf(all, (book as BookId) in BOOKS ? (book as BookId) : 'manual');
   const [q, setQ] = useState('');
   useEffect(() => {
     if (hash) {
@@ -76,12 +116,16 @@ export function HelpChapter() {
     } else {
       window.scrollTo(0, 0);
     }
-  }, [hash, slug]);
+  }, [hash, slug, help.data]);
+  if (help.isLoading) {
+    return <Typography color="text.secondary">Loading…</Typography>;
+  }
   if (!chapter) {
     return (
       <>
-        <PageHeader title="Help page not found" />
-        <Button component={RouterLink} to="/help">Back to the help centre</Button>
+        <PageHeader title="This help page is not available to you" />
+        <Alert severity="info" sx={{ mb: 2 }}>It may be about work outside your position and roles, or it no longer exists.</Alert>
+        <Button component={RouterLink} to="/help">Back to your help centre</Button>
       </>
     );
   }
@@ -94,18 +138,18 @@ export function HelpChapter() {
       <Box component="nav" aria-label={`${BOOKS[chapter.book].title} chapters`} sx={{ position: { md: 'sticky' }, top: { md: 64 }, display: { xs: 'none', md: 'block' } }}>
         <List dense subheader={<ListSubheader disableSticky sx={{ px: 1 }}>{BOOKS[chapter.book].title}</ListSubheader>}>
           <ListItemButton component={RouterLink} to="/help" sx={{ borderRadius: 1 }}><ListItemText primary="← Help centre" /></ListItemButton>
-          {chapters.map((c, i) => (
+          {chapters.map((c) => (
             <ListItemButton key={c.slug} component={RouterLink} to={`/help/${c.book}/${c.slug}`} selected={c.slug === chapter.slug} sx={{ borderRadius: 1 }}>
-              <ListItemText primary={`${i + 1}. ${c.title}`} />
+              <ListItemText primary={c.title} />
             </ListItemButton>
           ))}
         </List>
       </Box>
       <Box component="article" sx={{ minWidth: 0, maxWidth: 900 }}>
         <SearchBox value={q} onChange={setQ} />
-        {q.trim().length > 1 && <Results query={q} />}
+        {q.trim().length > 1 && <Results chapters={all} query={q} />}
         <Typography variant="caption" color="text.secondary">
-          <Link component={RouterLink} to="/help">Help centre</Link> › {BOOKS[chapter.book].title} › {index + 1}
+          <Link component={RouterLink} to="/help">Help centre</Link> › {BOOKS[chapter.book].title}
         </Typography>
         <Typography variant="h1" sx={{ mt: 0.5 }}>{chapter.title}</Typography>
         {chapter.summary && <Typography variant="body1" color="text.secondary" sx={{ mt: 0.5, mb: 2 }}>{chapter.summary}</Typography>}
@@ -119,7 +163,7 @@ export function HelpChapter() {
       </Box>
       {headings.length > 1 && (
         <Box component="nav" aria-label="On this page" sx={{ position: 'sticky', top: 64, display: { xs: 'none', xl: 'block' } }}>
-          <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 0.4 }}>On this page</Typography>
+          <Typography variant="caption" color="text.secondary">On this page</Typography>
           <Stack spacing={0.75} sx={{ mt: 1 }}>
             {headings.map((s) => <Link key={s.id} component={RouterLink} to={`#${s.id}`} variant="body2" underline="hover">{s.title}</Link>)}
           </Stack>

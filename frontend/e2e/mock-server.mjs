@@ -2,6 +2,7 @@
 // same shapes as the backend contract). Used for browser checks and Playwright tests.
 //   node e2e/mock-server.mjs [port] [--signed-out]
 import { createServer } from 'node:http';
+import { readdirSync, readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 
@@ -12,6 +13,24 @@ let signedIn = !process.argv.includes('--signed-out');
 // --persona=<username>: sign in as one of the Vijay Eye Clinic staff (see clinic-mock.mjs).
 const persona = process.argv.find((a) => a.startsWith('--persona='))?.slice('--persona='.length);
 const dist = new URL('../dist/', import.meta.url).pathname;
+const website = new URL('../website/', import.meta.url).pathname;
+// Help chapters from the backend resources, filtered like HelpService (audience line in each file).
+const helpRoot = new URL('../../backend/src/main/resources/help/', import.meta.url).pathname;
+const helpChapters = ['manual', 'developer'].flatMap((book) => readdirSync(helpRoot + book).filter((f) => /^\d+-.+\.md$/.test(f)).map((f) => {
+  const lines = readFileSync(helpRoot + book + '/' + f, 'utf8').split('\n');
+  const title = lines.shift().replace(/^#\s+/, '');
+  const summary = lines[0].startsWith('>') ? lines.shift().replace(/^>\s*/, '') : '';
+  const aud = /^<!--\s*audience:\s*(.*?)\s*-->$/.exec(lines[0].trim());
+  if (aud) lines.shift();
+  return { book, slug: f.replace(/^\d+-/, '').replace(/\.md$/, ''), order: Number(f.split('-')[0]), title, summary, audience: aud ? aud[1].split(/\s+/) : ['administrator'], body: lines.join('\n').trim() };
+}));
+function helpFor(who) {
+  const held = new Set([...(who.tenantPermissions ?? []), ...(who.centres ?? []).flatMap((c) => c.permissions ?? [])]);
+  const admin = (who.tenantPermissions ?? []).includes('iam.role.approve');
+  const chapters = helpChapters.filter((c) => c.audience.includes('everyone') || (c.audience.includes('administrator') ? admin : c.audience.some((p) => held.has(p))))
+    .map(({ audience, ...c }) => c);
+  return { administrator: admin, chapters };
+}
 const T = '0195f000-0000-7000-8000-000000000001';
 const id = (n) => `0195f000-0000-7000-8000-${String(n).padStart(12, '0')}`;
 const centres = [
@@ -23,7 +42,7 @@ const allPerms = ['org.structure.read', 'org.structure.manage', 'org.centre.crea
 const me = {
   userId: id(1), username: 'asha.admin', displayName: 'Asha Admin', tenantId: T, tenantName: 'Neha Health Group (demonstration)', demoTenant: true,
   tenantPermissions: allPerms, centres: centres.map((c) => ({ centreId: c.id, code: c.code, name: c.name, permissions: allPerms.filter((p) => !['org.structure.manage', 'workforce.position.define', 'iam.role.read', 'iam.role.draft', 'iam.role.approve'].includes(p)) })),
-  pendingApprovals: 1, responsibilities: [], postings: [],
+  pendingApprovals: 1, responsibilities: [], postings: [], roles: [{ roleName: 'System administrator', kind: 'ACCESS', scopeName: 'Neha Health Group (demonstration)' }],
 };
 const depts = [
   ['RECEPTION', 'Reception and front office', 'ADMINISTRATIVE'], ['OPHTHALMOLOGY', 'Ophthalmology', 'CLINICAL'], ['OPTOMETRY', 'Optometry', 'CLINICAL'],
@@ -79,30 +98,45 @@ function dynamic(method, path) {
   if (method === 'POST' && path === '/v1/assignments') return { __status: 422, code: 'iam.assignment.self', detail: 'You cannot request access or authority for yourself', requestId: 'mock-1' };
   return undefined;
 }
-const types = { '.js': 'text/javascript', '.css': 'text/css', '.html': 'text/html', '.woff2': 'font/woff2', '.woff': 'font/woff' };
+const types = { '.js': 'text/javascript', '.css': 'text/css', '.html': 'text/html', '.woff2': 'font/woff2', '.woff': 'font/woff', '.svg': 'image/svg+xml' };
 createServer(async (req, res) => {
   const url = new URL(req.url, 'http://x');
-  if (url.pathname === '/core-neha/api/logout') { signedIn = false; res.writeHead(302, { Location: '/core-neha/signed-out' }); return res.end(); }
-  if (url.pathname === '/core-neha/api/oauth2/authorization/keycloak') { signedIn = true; res.writeHead(302, { Location: '/core-neha/' }); return res.end(); }
+  if (url.pathname === '/core-neha/api/logout') { signedIn = false; res.writeHead(302, { Location: '/core-neha/staff/signed-out' }); return res.end(); }
+  if (url.pathname === '/core-neha/api/oauth2/authorization/keycloak') { signedIn = true; res.writeHead(302, { Location: '/core-neha/staff/' }); return res.end(); }
   if (url.pathname.startsWith('/core-neha/api/')) {
     const path = url.pathname.replace('/core-neha/api', '');
     if (!signedIn) { res.writeHead(401, { 'Content-Type': 'application/problem+json' }); return res.end('{"status":401}'); }
     // A test can also choose the persona per browser with a mock_persona cookie.
     const who = /(?:^|; )mock_persona=([^;]+)/.exec(req.headers.cookie ?? '')?.[1] ?? persona;
-    const body = who && req.method === 'GET' && path === '/v1/me' ? personaMe(who, T)
+    const meNow = who ? personaMe(who, T) : me;
+    const body = req.method === 'GET' && path === '/v1/help' ? helpFor(meNow)
+      : who && req.method === 'GET' && path === '/v1/me' ? meNow
       : clinicRoute(req.method, path, url.searchParams) ?? routes[`${req.method} ${path}`]?.() ?? dynamic(req.method, path);
     if (body === undefined) { res.writeHead(404); return res.end('{"status":404,"code":"not-found","detail":"Not found"}'); }
     const status = body.__status ?? 200;
     res.writeHead(status, { 'Content-Type': 'application/json', 'Set-Cookie': 'XSRF-TOKEN=mock-token; Path=/core-neha' });
     return res.end(JSON.stringify(body));
   }
-  let file = url.pathname.replace(/^\/core-neha\/?/, '') || 'index.html';
-  try {
-    const data = await readFile(join(dist, file));
-    res.writeHead(200, { 'Content-Type': types[extname(file)] ?? 'application/octet-stream' });
-    res.end(data);
-  } catch {
-    res.writeHead(200, { 'Content-Type': 'text/html' });
-    res.end(await readFile(join(dist, 'index.html')));
+  if (url.pathname.startsWith('/core-neha/staff')) {
+    const file = url.pathname.replace(/^\/core-neha\/staff\/?/, '') || 'index.html';
+    try {
+      const data = await readFile(join(dist, file));
+      res.writeHead(200, { 'Content-Type': types[extname(file)] ?? 'application/octet-stream' });
+      return res.end(data);
+    } catch {
+      res.writeHead(200, { 'Content-Type': 'text/html' });
+      return res.end(await readFile(join(dist, 'index.html')));
+    }
   }
-}).listen(port, () => console.log(`mock staff app on http://localhost:${port}/core-neha/`));
+  // Public website (static), like the gateway: <name> serves <name>.html.
+  let file = url.pathname.replace(/^\/core-neha\/?/, '') || 'index.html';
+  for (const candidate of [file, `${file}.html`]) {
+    try {
+      const data = await readFile(join(website, candidate));
+      res.writeHead(200, { 'Content-Type': types[extname(candidate)] ?? 'application/octet-stream' });
+      return res.end(data);
+    } catch { /* try the next */ }
+  }
+  res.writeHead(404, { 'Content-Type': 'text/html' });
+  res.end(await readFile(join(website, '404.html')));
+}).listen(port, () => console.log(`mock website on http://localhost:${port}/core-neha/ and staff app on /core-neha/staff/`));

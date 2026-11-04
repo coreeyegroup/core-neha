@@ -27,7 +27,7 @@ public class UserService {
     static final String USER_SELECT = """
             select u.id, u.person_id, p.given_name || ' ' || p.family_name as person_name, u.username, u.status,
                    u.access_version, exists(select 1 from iam.login_identity li where li.user_id = u.id) as login_linked,
-                   u.version
+                   u.mfa_required, u.version
             from iam.user_account u join workforce.person p on p.id = u.person_id
             """;
 
@@ -176,6 +176,35 @@ public class UserService {
         }
         audit.record(AuditEntry.success(actor, "iam.user.enable", "user_account", userId, null,
                 IamSupport.details("reason", cmd.reason())));
+        return row(userId);
+    }
+
+    /**
+     * Turns the one-time code (TOTP) at sign-in on or off for one account. Only a group-wide
+     * user administrator may do it, never for their own account, always with a reason.
+     * Turning it on ends the user's sessions so the next sign-in sets up the authenticator.
+     */
+    @Transactional
+    public UserView changeMfa(Actor actor, UUID userId, IamModels.ChangeMfa cmd) {
+        access.require(actor, Permission.IAM_USER_MANAGE, Scope.tenant(actor.tenantId()), "iam.user.mfa",
+                "user_account", userId.toString());
+        if (actor.userId().equals(userId)) {
+            throw new RuleViolationException("iam.user.self-mfa", "You cannot change the sign-in security of your own account");
+        }
+        UserView before = row(userId);
+        int updated = jdbc.sql("update iam.user_account set mfa_required = :r, version = version + 1 where id = :id and version = :v")
+                .param("r", cmd.required()).param("id", userId).param("v", cmd.expectedVersion()).update();
+        if (updated == 0) {
+            throw new ConflictException("iam.user.stale", "The account was changed by someone else");
+        }
+        String subject = subjectOf(userId);
+        if (subject != null) {
+            provisioner.setOneTimeCodeRequired(subject, cmd.required());
+        }
+        int sessions = cmd.required() ? support.endSessionsAndBumpAccess(userId) : 0;
+        audit.record(AuditEntry.success(actor, cmd.required() ? "iam.user.mfa.require" : "iam.user.mfa.exempt", "user_account",
+                userId, Scope.tenant(actor.tenantId()), IamSupport.details("username", before.username(), "reason", cmd.reason(),
+                        "before", before.mfaRequired(), "sessionsEnded", sessions)));
         return row(userId);
     }
 

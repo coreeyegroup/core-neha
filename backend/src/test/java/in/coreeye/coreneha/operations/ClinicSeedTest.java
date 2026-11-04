@@ -16,6 +16,10 @@ import in.coreeye.coreneha.billing.BillingService;
 import in.coreeye.coreneha.eyecare.EyeModels;
 import in.coreeye.coreneha.eyecare.SurgeryService;
 import in.coreeye.coreneha.eyecare.VisitService;
+import in.coreeye.coreneha.help.HelpService;
+import in.coreeye.coreneha.iam.IamModels;
+import in.coreeye.coreneha.iam.RoleService;
+import in.coreeye.coreneha.kernel.ConflictException;
 import in.coreeye.coreneha.iam.BootstrapService;
 import in.coreeye.coreneha.iam.IdentityProvisioner;
 import in.coreeye.coreneha.kernel.AccessDeniedException;
@@ -47,6 +51,8 @@ class ClinicSeedTest extends PostgresTestBase {
     @Autowired SurgeryService surgeries;
     @Autowired BillingService billing;
     @Autowired AccountsService accounts;
+    @Autowired HelpService help;
+    @Autowired RoleService roles;
     @MockitoBean IdentityProvisioner provisioner;
 
     @Test
@@ -147,6 +153,48 @@ class ClinicSeedTest extends PostgresTestBase {
             assertThat(accounts.decide(manager, submitted.id(), new BillingModels.ApprovalDecision(true, "Counted", submitted.version())).status())
                     .isEqualTo("APPROVED");
             assertThat(accounts.collections(manager, centre, null, null).collected()).isPositive();
+
+            // A payment with a stale version is refused (no double posting)
+            BillingModels.BillView open = billing.bills(reception, centre, null, null, "OPEN").stream()
+                    .filter(b -> b.balance().signum() > 0 && "NONE".equals(b.discountStatus())).findFirst().orElseThrow();
+            billing.collect(reception, open.id(), new BillingModels.CollectPayment("CASH", new BigDecimal("1.00"), null, open.version()));
+            assertThatThrownBy(() -> billing.collect(reception, open.id(),
+                    new BillingModels.CollectPayment("CASH", new BigDecimal("1.00"), null, open.version())))
+                    .isInstanceOf(ConflictException.class);
+
+            // Visit records do not show bills to clinical staff without billing access
+            assertThat(visits.chart(optometrist, completed.id()).billingVisible()).isFalse();
+            assertThat(visits.chart(optometrist, completed.id()).bills()).isEmpty();
+            assertThat(visits.chart(reception, completed.id()).bills()).isNotEmpty();
+
+            // Help: each person receives only the chapters for their work; the developer guide only for administrators
+            var receptionHelp = help.library(reception).chapters().stream().map(c -> c.book() + "/" + c.slug()).toList();
+            assertThat(receptionHelp).contains("manual/reception", "manual/getting-started", "manual/patient-database")
+                    .doesNotContain("manual/optometry", "manual/accounts", "manual/users-roles-and-access")
+                    .noneMatch(c -> c.startsWith("developer/"));
+            var optometryHelp = help.library(optometrist).chapters().stream().map(HelpService.HelpChapter::slug).toList();
+            assertThat(optometryHelp).contains("optometry").doesNotContain("reception", "accounts");
+            var adminHelp = help.library(admin);
+            assertThat(adminHelp.administrator()).isTrue();
+            assertThat(adminHelp.chapters()).anyMatch(c -> c.book().equals("developer"));
+            assertThat(adminHelp.chapters()).noneMatch(c -> c.slug().equals("reception"));
+
+            // An approver who holds a role cannot approve a version that widens it
+            Actor approver = actor("bala-" + code);
+            IamModels.RoleDetail role = roles.create(admin, new IamModels.CreateRole("SELF_TEST", "Self-benefit test", null,
+                    java.util.Set.of("org.centre.read"), "v1"));
+            var v1 = role.versions().getFirst();
+            roles.submit(admin, v1.id(), new IamModels.Decision("ready", v1.version()));
+            roles.approve(approver, v1.id(), new IamModels.Decision("ok", v1.version() + 1));
+            jdbc.sql("""
+                    insert into iam.role_assignment (tenant_id, kind, user_id, role_id, scope_type, scope_id, valid_from, status, reason, via_bootstrap)
+                    values (:t, 'ACCESS', :u, :r, 'TENANT', :t, current_date, 'ACTIVE', 'test: the approver holds the role', true)
+                    """).param("t", tenant).param("u", approver.userId()).param("r", role.role().id()).update();
+            var v2 = roles.draftVersion(admin, role.role().id(), new IamModels.DraftVersion(java.util.Set.of("org.centre.read", "patient.read"), "add"))
+                    .versions().stream().filter(v -> "DRAFT".equals(v.status())).findFirst().orElseThrow();
+            roles.submit(admin, v2.id(), new IamModels.Decision("ready", v2.version()));
+            assertThatThrownBy(() -> roles.approve(approver, v2.id(), new IamModels.Decision("ok", v2.version() + 1)))
+                    .isInstanceOf(RuleViolationException.class).hasMessageContaining("patient.read");
             return null;
         });
     }

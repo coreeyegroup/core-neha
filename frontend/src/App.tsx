@@ -66,7 +66,7 @@ const router = createBrowserRouter(
       ],
     },
   ],
-  { basename: __BASE_PATH__ },
+  { basename: __APP_BASE__ },
 );
 
 export function App() {

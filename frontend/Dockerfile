@@ -1,4 +1,4 @@
-# Staff application built into the gateway image (nginx serves it at <base path>/).
+# Gateway image: the public website at <base path>/ and the staff application at <base path>/staff/.
 FROM node:24.22.2-alpine3.24 AS build
 WORKDIR /app
 COPY package.json package-lock.json ./
@@ -10,4 +10,5 @@ RUN npm run build
 
 FROM nginx:1.30.6-alpine3.24
 ARG BASE_PATH=/core-neha
-COPY --from=build /app/dist /usr/share/nginx/html${BASE_PATH}
+COPY website/ /usr/share/nginx/html${BASE_PATH}/
+COPY --from=build /app/dist /usr/share/nginx/html${BASE_PATH}/staff

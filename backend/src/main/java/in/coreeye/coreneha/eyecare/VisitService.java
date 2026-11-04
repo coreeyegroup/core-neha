@@ -221,7 +221,10 @@ public class VisitService {
             audit.recordIndependently(AuditEntry.success(actor, "eyecare.visit.view", "visit", visitId, scope,
                     Map.of("patient", v.patientUhid())));
         }
-        return new VisitChart(v, clinical, optometry, consultation, surgery, billing.billsForVisit(visitId), previous);
+        // Financial details are gated separately: clinical access does not reveal bills.
+        boolean money = access.holds(actor, Permission.BILLING_READ, scope) || access.holds(actor, Permission.OPD_CHECKIN, scope);
+        return new VisitChart(v, clinical, optometry, consultation, surgery, money, money ? billing.billsForVisit(visitId) : List.of(),
+                previous);
     }
 
     @Transactional

@@ -270,6 +270,16 @@ export interface CentreView {
   version?: number;
 }
 
+export interface ChangeMfa {
+  expectedVersion: number;
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  reason: string;
+  required?: boolean;
+}
+
 export interface ChangeUserStatus {
   expectedVersion: number;
   /**
@@ -737,6 +747,7 @@ export interface UserView {
   accessVersion?: number;
   id?: string;
   loginLinked?: boolean;
+  mfaRequired?: boolean;
   personId?: string;
   personName?: string;
   status?: string;
@@ -818,6 +829,20 @@ export interface Explanation {
   scopeType?: string;
 }
 
+export interface HelpChapter {
+  body?: string;
+  book?: string;
+  order?: number;
+  slug?: string;
+  summary?: string;
+  title?: string;
+}
+
+export interface HelpLibrary {
+  administrator?: boolean;
+  chapters?: HelpChapter[];
+}
+
 export interface VisitView {
   cancelReason?: string;
   centreId?: string;
@@ -881,6 +906,13 @@ export interface MyPosting {
   positionTitle?: string;
 }
 
+export interface MyRole {
+  kind?: string;
+  roleName?: string;
+  scopeName?: string;
+  validTo?: string;
+}
+
 export interface Me {
   centres?: CentreAccess[];
   demoTenant?: boolean;
@@ -888,6 +920,7 @@ export interface Me {
   pendingApprovals?: number;
   postings?: MyPosting[];
   responsibilities?: ResponsibilityView[];
+  roles?: MyRole[];
   tenantId?: string;
   tenantName?: string;
   tenantPermissions?: string[];
@@ -1602,6 +1635,7 @@ export interface VersionImpact {
 }
 
 export interface VisitChart {
+  billingVisible?: boolean;
   bills?: BillSummary[];
   clinicalVisible?: boolean;
   consultation?: ConsultationView;
@@ -3063,6 +3097,27 @@ return apiFetch<DepartmentView>(getCreateDepartmentUrl(),
 
 
 
+export const getHelpLibraryUrl = () => {
+
+
+
+
+  return `/v1/help`
+}
+
+export const helpLibrary = async ( options?: Parameters<typeof apiFetch>[1]): Promise<HelpLibrary> => {
+
+  return apiFetch<HelpLibrary>(getHelpLibraryUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
 export const getLevelsUrl = () => {
 
 
@@ -4461,6 +4516,42 @@ return apiFetch<UserView>(getEnableUrl(userId),
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
     body: JSON.stringify(changeUserStatus)
+  }
+);}
+
+
+
+export const getChangeUserMfaUrl = (userId: string,) => {
+
+
+
+
+  return `/v1/users/${userId}/mfa`
+}
+
+export const changeUserMfa = async (userId: string,
+    changeMfa: ChangeMfa, options?: Parameters<typeof apiFetch>[1]): Promise<UserView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<UserView>(getChangeUserMfaUrl(userId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(changeMfa)
   }
 );}
 

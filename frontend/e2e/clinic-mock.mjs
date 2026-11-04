@@ -30,6 +30,7 @@ export function personaMe(username, tenant) {
     userId: id(1000), username, displayName: name, tenantId: tenant, tenantName: 'Neha Health Group (demonstration)', demoTenant: true,
     tenantPermissions: [], centres: [{ centreId: VEC.id, code: VEC.code, name: VEC.name, permissions: ROLE_PERMISSIONS[role] }],
     pendingApprovals: 0, responsibilities: [], postings: [{ centreId: VEC.id, centreName: VEC.name, positionTitle: position, departmentName: dept }],
+    roles: [{ roleName: `Eye clinic ${role}`, kind: 'ACCESS', scopeName: VEC.name }],
   };
 }
 

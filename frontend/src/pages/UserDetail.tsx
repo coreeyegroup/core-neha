@@ -18,7 +18,7 @@ export function UserDetail() {
   const session = useSession();
   const access = useQuery({ queryKey: ['effective-access', userId], queryFn: () => api.effectiveAccess(userId) });
   const [tab, setTab] = useState('assignments');
-  const [dialog, setDialog] = useState<'request' | 'disable' | 'enable' | undefined>();
+  const [dialog, setDialog] = useState<'request' | 'disable' | 'enable' | 'mfa' | undefined>();
   const [revoking, setRevoking] = useState<api.AssignmentView | undefined>();
   if (access.error) {
     return <ProblemAlert error={access.error} />;
@@ -29,7 +29,7 @@ export function UserDetail() {
     <>
       <PageHeader
         title={user?.username ?? 'User'}
-        subtitle={user ? <>{user.personName} · <StatusChip status={user.status} /></> : undefined}
+        subtitle={user ? <>{user.personName} · <StatusChip status={user.status} /> · sign-in {user.mfaRequired === false ? 'with password only' : 'with password and one-time code'}</> : undefined}
         actions={
           <>
             {session.hasAnywhere('iam.assignment.request') && !isSelf && user?.status === 'ACTIVE' && (
@@ -37,6 +37,9 @@ export function UserDetail() {
             )}
             {session.hasAnywhere('iam.user.manage') && !isSelf && user?.status === 'ACTIVE' && (
               <Button color="error" onClick={() => setDialog('disable')}>Disable account…</Button>
+            )}
+            {session.hasTenantWide('iam.user.manage') && !isSelf && user?.loginLinked && (
+              <Button onClick={() => setDialog('mfa')}>{user.mfaRequired === false ? 'Require one-time code…' : 'Turn off one-time code…'}</Button>
             )}
             {session.hasAnywhere('iam.user.manage') && user?.status === 'DISABLED' && (
               <Button onClick={() => setDialog('enable')}>Enable account…</Button>
@@ -74,6 +77,7 @@ export function UserDetail() {
       {tab === 'explain' && <Explain userId={userId} />}
       {dialog === 'request' && user && <RequestAccess user={user} onClose={() => setDialog(undefined)} />}
       {(dialog === 'disable' || dialog === 'enable') && user && <ChangeStatus user={user} disable={dialog === 'disable'} onClose={() => setDialog(undefined)} />}
+      {dialog === 'mfa' && user && <ChangeMfa user={user} onClose={() => setDialog(undefined)} />}
       {revoking && <RevokeAssignment assignment={revoking} userId={userId} onClose={() => setRevoking(undefined)} />}
     </>
   );
@@ -179,6 +183,26 @@ function RevokeAssignment({ assignment, userId, onClose }: { assignment: api.Ass
   return (
     <FormDialog open title={`Revoke ${assignment.roleName ?? 'authority'} at ${assignment.scopeName}`} submitLabel="Revoke" onClose={onClose} busy={action.isPending} error={action.error}
       onSubmit={() => action.mutate({ reason, expectedVersion: assignment.version ?? 0 })}>
+      <TextField label="Reason" value={reason} onChange={(e) => setReason(e.target.value)} required autoFocus />
+    </FormDialog>
+  );
+}
+
+/** Group-wide user administrators decide whether an account signs in with a one-time code (authenticator app). */
+function ChangeMfa({ user, onClose }: { user: api.UserView; onClose: () => void }) {
+  const turningOn = user.mfaRequired === false;
+  const [reason, setReason] = useState('');
+  const action = useAction(
+    () => api.changeUserMfa(user.id ?? '', { required: turningOn, reason, expectedVersion: user.version ?? 0 }),
+    { invalidate: [['effective-access', user.id], ['users']], success: turningOn ? 'One-time code required; the user sets up the authenticator at the next sign-in' : 'One-time code turned off for this account', onDone: onClose },
+  );
+  return (
+    <FormDialog open title={turningOn ? `Require a one-time code for ${user.username}` : `Turn off the one-time code for ${user.username}`}
+      submitLabel={turningOn ? 'Require one-time code' : 'Turn off one-time code'} onClose={onClose} busy={action.isPending} error={action.error}
+      intro={turningOn
+        ? <Alert severity="info">The user's open sessions end. At the next sign-in they scan a QR code with an authenticator app, then enter its 6-digit code at every sign-in.</Alert>
+        : <Alert severity="warning">The user's authenticator is removed and sign-in needs only the password. Use this only where the risk is accepted, for example a shared front-desk computer in a locked room. The change and your reason are recorded in the audit trail.</Alert>}
+      onSubmit={() => action.mutate(undefined)}>
       <TextField label="Reason" value={reason} onChange={(e) => setReason(e.target.value)} required autoFocus />
     </FormDialog>
   );

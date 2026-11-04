@@ -196,7 +196,7 @@ public class BillingService implements BillingDirectory {
 
     @Transactional
     public BillDetail addLines(Actor actor, UUID billId, BillingModels.AddLines cmd) {
-        BillView bill = billRow(billId);
+        BillView bill = lockedBill(billId);
         Scope scope = Scope.centre(bill.centreId());
         access.require(actor, Permission.BILLING_CHARGE, scope, "billing.bill.add-lines", "bill", billId.toString());
         requireOpen(bill, cmd.expectedVersion());
@@ -213,7 +213,7 @@ public class BillingService implements BillingDirectory {
 
     @Transactional
     public BillDetail removeLine(Actor actor, UUID billId, BillingModels.RemoveLine cmd) {
-        BillView bill = billRow(billId);
+        BillView bill = lockedBill(billId);
         Scope scope = Scope.centre(bill.centreId());
         access.require(actor, Permission.BILLING_CHARGE, scope, "billing.bill.remove-line", "bill", billId.toString());
         requireOpen(bill, cmd.expectedVersion());
@@ -232,7 +232,7 @@ public class BillingService implements BillingDirectory {
 
     @Transactional
     public BillDetail requestDiscount(Actor actor, UUID billId, BillingModels.RequestDiscount cmd) {
-        BillView bill = billRow(billId);
+        BillView bill = lockedBill(billId);
         Scope scope = Scope.centre(bill.centreId());
         access.require(actor, Permission.BILLING_CHARGE, scope, "billing.discount.request", "bill", billId.toString());
         requireOpen(bill, cmd.expectedVersion());
@@ -255,7 +255,7 @@ public class BillingService implements BillingDirectory {
 
     @Transactional
     public BillDetail decideDiscount(Actor actor, UUID billId, BillingModels.ApprovalDecision cmd) {
-        BillView bill = billRow(billId);
+        BillView bill = lockedBill(billId);
         Scope scope = Scope.centre(bill.centreId());
         access.require(actor, Permission.BILLING_DISCOUNT_APPROVE, scope, "billing.discount.decide", "bill", billId.toString());
         requireOpen(bill, cmd.expectedVersion());
@@ -286,7 +286,7 @@ public class BillingService implements BillingDirectory {
 
     @Transactional
     public BillDetail collect(Actor actor, UUID billId, BillingModels.CollectPayment cmd) {
-        BillView bill = billRow(billId);
+        BillView bill = lockedBill(billId);
         Scope scope = Scope.centre(bill.centreId());
         access.require(actor, Permission.BILLING_COLLECT, scope, "billing.payment.collect", "bill", billId.toString());
         requireOpen(bill, cmd.expectedVersion());
@@ -307,8 +307,13 @@ public class BillingService implements BillingDirectory {
                 """).param("t", actor.tenantId()).param("c", bill.centreId()).param("b", billId).param("d", BusinessTime.today())
                 .param("m", cmd.mode()).param("a", amount).param("r", reference).param("by", actor.userId())
                 .query(UUID.class).single();
-        jdbc.sql("update billing.bill set paid_amount = paid_amount + :a, version = version + 1 where id = :id")
-                .param("a", amount).param("id", billId).update();
+        int posted = jdbc.sql("""
+                update billing.bill set paid_amount = paid_amount + :a, version = version + 1
+                where id = :id and version = :v and status = 'OPEN' and paid_amount + :a <= net_amount
+                """).param("a", amount).param("id", billId).param("v", bill.version()).update();
+        if (posted == 0) {
+            throw new ConflictException("billing.bill.changed", "Someone else changed this bill. Reload and try again.");
+        }
         recompute(billId);
         audit.record(AuditEntry.success(actor, "billing.payment.collect", "bill", billId, scope,
                 Map.of("billNo", bill.billNo(), "mode", cmd.mode(), "amount", amount.toPlainString(), "paymentId", paymentId.toString())));
@@ -317,7 +322,7 @@ public class BillingService implements BillingDirectory {
 
     @Transactional
     public BillDetail cancel(Actor actor, UUID billId, BillingModels.CancelBill cmd) {
-        BillView bill = billRow(billId);
+        BillView bill = lockedBill(billId);
         Scope scope = Scope.centre(bill.centreId());
         access.require(actor, Permission.BILLING_DISCOUNT_APPROVE, scope, "billing.bill.cancel", "bill", billId.toString());
         requireOpen(bill, cmd.expectedVersion());
@@ -367,6 +372,13 @@ public class BillingService implements BillingDirectory {
         }
         return jdbc.sql(BILL_SELECT + " where b.patient_id = :p order by b.created_at desc").param("p", patientId)
                 .query(BillView.class).list().stream().filter(b -> centres.contains(b.centreId())).toList();
+    }
+
+    /** Locks the bill row for the rest of the transaction so concurrent changes (two payments) are serialised. */
+    private BillView lockedBill(UUID id) {
+        jdbc.sql("select id from billing.bill where id = :id for update").param("id", id).query(UUID.class).optional()
+                .orElseThrow(() -> new NotFoundException("Bill not found"));
+        return billRow(id);
     }
 
     BillView billRow(UUID id) {

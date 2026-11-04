@@ -42,9 +42,14 @@ ops/bootstrap.sh        # create a real tenant with its two first administrators
 
 Details: [docs/operations/OPERATIONS.md](docs/operations/OPERATIONS.md) · Versions: [docs/versions/VERSIONS.md](docs/versions/VERSIONS.md) · Decisions: [docs/adr](docs/adr/README.md)
 
+## Public website and staff application
+
+- `https://coreeye.in/core-neha/` is the Vijaya Eye Clinic website (`frontend/website/`, contact details in `assets/site-config.js`).
+- `https://coreeye.in/core-neha/staff/` is the staff application (Staff login on the website).
+
 ## Knowledge centre
 
-The operation manual (for hospital staff and management) and the developer guide are
-inside the application at `/core-neha/help` (the **?** button opens the chapter for the
-current screen). Their sources are Markdown files in `frontend/src/help/manual/` and
-`frontend/src/help/developer/`; update them in the same change as the feature.
+Inside the staff application at **Help → Help centre** (the **?** button opens the chapter for the
+current screen). Each person sees only the chapters for their own work; the developer guide is for
+group-wide administrators. Sources: `backend/src/main/resources/help/{manual,developer}/`; update
+them in the same change as the feature.

@@ -19,7 +19,7 @@ public final class IamModels {
 
     // ------------------------------------------------------------------ users
     public record UserView(UUID id, UUID personId, String personName, String username, String status,
-                           int accessVersion, boolean loginLinked, int version) {
+                           int accessVersion, boolean loginLinked, boolean mfaRequired, int version) {
     }
 
     /** The temporary password is returned once only; it is never stored or logged by core-neha. */
@@ -31,6 +31,10 @@ public final class IamModels {
     }
 
     public record ChangeUserStatus(@NotBlank @Size(max = 500) String reason, @NotNull Integer expectedVersion) {
+    }
+
+    /** Whether sign-in needs a one-time code from an authenticator app. */
+    public record ChangeMfa(boolean required, @NotBlank @Size(max = 500) String reason, @NotNull Integer expectedVersion) {
     }
 
     // ------------------------------------------------------------------ roles
@@ -130,8 +134,13 @@ public final class IamModels {
     public record MyPosting(UUID centreId, String centreName, String positionTitle, String departmentName) {
     }
 
+    /** A role the signed-in user holds, and where. */
+    public record MyRole(String roleName, String kind, String scopeName, LocalDate validTo) {
+    }
+
     public record Me(UUID userId, String username, String displayName, UUID tenantId, String tenantName,
                      boolean demoTenant, List<String> tenantPermissions, List<CentreAccess> centres,
-                     int pendingApprovals, List<ResponsibilityView> responsibilities, List<MyPosting> postings) {
+                     int pendingApprovals, List<ResponsibilityView> responsibilities, List<MyPosting> postings,
+                     List<MyRole> roles) {
     }
 }

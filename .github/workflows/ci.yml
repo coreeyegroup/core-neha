@@ -35,7 +35,7 @@ jobs:
             echo "contract unchanged"
           else
             echo "::warning::contracts/openapi.json differs from the exported contract; update it and regenerate the client"
-            echo "OPENAPI-CONTRACT-BEGIN"; python3 -c "import json;print(json.dumps(json.load(open('/tmp/exported.json')),sort_keys=True))"; echo "OPENAPI-CONTRACT-END"
+            echo "OPENAPI-CONTRACT-BEGIN"; python3 -c "import json;print(json.dumps(json.load(open('/tmp/exported.json')),sort_keys=True,indent=1))"; echo "OPENAPI-CONTRACT-END"
           fi
       - name: OpenAPI contract artifact
         uses: actions/upload-artifact@v4

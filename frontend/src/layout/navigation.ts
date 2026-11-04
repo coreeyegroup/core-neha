@@ -9,6 +9,7 @@ export interface NavItem {
 
 export const NAV_ITEMS: NavItem[] = [
   { to: '/', label: 'Overview', group: 'Workspace' },
+  { to: '/activity', label: 'Centre activity', anyOf: ['eye.clinical.read', 'billing.report.read', 'workforce.read'], group: 'Clinic' },
   { to: '/reception', label: 'Reception desk', anyOf: ['opd.checkin', 'opd.appointment.manage'], group: 'Clinic' },
   { to: '/optometry', label: 'Optometry', permission: 'eye.optometry.record', group: 'Clinic' },
   { to: '/consultation', label: 'Consultation', permission: 'eye.consultation.record', group: 'Clinic' },

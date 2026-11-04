@@ -42,6 +42,8 @@ class ClinicStaff {
 
     /** Position code, title, category, department code, role code, then two people (given, family). */
     static final String[][] POSITIONS = {
+            // Centre management (no department): sees everything at the centre, approves; does not do department work
+            {"CENTRE_DIRECTOR", "Centre director", "MANAGEMENT", "", "EYE_CENTRE_DIRECTOR", "Radhika", "Narayan", "Mohan", "Krishnamurthy"},
             // Reception and front office
             {"RECEPTIONIST", "Receptionist", "ADMINISTRATIVE", "RECEPTION", "EYE_FRONT_OFFICE", "Priya", "Sharma", "Divya", "Hegde"},
             {"FRONT_OFFICE_SUPERVISOR", "Front office supervisor", "ADMINISTRATIVE", "RECEPTION", "EYE_FRONT_OFFICE_SUPERVISOR", "Ramesh", "Kumar", "Asha", "Kamath"},
@@ -94,6 +96,9 @@ class ClinicStaff {
     static final Map<String, String[]> ROLES = new LinkedHashMap<>();
 
     static {
+        ROLES.put("EYE_CENTRE_DIRECTOR", new String[] {"Eye clinic centre director (sees all centre data)",
+                "org.centre.read", "workforce.read", "iam.assignment.read", "patient.read", "opd.queue.read", "eye.clinical.read",
+                "billing.read", "billing.report.read", "billing.discount.approve", "billing.dayclose.approve", "audit.read"});
         ROLES.put("EYE_APPOINTMENTS", new String[] {"Eye clinic appointments and call centre",
                 "org.centre.read", "patient.read", "patient.register", "opd.queue.read", "opd.appointment.manage"});
         ROLES.put("EYE_PATIENT_RELATIONS", new String[] {"Eye clinic patient relations",
@@ -186,10 +191,13 @@ class ClinicStaff {
 
         List<CredentialsFile.Entry> logins = new ArrayList<>();
         for (String[] s : POSITIONS) {
-            var department = departments.get(s[3]);
-            if (department == null) {
+            var department = s[3].isEmpty() ? null : departments.get(s[3]);
+            if (department == null && !s[3].isEmpty()) {
                 throw new IllegalStateException("Department " + s[3] + " is not enabled at " + ClinicSeed.CENTRE_NAME);
             }
+            UUID departmentId = department == null ? null : department.id();
+            String departmentLabel = department == null ? "Centre management"
+                    : department.localName() == null ? department.departmentName() : department.localName();
             UUID roleId = roleIds.get(s[4]);
             if (roleId == null) {
                 throw new IllegalStateException("Role " + s[4] + " is missing; run ops/clinic-seed.sh first");
@@ -206,9 +214,9 @@ class ClinicStaff {
                 continue;
             }
             var establishment = workforce.establishments(a, centre).stream()
-                    .filter(e -> e.positionId().equals(position) && department.id().equals(e.centreDepartmentId()) && e.validTo() == null)
+                    .filter(e -> e.positionId().equals(position) && java.util.Objects.equals(departmentId, e.centreDepartmentId()) && e.validTo() == null)
                     .findFirst()
-                    .orElseGet(() -> workforce.establish(a, centre, new WorkforceModels.Establish(position, department.id(), 2, null)));
+                    .orElseGet(() -> workforce.establish(a, centre, new WorkforceModels.Establish(position, departmentId, 2, null)));
             int needed = establishment.activePostings() + missing.size();
             if (establishment.approvedHeadcount() < needed) {
                 workforce.changeHeadcount(a, establishment.id(), needed, "Two people per position for the clinic demonstration");
@@ -224,8 +232,7 @@ class ClinicStaff {
                         roleId, "CENTRE", centre, posting, null, null, s[1] + ", " + ClinicSeed.CENTRE_NAME));
                 assignments.approve(b, requested.id(), new IamModels.Decision("Approved for the clinic demonstration", requested.version()));
                 logins.add(new CredentialsFile.Entry(created.user().username(), created.temporaryPassword(),
-                        given + " " + family + ", " + s[1] + ", " + (department.localName() == null ? department.departmentName() : department.localName())
-                                + ", " + ClinicSeed.CENTRE_NAME));
+                        given + " " + family + ", " + s[1] + ", " + departmentLabel + ", " + ClinicSeed.CENTRE_NAME));
             }
         }
         return new Summary(POSITIONS.length, logins.size(), logins);

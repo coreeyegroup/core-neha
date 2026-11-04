@@ -44,3 +44,16 @@ test('the accounts manager approves a discount requested at the desk', async ({ 
   await page.getByRole('dialog').getByRole('button', { name: 'Approve', exact: true }).click();
   await expect(page.getByText('Discount approved')).toBeVisible();
 });
+
+test('the centre director sees the whole centre: flow, visits, surgeries and money', async ({ page, context }) => {
+  await as(context, 'radhika.director');
+  await page.goto('./activity');
+  await expect(page.getByRole('heading', { name: 'Centre activity' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Patient flow' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Money' })).toBeVisible();
+  await expect(page.getByText('Savitri Devi').first()).toBeVisible();
+  await page.getByRole('tab', { name: /^Surgeries/ }).click();
+  await expect(page.getByText('Phacoemulsification with toric IOL').first()).toBeVisible();
+  await page.goto('./reception');
+  await expect(page.getByText(/You do not have front-office access/)).toBeVisible();
+});

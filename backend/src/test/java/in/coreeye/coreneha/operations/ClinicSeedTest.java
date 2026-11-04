@@ -212,8 +212,8 @@ class ClinicSeedTest extends PostgresTestBase {
         UUID centre = seed.load(code).centreId();
 
         ClinicStaff.Summary first = clinicStaff.extend(code);
-        assertThat(first.positions()).isEqualTo(40);
-        assertThat(first.added()).isEqualTo(40 * 2 - 12);
+        assertThat(first.positions()).isEqualTo(41);
+        assertThat(first.added()).isEqualTo(41 * 2 - 12);
         assertThat(first.logins()).allSatisfy(l -> assertThat(l.username()).matches("e\\d{5}"));
         assertThat(clinicStaff.extend(code).added()).isZero();
 
@@ -222,16 +222,25 @@ class ClinicSeedTest extends PostgresTestBase {
             assertThat(jdbc.sql("""
                     select count(*) from workforce.establishment e where e.centre_id = :c and e.approved_headcount = 2
                     and (select count(*) from workforce.posting p where p.establishment_id = e.id) = 2""")
-                    .param("c", centre).query(Integer.class).single()).isEqualTo(40);
+                    .param("c", centre).query(Integer.class).single()).isEqualTo(41);
             assertThat(jdbc.sql("""
                     select count(*) from iam.role_assignment where scope_id = :c and status = 'ACTIVE'
                     and decided_by is not null and decided_by <> requested_by""").param("c", centre).query(Integer.class).single())
-                    .isEqualTo(80);
+                    .isEqualTo(82);
             // Employee numbers (login ids) are unique across tenants.
             assertThat(jdbc.sql("select count(*) - count(distinct username) from iam.user_account").query(Integer.class).single()).isZero();
             // Sterilisation staff work in the theatre but have no access to patient records.
             Actor cssd = staff("Basavaraj", "Hosamani");
             assertThatThrownBy(() -> patients.search(cssd, "Lakshmi", 10)).isInstanceOf(AccessDeniedException.class);
+            // The centre director sees every patient, visit, surgery and bill at the centre, but cannot record clinical work.
+            Actor director = staff("Radhika", "Narayan");
+            assertThat(patients.search(director, "Lakshmi", 10)).isNotEmpty();
+            EyeModels.VisitView anyVisit = visits.visits(director, centre, BusinessTime.today(), null).getFirst();
+            assertThat(visits.chart(director, anyVisit.id()).clinicalVisible()).isTrue();
+            assertThat(billing.bills(director, centre, null, null, null)).isNotEmpty();
+            EyeModels.VisitView waitingVisit = visits.visits(director, centre, null, "OPTOMETRY").getFirst();
+            assertThatThrownBy(() -> visits.saveOptometry(director, waitingVisit.id(), emptyOptometry(false)))
+                    .isInstanceOf(AccessDeniedException.class);
             // The cashier collects payments but cannot change the price list.
             Actor cashier = staff("Feroz", "Ahmed");
             assertThat(billing.bills(cashier, centre, null, null, null)).isNotEmpty();

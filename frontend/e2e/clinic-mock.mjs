@@ -13,6 +13,7 @@ const ROLE_PERMISSIONS = {
   doctor: ['org.centre.read', 'patient.read', 'opd.queue.read', 'eye.clinical.read', 'eye.optometry.record', 'eye.consultation.record'],
   counselling: ['org.centre.read', 'patient.read', 'opd.queue.read', 'opd.appointment.manage', 'eye.clinical.read', 'eye.counselling.record', 'eye.surgery.schedule', 'billing.read'],
   surgeon: ['org.centre.read', 'patient.read', 'opd.queue.read', 'eye.clinical.read', 'eye.surgery.prepare', 'eye.surgery.operate'],
+  director: ['org.centre.read', 'workforce.read', 'iam.assignment.read', 'patient.read', 'opd.queue.read', 'eye.clinical.read', 'billing.read', 'billing.report.read', 'billing.discount.approve', 'billing.dayclose.approve', 'audit.read'],
   accounts: ['org.centre.read', 'billing.read', 'billing.report.read', 'billing.dayclose.approve', 'billing.discount.approve', 'billing.tariff.manage', 'audit.read'],
 };
 const PERSONAS = {
@@ -22,6 +23,7 @@ const PERSONAS = {
   'lata.counselling': ['Lata Menon', 'counselling', 'Surgery counsellor', 'Surgery counselling'],
   'dr.arjun': ['Arjun Rao', 'surgeon', 'Ophthalmic surgeon', 'Operation theatre (OT)'],
   'shobha.accounts': ['Shobha Kulkarni', 'accounts', 'Accounts manager', 'Accounts'],
+  'radhika.director': ['Radhika Narayan', 'director', 'Centre director', undefined],
 };
 
 export function personaMe(username, tenant) {
@@ -29,7 +31,7 @@ export function personaMe(username, tenant) {
   return {
     userId: id(1000), username, displayName: name, tenantId: tenant, tenantName: 'Neha Health Group (demonstration)', demoTenant: true,
     tenantPermissions: [], centres: [{ centreId: VEC.id, code: VEC.code, name: VEC.name, permissions: ROLE_PERMISSIONS[role] }],
-    pendingApprovals: 0, responsibilities: [], postings: [{ centreId: VEC.id, centreName: VEC.name, positionTitle: position, departmentName: dept }],
+    pendingApprovals: 0, responsibilities: [], postings: [{ centreId: VEC.id, centreName: VEC.name, positionTitle: position, ...(dept ? { departmentName: dept } : {}) }],
     roles: [{ roleName: `Eye clinic ${role}`, kind: 'ACCESS', scopeName: VEC.name }],
   };
 }

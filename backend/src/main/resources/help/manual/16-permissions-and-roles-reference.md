@@ -74,14 +74,27 @@ All are assigned at **one centre**. Every role also includes `org.centre.read`.
 
 | Role | Positions | Main permissions |
 |---|---|---|
-| Eye clinic front office | Receptionist | patient read/register, queue, appointments, check-in, billing read/charge/collect |
+| Eye clinic centre director (sees all centre data) | Centre director | patient read, queue, clinical read, billing read, reports, discount and day close approval, staff and access read, audit |
+| Eye clinic front office | Receptionist, Patient registration executive | patient read/register, queue, appointments, check-in, billing read/charge/collect |
 | Eye clinic front office supervisor | Front office supervisor | front office + discount approval + reports |
-| Eye clinic optometry | Optometrist, Senior optometrist | patient read, queue, clinical read, optometry |
-| Eye clinic consultant | Consultant and associate ophthalmologist | patient read, queue, clinical read, optometry, consultation |
-| Eye clinic surgery counselling | Surgery counsellor, Patient care coordinator | patient read, queue, appointments, clinical read, counselling, surgery scheduling, billing read |
+| Eye clinic appointments and call centre | Appointment and call-centre executive | patient read/register, queue, appointments |
+| Eye clinic patient relations | Patient relations executive | patient read, queue, appointments |
+| Eye clinic centre operations manager | Centre operations manager | patient read, queue, appointments, billing read, reports, audit (no clinical records) |
+| Eye clinic optometry | Optometrist, Senior and Chief optometrist, Ophthalmic assistant, Imaging technician | patient read, queue, clinical read, optometry |
+| Eye clinic optical dispensing | Dispensing optician | patient read, queue, clinical read, billing read/charge |
+| Eye clinic medical director | Medical director | consultant + surgery scheduling, reports, audit |
+| Eye clinic consultant | Consultant, Associate, Retina, Glaucoma, Cornea, Paediatric ophthalmologists, Resident medical officer | patient read, queue, clinical read, optometry, consultation |
+| Eye clinic OPD nurse | OPD nurse | patient read, queue, clinical read, optometry |
+| Eye clinic surgery counselling | Surgery counsellor, Patient care coordinator, Senior counsellor, Surgery scheduler | patient read, queue, appointments, clinical read, counselling, surgery scheduling, billing read |
+| Eye clinic insurance (Mediclaim) desk | Insurance (Mediclaim) coordinator | patient read, queue, clinical read, billing read/charge |
 | Eye clinic surgeon (operation theatre) | Ophthalmic surgeon | patient read, queue, clinical read, pre-op, operate |
-| Eye clinic OT nurse | OT nurse | patient read, queue, clinical read, pre-op |
-| Eye clinic accountant | Accountant | billing read/collect, reports, day close submit |
+| Eye clinic anaesthesia | Anaesthesiologist | patient read, queue, clinical read, pre-op |
+| Eye clinic OT nurse | OT nursing in-charge, OT nurse, Scrub nurse, OT technician, Day-care ward nurse | patient read, queue, clinical read, pre-op |
+| Eye clinic OT support (no patient records) | CSSD technician | centre read only |
+| Eye clinic accountant | Accountant, Accounts assistant | billing read/collect, reports, day close submit |
 | Eye clinic accounts manager | Accounts manager | billing read, reports, day close approve, discount approval, price list, audit |
+| Eye clinic billing | Billing executive | patient read, queue, billing read/charge/collect |
+| Eye clinic cashier | Cashier | patient read, billing read/collect |
+| Eye clinic internal audit (read only) | Internal auditor | billing read, reports, audit |
 
 Use these as the template for every new eye clinic; for a centre of another kind, copy the closest role with **Clone role** and adjust.

@@ -1,6 +1,6 @@
 # For management
 > What management should know and check: ownership, regular reviews, daily and monthly controls, and handing over.
-<!-- audience: iam.assignment.approve billing.dayclose.approve billing.report.read audit.read -->
+<!-- audience: iam.assignment.approve billing.dayclose.approve billing.report.read audit.read eye.clinical.read workforce.read -->
 
 ## Who owns what
 
@@ -13,7 +13,26 @@
 | Discounts | Front office supervisor, accounts manager | Accounts → Discounts |
 | Day close | Accountant submits, accounts manager approves | Accounts → Day close |
 | Clinical records | Medical director / head of department | Clinic desks |
+| Everything at one centre (read, approve) | Centre director | Clinic → Centre activity |
 | Audit and privacy | Quality or compliance manager | Audit trail |
+
+## Seeing everything at one centre
+
+Administrators set up the organisation and give access; by design they **do not** see patients,
+clinical records or money (so an IT or HR administrator cannot read medical records). The person
+who runs a centre gets that view through a role instead:
+
+- **Centre director** (role *Eye clinic centre director*): every patient, visit, clinical record,
+  surgery, bill, collection report, staff posting and the audit trail **at that one centre**, plus
+  approving discounts and the day close. It does not record clinical work or take payments; those
+  stay with the departments. Give it like any role: an administrator requests it at the centre, a
+  second administrator approves it. If the same person also works in a department, give them that
+  department's role as well.
+- **Clinic → Centre activity** is their page: choose a day and see the patient flow (visits, waiting
+  at each stage, waits), money (billed, collected, discounts, outstanding), staffing (positions,
+  people posted, vacancies), and lists of every visit, the OT list, the surgery pipeline and open
+  bills. Each part appears only if the person's roles allow it.
+- Every record a director opens is written to the audit trail, the same as for anyone else.
 
 ## Daily controls
 

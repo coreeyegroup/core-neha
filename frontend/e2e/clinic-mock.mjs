@@ -5,7 +5,7 @@ const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).for
 const now = new Date().toISOString();
 const ago = (min) => new Date(Date.now() - min * 60_000).toISOString();
 
-export const VEC = { id: id(150), code: 'VEC', name: 'Vijay Eye Clinic' };
+export const VEC = { id: id(150), code: 'VEC', name: 'Vijaya Eye Clinic' };
 
 const ROLE_PERMISSIONS = {
   reception: ['org.centre.read', 'patient.read', 'patient.register', 'opd.queue.read', 'opd.appointment.manage', 'opd.checkin', 'billing.read', 'billing.charge', 'billing.collect'],

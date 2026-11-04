@@ -614,11 +614,8 @@ export interface CreateTariffItem {
 
 export interface CreateUser {
   personId: string;
-  /**
-     * @minLength 1
-     * @pattern ^[a-z0-9][a-z0-9._-]{2,59}$
-     */
-  username: string;
+  /** @pattern ^[a-z0-9][a-z0-9._-]{2,59}$ */
+  username?: string;
 }
 
 export interface DayCloseView {
@@ -745,11 +742,13 @@ export interface ResponsibilityView {
 
 export interface UserView {
   accessVersion?: number;
+  employeeNo?: string;
   id?: string;
   loginLinked?: boolean;
   mfaRequired?: boolean;
   personId?: string;
   personName?: string;
+  positions?: string;
   status?: string;
   username?: string;
   version?: number;
@@ -1095,6 +1094,7 @@ export interface PermissionView {
 export interface PersonView {
   demo?: boolean;
   email?: string;
+  employeeNo?: string;
   familyName?: string;
   givenName?: string;
   id?: string;

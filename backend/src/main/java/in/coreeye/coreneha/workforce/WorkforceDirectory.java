@@ -7,7 +7,7 @@ import java.util.UUID;
 /** Read-only workforce lookups for other modules (no access checks; callers check). */
 public interface WorkforceDirectory {
 
-    record PersonRef(UUID id, UUID tenantId, String givenName, String familyName, String email, String status) {
+    record PersonRef(UUID id, UUID tenantId, String employeeNo, String givenName, String familyName, String email, String status) {
     }
 
     record PostingRef(UUID id, UUID personId, UUID centreId, UUID positionId, String positionTitle, String departmentName,

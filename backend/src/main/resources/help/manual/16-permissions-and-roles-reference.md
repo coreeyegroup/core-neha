@@ -1,5 +1,5 @@
 # Permissions and roles reference
-> Every permission in the system, what it allows, and the roles used at Vijay Eye Clinic.
+> Every permission in the system, what it allows, and the roles used at Vijaya Eye Clinic.
 <!-- audience: iam.role.read iam.assignment.approve -->
 
 Permissions marked **group-wide only** work only from an assignment that applies to the whole group.
@@ -68,7 +68,7 @@ Permissions marked **group-wide only** work only from an assignment that applies
 | `billing.dayclose.submit` | Submit the daily cash close |
 | `billing.dayclose.approve` | Approve or reject a daily cash close |
 
-## Roles at Vijay Eye Clinic
+## Roles at Vijaya Eye Clinic
 
 All are assigned at **one centre**. Every role also includes `org.centre.read`.
 

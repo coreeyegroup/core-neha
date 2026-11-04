@@ -14,7 +14,7 @@
 | `OpenApiContractTest` | Exports the OpenAPI contract to `target/openapi.json` |
 | `iam/AccessScenarioTest` | Ten ordered acceptance scenarios of slice 1.1: bootstrap, roles with independent approval, scoped assignments, authority, revocation, denial audit |
 | `operations/DemoSeedTest` | The 20-centre demonstration tenant through the normal rules |
-| `operations/ClinicSeedTest` | Vijay Eye Clinic end to end, then the boundaries: front office cannot see findings or record optometry; accounts and administrators cannot search patients; discount self-approval refused; no payment while a discount is pending; no checkout with balance; no surgery before the checklist; the accountant cannot approve the day close |
+| `operations/ClinicSeedTest` | Vijaya Eye Clinic end to end, then the boundaries: front office cannot see findings or record optometry; accounts and administrators cannot search patients; discount self-approval refused; no payment while a discount is pending; no checkout with balance; no surgery before the checklist; the accountant cannot approve the day close |
 
 All integration tests use one PostgreSQL 18.6 container (Testcontainers) with the production role model. Keycloak is replaced by a mock `IdentityProvisioner`.
 

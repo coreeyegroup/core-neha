@@ -25,7 +25,8 @@ The list shows each position's headcount and how many people currently hold it.
 ## Adding a person
 
 1. Open **People and postings** and choose **Add person**.
-2. Enter **Given name**, **Family name** and **Work email** (unique in the group). Choose **Add person**.
+2. Enter **Given name**, **Family name** and **Email** (unique in the group; use the person's own work or personal email, not one named after a job). Choose **Add person**.
+3. The system gives the person a permanent **employee number** (for example `E10003`). It is their id for as long as they work in the group, and their login id. Their positions and departments are shown as tags next to it and can change at any time without changing the id.
 
 A person can exist without a login; for example contract staff who never use the system.
 

@@ -27,7 +27,8 @@ export function PersonDetail() {
   const account = (users.data ?? []).find((u) => u.personId === personId);
   return (
     <>
-      <PageHeader title={p ? `${p.givenName} ${p.familyName}` : 'Person'} subtitle={p?.email}
+      <PageHeader title={p ? `${p.givenName} ${p.familyName}` : 'Person'}
+        subtitle={p ? <>Employee no. <strong>{p.employeeNo}</strong> · {p.email}</> : undefined}
         actions={
           <>
             {session.hasAnywhere('workforce.person.manage') && <Button onClick={() => setDialog('posting')}>Add posting</Button>}
@@ -120,7 +121,8 @@ function EndPosting({ posting, personId, onClose }: { posting: api.PostingView; 
 }
 
 function CreateAccount({ person, onClose }: { person: api.PersonView; onClose: () => void }) {
-  const suggested = `${person.givenName ?? ''}.${person.familyName ?? ''}`.toLowerCase().replace(/[^a-z0-9.]/g, '');
+  // The login id is the permanent employee number, so it never changes with the person's position.
+  const suggested = (person.employeeNo ?? '').toLowerCase();
   const [username, setUsername] = useState(suggested);
   const [created, setCreated] = useState<api.UserCreated | undefined>();
   const action = useAction((b: api.CreateUser) => api.createUser(b), { invalidate: [['users']], onDone: setCreated });
@@ -139,7 +141,8 @@ function CreateAccount({ person, onClose }: { person: api.PersonView; onClose: (
     <FormDialog open title="Create user account" submitLabel="Create account" onClose={onClose} busy={action.isPending} error={action.error}
       intro={<Typography variant="body2" color="text.secondary">Creates a login. It grants no permission until a role assignment is requested and approved by someone else.</Typography>}
       onSubmit={() => action.mutate({ personId: person.id ?? '', username })}>
-      <TextField label="Username" value={username} onChange={(e) => setUsername(e.target.value)} required autoFocus helperText="Lowercase letters, digits, dot, dash" />
+      <TextField label="Login id" value={username} onChange={(e) => setUsername(e.target.value)} required autoFocus
+        helperText="The employee number. Keep it: it stays the same when the person's position changes. Sign-in accepts capitals too." />
     </FormDialog>
   );
 }

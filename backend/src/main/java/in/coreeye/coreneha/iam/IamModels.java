@@ -18,8 +18,9 @@ public final class IamModels {
     }
 
     // ------------------------------------------------------------------ users
-    public record UserView(UUID id, UUID personId, String personName, String username, String status,
-                           int accessVersion, boolean loginLinked, boolean mfaRequired, int version) {
+    /** positions: the person's current positions (tags), for example "Receptionist (Reception, VEC)", separated by "; ". */
+    public record UserView(UUID id, UUID personId, String personName, String employeeNo, String positions, String username,
+                           String status, int accessVersion, boolean loginLinked, boolean mfaRequired, int version) {
     }
 
     /** The temporary password is returned once only; it is never stored or logged by core-neha. */
@@ -27,7 +28,8 @@ public final class IamModels {
     }
 
     public record CreateUser(@NotNull UUID personId,
-                             @NotBlank @Pattern(regexp = "^[a-z0-9][a-z0-9._-]{2,59}$") String username) {
+                             /** Optional: defaults to the person's employee number (recommended; it never changes). */
+                             @Pattern(regexp = "^[a-z0-9][a-z0-9._-]{2,59}$") String username) {
     }
 
     public record ChangeUserStatus(@NotBlank @Size(max = 500) String reason, @NotNull Integer expectedVersion) {

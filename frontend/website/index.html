@@ -3,27 +3,35 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Vijaya Eye Clinic | Super-speciality eye hospital, Bengaluru</title>
-  <meta name="description" content="Vijaya Eye Clinic, Bengaluru: cataract surgery, LASIK, glaucoma and retina care by specialist ophthalmologists since 1985.">
-  <meta name="theme-color" content="#0066cc">
+  <title>Vijaya Eye Clinic | Super-speciality eye hospital in Vijayanagar, Bengaluru</title>
+  <meta name="description" content="Vijaya Eye Clinic, Vijayanagar, Bengaluru: cataract, LASIK, retina, glaucoma and children's eye care by senior ophthalmologists since 1985. Cashless Mediclaim.">
+  <meta name="theme-color" content="#0a2540">
   <link rel="icon" href="./assets/mark.svg" type="image/svg+xml">
+  <link rel="preload" href="./fonts/ibm-plex-serif-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="./assets/site.css">
   <script src="./assets/site-config.js" defer></script>
   <script src="./assets/site.js" defer></script>
 </head>
 <body>
   <a class="skip" href="#main">Skip to content</a>
+  <div class="utility">
+    <div class="wrap">
+      <span data-site-optional>Appointments <a href="#" data-site="phone"></a></span>
+      <span data-site-optional class="hide-small">WhatsApp <a href="#" data-site="whatsapp"></a></span>
+      <span data-site-optional class="hide-small" data-site="hoursShort"></span>
+      <a class="push" href="./staff/">Staff login</a>
+    </div>
+  </div>
   <header class="site-header">
     <div class="wrap">
-      <a class="brand" href="./"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M3 24c5.5-9 12.6-14 21-14s15.5 5 21 14c-5.5 9-12.6 14-21 14S8.5 33 3 24z" fill="none" stroke="#0066cc" stroke-width="3" stroke-linejoin="round"/><circle cx="24" cy="24" r="8.5" fill="#0066cc"/><circle cx="24" cy="24" r="3.4" fill="#0e2a47"/><circle cx="27.2" cy="20.8" r="1.8" fill="#f2a900"/></svg><span><strong>Vijaya Eye Clinic</strong><span>Super-speciality eye care, Bengaluru</span></span></a>
+      <a class="brand" href="./"><svg viewBox="0 0 48 48" aria-hidden="true"><circle cx="24" cy="24" r="22.5" fill="#0a2540"/><path d="M8 24c4.2-6.6 9.6-10 16-10s11.8 3.4 16 10c-4.2 6.6-9.6 10-16 10S12.2 30.6 8 24z" fill="none" stroke="#fff" stroke-width="2.2" stroke-linejoin="round"/><circle cx="24" cy="24" r="6.2" fill="#0066cc"/><circle cx="24" cy="24" r="2.5" fill="#0a2540"/><circle cx="26.4" cy="21.6" r="1.3" fill="#b8862b"/></svg><span><span class="name">Vijaya Eye Clinic</span><span class="est"><b>Est. 1985</b><span class="tag"> &nbsp;Super-speciality eye care, Vijayanagar, Bengaluru</span></span></span></a>
       <button class="menu-button" type="button" aria-expanded="false" aria-controls="site-nav">Menu</button>
       <nav class="nav" id="site-nav" aria-label="Main">
-        <a href="./treatments">Treatments</a>
-        <a href="./visit">Your visit</a>
+        <a href="./specialities">Specialities</a>
+        <a href="./doctors">Doctors</a>
+        <a href="./patients">Patients and visitors</a>
         <a href="./contact">Contact</a>
-        <a class="staff" href="./staff/">Staff login</a>
-        <a class="button" href="#" data-site="phone" data-keep-text data-when-phone>Call to book</a>
-        <a class="button" href="./contact" data-when-no-phone>Contact us</a>
+        <a class="button" href="./contact" data-site="bookingUrl">Book appointment</a>
       </nav>
     </div>
   </header>
@@ -31,99 +39,202 @@
     <section class="hero" aria-labelledby="hero-title">
       <div class="wrap">
         <div>
-          <p class="since">Bengaluru, since 1985</p>
-          <h1 id="hero-title">Specialist eye care for every age.</h1>
-          <p class="lead">Cataract surgery, LASIK, glaucoma and retina care by specialist ophthalmologists. Tests, consultation and surgery in one clinic, with one record for every visit.</p>
+          <h1 id="hero-title">Eye care for Bengaluru's families since 1985.</h1>
+          <p class="lead">Senior ophthalmologists for cataract, LASIK, retina, glaucoma and children's eyes, with diagnostics and operation theatres under one roof in Vijayanagar.</p>
           <div class="actions">
-            <a class="button" href="#" data-site="phone" data-keep-text data-when-phone>Call to book an appointment</a>
-            <a class="button" href="./contact" data-when-no-phone>How to reach us</a>
-            <a class="button secondary" href="./treatments">See treatments</a>
+            <a class="button" href="./contact" data-site="bookingUrl">Book an appointment</a>
+            <a class="button quiet" href="./contact" data-site="phone" data-keep-text>Call the clinic</a>
           </div>
+          <ul class="credentials">
+            <li><strong>40+ years</strong><span>of eye care in Vijayanagar</span></li>
+            <li><strong>4.9 on Google</strong><span>from more than 2,700 reviews</span></li>
+            <li><strong>Cashless</strong><span>Mediclaim with 16 insurers and TPAs</span></li>
+          </ul>
         </div>
-        <figure class="chart-wrap">
-          <div class="chart" role="img" aria-label="A Snellen eye chart, from the large letter E at 6/60 down to 6/6">
-            <ol aria-hidden="true">
-              <li class="l1"><span>E</span><small>6/60</small></li>
-              <li class="l2"><span>F P</span><small>6/36</small></li>
-              <li class="l3"><span>T O Z</span><small>6/24</small></li>
-              <li class="l4"><span>L P E D</span><small>6/18</small></li>
-              <li class="l5"><span>P E C F D</span><small>6/12</small></li>
-              <li class="l6 target"><span>E D F C Z P</span><small>6/6</small></li>
-            </ol>
-          </div>
-          <figcaption>6/6 is normal distance vision. Every visit starts with a vision test like this one.</figcaption>
+        <figure class="chart" aria-label="A Snellen eye chart, from the letter E at 6/60 down to the 6/6 line">
+          <ol aria-hidden="true">
+            <li class="l1"><span>E</span><small>6/60</small></li>
+            <li class="l2"><span>F P</span><small>6/36</small></li>
+            <li class="l3"><span>T O Z</span><small>6/24</small></li>
+            <li class="l4"><span>L P E D</span><small>6/18</small></li>
+            <li class="l5"><span>P E C F D</span><small>6/12</small></li>
+            <li class="l6"><span>E D F C Z P</span><small>6/6</small></li>
+          </ol>
+          <figcaption>6/6 is normal distance vision. Every consultation begins with a vision test.</figcaption>
         </figure>
       </div>
     </section>
 
-    <section aria-labelledby="treat-title">
+    <section class="section" aria-labelledby="spec-title">
       <div class="wrap">
-        <h2 id="treat-title">What we treat</h2>
-        <p class="section-intro">Each condition is seen by an ophthalmologist after a full work-up of your vision and eye pressure.</p>
-        <div class="conditions">
-          <div class="condition"><h3>Cataract</h3><p>Cloudy, dim or glary vision as the eye's lens clouds with age. Treated with day-care surgery and a lens implant.</p><a href="./treatments#cataract">About cataract</a></div>
-          <div class="condition"><h3>LASIK and vision correction</h3><p>Freedom from glasses or contact lenses for suitable eyes, after a detailed corneal assessment.</p><a href="./treatments#lasik">About LASIK</a></div>
-          <div class="condition"><h3>Glaucoma</h3><p>Raised eye pressure that slowly damages the optic nerve, often without symptoms. Found by regular checks; controlled with drops, laser or surgery.</p><a href="./treatments#glaucoma">About glaucoma</a></div>
-          <div class="condition"><h3>Retina</h3><p>Diabetic eye disease, macular degeneration, retinal tears and detachment.</p><a href="./treatments#retina">About retina care</a></div>
-          <div class="condition"><h3>Eye check-ups</h3><p>Vision, glasses power, eye pressure and a look at the back of the eye, for adults and children.</p><a href="./treatments#check-up">About check-ups</a></div>
+        <div class="section-head">
+          <h2 id="spec-title">Specialities</h2>
+          <p>Each patient is examined by a senior specialist after a complete work-up of vision and eye pressure.</p>
+        </div>
+        <div class="specialities">
+          <div class="speciality">
+            <h3>Cataract surgery</h3>
+            <p>Stitchless micro-incision phacoemulsification as day-care surgery, with monofocal, toric and multifocal lens choices.</p>
+            <a href="./specialities#cataract">About cataract surgery</a>
+          </div>
+          <div class="speciality">
+            <h3>LASIK and refractive surgery</h3>
+            <p>Laser vision correction planned from corneal topography and thickness, for adults who want to be free of glasses or contact lenses.</p>
+            <a href="./specialities#lasik">About lasik and refractive surgery</a>
+          </div>
+          <div class="speciality">
+            <h3>Retina and diabetic eye care</h3>
+            <p>Diabetic retinopathy, macular degeneration and retinal detachment, with OCT, angiography and retinal laser.</p>
+            <a href="./specialities#retina">About retina and diabetic eye care</a>
+          </div>
+          <div class="speciality">
+            <h3>Glaucoma</h3>
+            <p>Early detection of the "silent thief of sight" with pressure, nerve and visual field tests, and lifelong management.</p>
+            <a href="./specialities#glaucoma">About glaucoma</a>
+          </div>
+          <div class="speciality">
+            <h3>Children's eye care and squint</h3>
+            <p>Refractive errors, lazy eye (amblyopia), squint and digital eye strain, assessed in a child-friendly way.</p>
+            <a href="./specialities#children">About children's eye care and squint</a>
+          </div>
+          <div class="speciality">
+            <h3>Cornea, dry eye and eye examinations</h3>
+            <p>Complete eye examinations, dry eye and tear-film assessment, pterygium and corneal infections, and in-house spectacles.</p>
+            <a href="./specialities#cornea">About cornea, dry eye and eye examinations</a>
+          </div>
         </div>
       </div>
     </section>
 
-    <section class="tint" aria-labelledby="visit-title">
+    <section class="section alt" aria-labelledby="doc-title">
       <div class="wrap">
-        <h2 id="visit-title">Your visit, step by step</h2>
-        <p class="section-intro">Most consultations take one to two hours, longer if your pupils are dilated for a retina check.</p>
-        <ol class="steps">
-          <li><h3>Registration</h3><p>Your details are recorded once. You get a patient number (UHID) used at every visit.</p></li>
-          <li><h3>Vision tests</h3><p>An optometrist checks your vision, glasses power and eye pressure.</p></li>
-          <li><h3>Doctor</h3><p>The ophthalmologist examines your eyes, explains the diagnosis and the treatment.</p></li>
-          <li><h3>Counselling</h3><p>If surgery is advised, a counsellor explains the procedure, the package and the cost, and books your date.</p></li>
-          <li><h3>Billing</h3><p>Pay by cash, UPI or card. Your prescription and next appointment are given to you.</p></li>
-        </ol>
-        <p><a href="./visit">What to bring, and what happens on surgery day</a></p>
+        <div class="section-head">
+          <h2 id="doc-title">Our doctors</h2>
+          <a class="more" href="./doctors">All doctors and their areas of care</a>
+        </div>
+        <div class="doctors">
+          <article class="doctor">
+            <div class="monogram" aria-hidden="true">VP</div>
+            <h3>Dr. Vasant N Patil</h3>
+            <p class="role">Founder and Chief Ophthalmologist</p>
+            <p class="quals">MBBS, DO, MS (Ophthalmology), FVR</p>
+            <p class="focus">Comprehensive ophthalmology, cataract and glaucoma.</p>
+            <span class="years">40+ years in practice</span>
+          </article>
+          <article class="doctor">
+            <div class="monogram" aria-hidden="true">V</div>
+            <h3>Dr. Vishwanath</h3>
+            <p class="role">Senior Vitreo-Retinal Surgeon</p>
+            <p class="quals">MBBS, DO, MS (Ophthalmology), FVR</p>
+            <p class="focus">Vitreo-retinal surgery, diabetic retinopathy and macular disorders.</p>
+            <span class="years">25+ years in practice</span>
+          </article>
+          <article class="doctor">
+            <div class="monogram" aria-hidden="true">SK</div>
+            <h3>Dr. Sunil Kumar M</h3>
+            <p class="role">Consultant Ophthalmologist and Phaco Surgeon</p>
+            <p class="quals">MBBS, DOMS, DNB</p>
+            <p class="focus">Phacoemulsification cataract surgery and refractive care.</p>
+            <span class="years">15+ years in practice</span>
+          </article>
+          <article class="doctor">
+            <div class="monogram" aria-hidden="true">SC</div>
+            <h3>Dr. Savitha C S</h3>
+            <p class="role">Consultant Ophthalmologist</p>
+            <p class="quals">MS (Ophthalmology), FVR</p>
+            <p class="focus">Anterior segment, medical retina and diagnostics.</p>
+            <span class="years">20+ years in practice</span>
+          </article>
+          <article class="doctor">
+            <div class="monogram" aria-hidden="true">CK</div>
+            <h3>Dr. Chandana K M</h3>
+            <p class="role">Consultant Ophthalmologist</p>
+            <p class="quals">MBBS, MS (Ophthalmology)</p>
+            <p class="focus">Cornea care and eye examinations for children.</p>
+            <span class="years">10+ years in practice</span>
+          </article>
+          <article class="doctor">
+            <div class="monogram" aria-hidden="true">DK</div>
+            <h3>Dr. Dhananjaya K H</h3>
+            <p class="role">Consultant Cataract, Cornea and Refractive Surgeon</p>
+            <p class="quals">MS (Ophthalmology), FPRS</p>
+            <p class="focus">Phacoemulsification, cornea and LASIK.</p>
+            <span class="years">8+ years in practice</span>
+          </article>
+        </div>
       </div>
     </section>
 
-    <section aria-labelledby="about-title">
+    <section class="section" aria-labelledby="visit-title">
+      <div class="wrap">
+        <div class="section-head">
+          <h2 id="visit-title">Your visit</h2>
+          <p>Personal attention from senior consultants, explained clearly, without hurried referrals.</p>
+        </div>
+        <ol class="steps">
+          <li><h3>Call or message</h3><p>Call or WhatsApp to confirm the doctor's timings, or tell reception you are on your way. Walk-ins are welcome.</p></li>
+          <li><h3>Registration and tests</h3><p>Register at the front desk; an optometrist checks your vision, glasses power and eye pressure.</p></li>
+          <li><h3>Consultation</h3><p>A senior specialist examines your eyes with the slit lamp, and dilates the pupils when needed.</p></li>
+          <li><h3>Your plan</h3><p>The doctor explains the diagnosis and treatment, your spectacle prescription, or surgery and cashless Mediclaim.</p></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="section alt" aria-labelledby="ins-title">
       <div class="wrap split">
         <div>
-          <h2 id="about-title">A clinic Bengaluru has trusted for decades</h2>
-          <p>Vijaya Eye Clinic has looked after the eyes of families in Bengaluru since 1985. The same care runs through every visit: an unhurried examination, a clear explanation, and treatment that suits your eyes and your life.</p>
+          <h2 id="ins-title">Cashless Mediclaim</h2>
+          <p>Our Mediclaim desk prepares the documents and the pre-authorisation with your insurer or TPA, so that you can focus on your treatment.</p>
+          <p><a href="./patients#insurance">What to bring for cashless treatment</a></p>
         </div>
-        <ul class="facts">
-          <li><strong>Specialist ophthalmologists</strong>Cataract, refractive, glaucoma and retina care.</li>
-          <li><strong>Everything in one place</strong>Vision tests, consultation, counselling and the operation theatre.</li>
-          <li><strong>Day-care surgery</strong>Most cataract patients go home the same day, with a review the next morning.</li>
-          <li><strong>One record for you</strong>Every test, diagnosis and bill is kept under your patient number.</li>
+        <ul class="insurers">
+          <li>Star Health Insurance</li>
+          <li>HDFC ERGO</li>
+          <li>ICICI Lombard</li>
+          <li>Bajaj Allianz</li>
+          <li>Niva Bupa</li>
+          <li>Care Health Insurance</li>
+          <li>United India Insurance</li>
+          <li>National Insurance</li>
+          <li>The Oriental Insurance</li>
+          <li>The New India Assurance</li>
+          <li>ManipalCigna</li>
+          <li>Medi Assist TPA</li>
+          <li>Vidal Health TPA</li>
+          <li>Paramount Health</li>
+          <li>Heritage Health</li>
+          <li>Family Health Plan (FHPL)</li>
         </ul>
       </div>
     </section>
 
-    <section class="tint" aria-labelledby="reach-title">
-      <div class="wrap split">
+    <section class="section" aria-labelledby="visit-us-title">
+      <div class="wrap contact-grid">
         <div>
-          <h2 id="reach-title">Reach us</h2>
-        <div class="contact-card">
-          <dl>
-            <dt>Address</dt><dd data-site="address"></dd>
-            <div class="row" data-site-optional><dt>Phone</dt><dd><a href="#" data-site="phone"></a></dd></div>
-            <div class="row" data-site-optional><dt>WhatsApp</dt><dd><a href="#" data-site="whatsapp"></a></dd></div>
-            <div class="row" data-site-optional><dt>Email</dt><dd><a href="#" data-site="email"></a></dd></div>
+          <h2 id="visit-us-title">Visit us</h2>
+          <dl class="facts">
+            <div class="row"><dt>Address</dt><dd data-site="address"></dd></div>
+            <div class="row" data-site-optional><dt>Landmark</dt><dd data-site="landmark"></dd></div>
             <div class="row" data-site-optional><dt>Timings</dt><dd data-site="hours"></dd></div>
+            <div class="row" data-site-optional><dt>Landline</dt><dd><a href="#" data-site="phone"></a></dd></div>
+            <div class="row" data-site-optional><dt>Mobile and WhatsApp</dt><dd><a href="#" data-site="mobile"></a></dd></div>
+            <div class="row" data-site-optional><dt>Email</dt><dd><a href="#" data-site="email"></a></dd></div>
           </dl>
-          <p class="card-action" data-site-optional><a class="button secondary" href="#" data-site="mapUrl">Open in Maps</a></p>
-          <p class="card-action" data-site-optional><a class="button" href="#" data-site="bookingUrl">Book online</a></p>
-        </div>
+          <div class="contact-actions">
+            <a class="button" href="#" data-site="bookingUrl">Book an appointment</a>
+            <a class="button quiet" href="#" data-site="whatsapp" data-keep-text>Message on WhatsApp</a>
+            <a class="button quiet" href="#" data-site="mapUrl">Get directions</a>
+          </div>
         </div>
         <aside class="urgent" aria-labelledby="urgent-title">
-          <h3 id="urgent-title">Go to an emergency department straight away if you have</h3>
+          <h3 id="urgent-title">When to seek help immediately</h3>
           <ul>
-            <li>sudden loss or dimming of vision in one or both eyes;</li>
-            <li>a sudden shower of floaters, flashes of light, or a curtain over part of your vision;</li>
-            <li>an injury to the eye, or a chemical splash (rinse with clean water for 15 minutes on the way);</li>
-            <li>a painful red eye with headache, nausea or haloes around lights.</li>
+            <li>Sudden loss or dimming of vision in one or both eyes.</li>
+            <li>A sudden shower of floaters, flashes of light, or a curtain over part of your vision.</li>
+            <li>An injury to the eye, or a chemical splash: rinse with clean water for 15 minutes on the way.</li>
+            <li>A painful red eye with headache, nausea or haloes around lights.</li>
           </ul>
+          <p class="muted">Call the clinic, or go to the nearest emergency department.</p>
         </aside>
       </div>
     </section>
@@ -131,25 +242,34 @@
   <footer class="site-footer">
     <div class="wrap">
       <div>
-        <h3>Vijaya Eye Clinic</h3>
-        <p>Eye care in Bengaluru since 1985: cataract, LASIK, glaucoma and retina.</p>
-        <p><span data-site="address"></span></p>
+        <p class="fname">Vijaya Eye Clinic</p>
+        <p>Super-speciality eye care in Vijayanagar, Bengaluru, since 1985.</p>
+        <p data-site="address"></p>
       </div>
       <div>
-        <h3>Patients</h3>
+        <h4>Care</h4>
         <ul>
-          <li><a href="./treatments">Treatments</a></li>
-          <li><a href="./visit">Your visit</a></li>
-          <li><a href="./contact">Contact and timings</a></li>
+          <li><a href="./specialities">Specialities</a></li>
+          <li><a href="./doctors">Doctors</a></li>
+          <li><a href="./specialities#facilities">Technology</a></li>
         </ul>
       </div>
       <div>
-        <h3>Clinic staff</h3>
+        <h4>Patients</h4>
+        <ul>
+          <li><a href="./patients">Your visit</a></li>
+          <li><a href="./patients#insurance">Cashless Mediclaim</a></li>
+          <li><a href="./patients#faq">Questions</a></li>
+          <li><a href="./contact">Contact and directions</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Clinic staff</h4>
         <ul>
           <li><a href="./staff/">Staff login</a></li>
         </ul>
       </div>
-      <p class="legal">© <span id="year">2026</span> Vijaya Eye Clinic. Information on this website is general and does not replace an examination by an eye doctor.</p>
+      <p class="legal">© <span id="year">2026</span> Vijaya Eye Clinic, Bengaluru. The information on this website is general and does not replace an examination by an eye doctor.</p>
     </div>
   </footer>
 </body>

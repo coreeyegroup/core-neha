@@ -1382,14 +1382,12 @@
             "type": "string"
           },
           "username": {
-            "minLength": 1,
             "pattern": "^[a-z0-9][a-z0-9._-]{2,59}$",
             "type": "string"
           }
         },
         "required": [
-          "personId",
-          "username"
+          "personId"
         ],
         "type": "object"
       },
@@ -2429,6 +2427,9 @@
             "type": "boolean"
           },
           "email": {
+            "type": "string"
+          },
+          "employeeNo": {
             "type": "string"
           },
           "familyName": {
@@ -3659,6 +3660,9 @@
             "format": "int32",
             "type": "integer"
           },
+          "employeeNo": {
+            "type": "string"
+          },
           "id": {
             "format": "uuid",
             "type": "string"
@@ -3674,6 +3678,9 @@
             "type": "string"
           },
           "personName": {
+            "type": "string"
+          },
+          "positions": {
             "type": "string"
           },
           "status": {

@@ -28,8 +28,8 @@ export function UserDetail() {
   return (
     <>
       <PageHeader
-        title={user?.username ?? 'User'}
-        subtitle={user ? <>{user.personName} · <StatusChip status={user.status} /> · sign-in {user.mfaRequired === false ? 'with password only' : 'with password and one-time code'}</> : undefined}
+        title={user ? `${user.personName} (${(user.username ?? '').toUpperCase()})` : 'User'}
+        subtitle={user ? <>{(user.positions ?? '').split('; ').filter(Boolean).map((t) => <Chip key={t} size="small" variant="outlined" label={t} sx={{ mr: 0.5 }} />)} <StatusChip status={user.status} /> · sign-in {user.mfaRequired === false ? 'with password only' : 'with password and one-time code'}</> : undefined}
         actions={
           <>
             {session.hasAnywhere('iam.assignment.request') && !isSelf && user?.status === 'ACTIVE' && (

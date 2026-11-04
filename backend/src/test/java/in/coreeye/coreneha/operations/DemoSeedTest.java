@@ -53,12 +53,16 @@ class DemoSeedTest extends PostgresTestBase {
             // The visiting consultant holds two scoped, approved assignments
             assertThat(jdbc.sql("""
                     select count(*) from iam.role_assignment ra join iam.user_account u on u.id = ra.user_id
-                    where u.username = 'ravi.visiting' and ra.status = 'ACTIVE' and ra.scope_type = 'CENTRE'""")
+                    join workforce.person p on p.id = u.person_id
+                    where p.given_name = 'Ravi' and p.family_name = 'Rao' and ra.status = 'ACTIVE' and ra.scope_type = 'CENTRE'""")
                     .query(Integer.class).single()).isEqualTo(2);
             // Every non-bootstrap assignment was approved by someone other than its requester
             assertThat(jdbc.sql("""
                     select count(*) from iam.role_assignment where not via_bootstrap
                     and (decided_by is null or decided_by = requested_by or decided_by = user_id)""")
+                    .query(Integer.class).single()).isZero();
+            // Logins are employee numbers, not names or positions
+            assertThat(jdbc.sql("select count(*) from iam.user_account u join workforce.person p on p.id = u.person_id where u.username <> lower(p.employee_no)")
                     .query(Integer.class).single()).isZero();
             return null;
         });

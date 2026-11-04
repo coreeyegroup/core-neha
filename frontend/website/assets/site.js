@@ -2,23 +2,29 @@
 (function () {
   var s = window.SITE || {};
   function digits(v) { return String(v || '').replace(/[^0-9+]/g, ''); }
+  function tel(v) { var d = digits(v); return d.charAt(0) === '0' ? 'tel:+91' + d.slice(1) : 'tel:' + d; }
   document.querySelectorAll('[data-site]').forEach(function (el) {
     var key = el.getAttribute('data-site');
     var value = s[key];
     var empty = !value || (Array.isArray(value) && value.length === 0);
     var holder = el.closest('[data-site-optional]');
     if (empty) {
-      if (holder) { holder.hidden = true; }
+      if (holder) { holder.hidden = true; } else { el.hidden = true; }
       return;
     }
-    if (key === 'phone' || key === 'whatsapp') {
-      if (el.tagName === 'A') { el.href = key === 'phone' ? 'tel:' + digits(value) : 'https://wa.me/' + digits(value).replace('+', ''); }
-      if (!el.hasAttribute('data-keep-text')) { el.textContent = value; }
+    var keepText = el.hasAttribute('data-keep-text');
+    if (key === 'phone' || key === 'mobile') {
+      if (el.tagName === 'A') { el.href = tel(value); }
+      if (!keepText) { el.textContent = value; }
+    } else if (key === 'whatsapp') {
+      if (el.tagName === 'A') { el.href = 'https://wa.me/' + digits(value).replace('+', ''); el.rel = 'noopener'; }
+      if (!keepText) { el.textContent = value; }
     } else if (key === 'email') {
       if (el.tagName === 'A') { el.href = 'mailto:' + value; }
-      el.textContent = value;
+      if (!keepText) { el.textContent = value; }
     } else if (key === 'mapUrl' || key === 'bookingUrl') {
       el.href = value;
+      el.rel = 'noopener';
     } else if (Array.isArray(value)) {
       el.textContent = '';
       value.forEach(function (line, i) { if (i) { el.appendChild(document.createElement('br')); } el.appendChild(document.createTextNode(line)); });
@@ -26,9 +32,6 @@
       el.textContent = value;
     }
   });
-  // Show "call" actions only when a phone number is set, "contact" otherwise.
-  document.querySelectorAll('[data-when-phone]').forEach(function (el) { el.hidden = !s.phone; });
-  document.querySelectorAll('[data-when-no-phone]').forEach(function (el) { el.hidden = !!s.phone; });
   var year = document.getElementById('year');
   if (year) { year.textContent = String(new Date().getFullYear()); }
   var button = document.querySelector('.menu-button');

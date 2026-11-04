@@ -21,11 +21,12 @@ final class CredentialsFile {
         Files.createDirectories(dir);
         Path file = dir.resolve(name + "-" + Instant.now().toString().replace(":", "").replace(".", "") + ".txt");
         StringBuilder sb = new StringBuilder(header).append("\n\n");
-        sb.append(String.format("%-28s %-20s %s%n", "USERNAME", "TEMPORARY PASSWORD", "WHO"));
+        sb.append(String.format("%-28s %-20s %s%n", "LOGIN ID (EMPLOYEE NO)", "TEMPORARY PASSWORD", "PERSON AND POSITION"));
         for (Entry e : entries) {
             sb.append(String.format("%-28s %-20s %s%n", e.username(), e.temporaryPassword(), e.description()));
         }
-        sb.append("\nEach password works once: the first sign-in asks for a new password and an authenticator app (TOTP).\n");
+        sb.append("\nSign in with the LOGIN ID (for example E10003). Each password works once: the first sign-in asks for a new\n"
+                + "password and an authenticator app (TOTP), unless the administrator turned the one-time code off for that account.\n");
         Files.writeString(file, sb.toString());
         try {
             Files.setPosixFilePermissions(file, PosixFilePermissions.fromString("rw-------"));

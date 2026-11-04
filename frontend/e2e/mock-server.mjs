@@ -10,7 +10,7 @@ import { clinicRoute, personaMe } from './clinic-mock.mjs';
 
 const port = Number(process.argv[2] ?? 4173);
 let signedIn = !process.argv.includes('--signed-out');
-// --persona=<username>: sign in as one of the Vijay Eye Clinic staff (see clinic-mock.mjs).
+// --persona=<username>: sign in as one of the Vijaya Eye Clinic staff (see clinic-mock.mjs).
 const persona = process.argv.find((a) => a.startsWith('--persona='))?.slice('--persona='.length);
 const dist = new URL('../dist/', import.meta.url).pathname;
 const website = new URL('../website/', import.meta.url).pathname;

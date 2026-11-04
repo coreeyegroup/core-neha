@@ -11,7 +11,7 @@ A user can do something only if they hold an **active, approved assignment** of 
 ## Creating a user account
 
 1. Open the person's page (**People and postings → the person**) and choose **Create user account**.
-2. Enter a **Username**: lower case, for example `priya.reception`.
+2. The **Login id** is filled in with the person's **employee number** (for example `e10003`). Keep it: the employee number never changes, so the login stays the same when the person changes position, department or centre. Sign-in accepts it in capitals too (`E10003`).
 3. Choose **Create account**. The system shows a **one-time password** once. Give it to the person privately (in person or by phone). It is not stored anywhere you can see again.
 
 The new account has **no access** until an assignment is approved.

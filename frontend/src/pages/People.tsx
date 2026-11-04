@@ -30,6 +30,7 @@ export function People() {
         filterPlaceholder="Filter by name or email"
         onRowClick={(r) => navigate(`/people/${r.id}`)}
         columns={[
+          { key: 'no', header: 'Employee no.', render: (r) => r.employeeNo, value: (r) => r.employeeNo },
           { key: 'name', header: 'Name', render: (r) => `${r.givenName} ${r.familyName}`, value: (r) => `${r.familyName} ${r.givenName}` },
           { key: 'email', header: 'Email', render: (r) => r.email, value: (r) => r.email },
           { key: 'demo', header: '', render: (r) => (r.demo ? <Chip label="Synthetic" variant="outlined" color="secondary" /> : null) },

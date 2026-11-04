@@ -1,6 +1,6 @@
 import { expect, test, type BrowserContext } from '@playwright/test';
 
-// Vijay Eye Clinic: each position signs in to its own department dashboard (mock personas, see e2e/clinic-mock.mjs).
+// Vijaya Eye Clinic: each position signs in to its own department dashboard (mock personas, see e2e/clinic-mock.mjs).
 async function as(context: BrowserContext, username: string) {
   await context.addCookies([{ name: 'mock_persona', value: username, url: 'http://localhost:4173' }]);
 }
@@ -8,7 +8,7 @@ async function as(context: BrowserContext, username: string) {
 test('a receptionist lands on the reception desk and checks in an appointment', async ({ page, context }) => {
   await as(context, 'priya.reception');
   await page.goto('./');
-  await expect(page.getByText('Receptionist · Reception · Vijay Eye Clinic')).toBeVisible();
+  await expect(page.getByText('Receptionist · Reception · Vijaya Eye Clinic')).toBeVisible();
   await expect(page.getByRole('link', { name: /Reception desk/ }).first()).toBeVisible();
   await page.goto('./reception');
   await expect(page.getByRole('heading', { name: 'Reception desk' })).toBeVisible();

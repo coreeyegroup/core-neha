@@ -11,7 +11,7 @@ test('an administrator sees the developer guide and can search', async ({ page }
 test('a receptionist sees only the help for their work', async ({ page, context }) => {
   await context.addCookies([{ name: 'mock_persona', value: 'priya.reception', url: 'http://localhost:4173' }]);
   await page.goto('./help');
-  await expect(page.getByText('Receptionist, Reception at Vijay Eye Clinic')).toBeVisible();
+  await expect(page.getByText('Receptionist, Reception at Vijaya Eye Clinic')).toBeVisible();
   await expect(page.getByRole('link', { name: /Reception desk/ }).last()).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Developer guide' })).toHaveCount(0);
   await expect(page.getByRole('heading', { name: 'Optometry', exact: true })).toHaveCount(0);

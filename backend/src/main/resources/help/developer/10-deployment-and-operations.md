@@ -28,7 +28,8 @@ Compose project `core-neha`: `postgres`, `keycloak`, `backend`, `gateway`. Memor
 | `caddy-route.sh add|remove|show` | Publish or remove the public route (sudo) |
 | `bootstrap.sh` | Create a real tenant and its two first administrators (production onboarding) |
 | `demo-seed.sh` | Load the 20-centre demonstration tenant (demo only, once) |
-| `clinic-seed.sh` | Add Vijay Eye Clinic to the demonstration tenant (demo only, once, after demo-seed) |
+| `demo-reset.sh` | Demo only: back up, wipe the application and Keycloak databases, and reload both demo seeds (asks you to type RESET DEMO) |
+| `clinic-seed.sh` | Add Vijaya Eye Clinic to the demonstration tenant (demo only, once, after demo-seed) |
 
 ## Website contact details
 

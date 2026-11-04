@@ -25,7 +25,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService {
 
     static final String USER_SELECT = """
-            select u.id, u.person_id, p.given_name || ' ' || p.family_name as person_name, u.username, u.status,
+            select u.id, u.person_id, p.given_name || ' ' || p.family_name as person_name, p.employee_no,
+                   (select string_agg(pd.title || coalesce(' (' || coalesce(cd.local_name, dd.name) || ', ' || c.code || ')', ' (' || c.code || ')'), '; '
+                            order by pd.title)
+                    from workforce.posting po join workforce.establishment e on e.id = po.establishment_id
+                    join workforce.position_definition pd on pd.id = e.position_id join org.centre c on c.id = e.centre_id
+                    left join org.centre_department cd on cd.id = e.centre_department_id
+                    left join org.department_definition dd on dd.id = cd.department_id
+                    where po.person_id = u.person_id and po.valid_from <= current_date
+                      and (po.valid_to is null or po.valid_to >= current_date)) as positions,
+                   u.username, u.status,
                    u.access_version, exists(select 1 from iam.login_identity li where li.user_id = u.id) as login_linked,
                    u.mfa_required, u.version
             from iam.user_account u join workforce.person p on p.id = u.person_id
@@ -58,13 +67,14 @@ public class UserService {
         }
         boolean demo = Boolean.TRUE.equals(jdbc.sql("select is_demo from workforce.person where id = :id")
                 .param("id", cmd.personId()).query(Boolean.class).single());
-        UUID id = insert(actor.tenantId(), cmd.personId(), cmd.username());
+        String username = loginId(cmd.username(), person.employeeNo());
+        UUID id = insert(actor.tenantId(), cmd.personId(), username);
         IdentityProvisioner.ProvisionedIdentity identity =
-                provisioner.create(cmd.username(), person.email(), person.givenName(), person.familyName(), demo);
+                provisioner.create(username, person.email(), person.givenName(), person.familyName(), demo);
         try {
             linkIdentity(actor.tenantId(), id, identity.subject());
             audit.record(AuditEntry.success(actor, "iam.user.create", "user_account", id, null,
-                    IamSupport.details("personId", cmd.personId().toString(), "username", cmd.username(),
+                    IamSupport.details("personId", cmd.personId().toString(), "username", username,
                             "loginAccountCreated", true, "temporaryPasswordIssued", true)));
         } catch (RuntimeException e) {
             safeDelete(identity.subject());
@@ -75,8 +85,9 @@ public class UserService {
     }
 
     /** Creates the account and login for bootstrap and demonstration loaders (they audit as the system). */
-    IamModels.UserCreated createForLoader(UUID tenantId, UUID personId, String username, String email, String givenName,
+    IamModels.UserCreated createForLoader(UUID tenantId, UUID personId, String requestedUsername, String email, String givenName,
                                           String familyName, boolean demo) {
+        String username = loginId(requestedUsername, workforce.person(personId).map(WorkforceDirectory.PersonRef::employeeNo).orElse(null));
         UUID id = insert(tenantId, personId, username);
         IdentityProvisioner.ProvisionedIdentity identity = provisioner.create(username, email, givenName, familyName, demo);
         try {
@@ -86,6 +97,17 @@ public class UserService {
             throw e;
         }
         return new IamModels.UserCreated(row(id), identity.temporaryPassword(), null);
+    }
+
+    /** The login id: the requested username, or else the employee number in lower case (Keycloak stores usernames in lower case). */
+    static String loginId(String requested, String employeeNo) {
+        if (requested != null && !requested.isBlank()) {
+            return requested.trim();
+        }
+        if (employeeNo == null) {
+            throw new RuleViolationException("iam.user.no-login-id", "Give a username: this person has no employee number");
+        }
+        return employeeNo.toLowerCase(java.util.Locale.ROOT);
     }
 
     private void safeDelete(String subject) {

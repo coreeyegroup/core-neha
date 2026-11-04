@@ -1,4 +1,4 @@
-# Slice 2.1 – Eye clinic end to end (Vijay Eye Clinic)
+# Slice 2.1 – Eye clinic end to end (Vijaya Eye Clinic)
 
 Status: **implemented; CI green; acceptance on core-node pending**.
 
@@ -6,16 +6,18 @@ Status: **implemented; CI green; acceptance on core-node pending**.
 
 | Department (local name) | Positions (one login each) | Role | Signs in to | Does |
 |---|---|---|---|---|
-| Reception | Receptionist (`priya.reception`), Front office supervisor (`ramesh.frontoffice`) | EYE_FRONT_OFFICE, EYE_FRONT_OFFICE_SUPERVISOR | Reception desk | Find or register patients (UHID), book appointments, check in (token), raise bills, collect payment, request discounts, checkout. The supervisor also approves discounts and sees collections. |
-| Optometry | Optometrist (`sunita.optometry`), Senior optometrist (`karthik.optometry`) | EYE_OPTOMETRY | Optometry | Queue of checked-in patients; vision (unaided, glasses, near, best corrected), refraction (sphere, cylinder, axis, add) and IOP for each eye; send to the doctor. |
-| Consultation (eye specialists) | Consultant ophthalmologist (`dr.vijay`), Associate ophthalmologist (`dr.meera`) | EYE_CONSULTANT | Consultation | Queue with optometry done; anterior and posterior segment, diagnosis with ICD-10, medicines, spectacles, follow-up; advise surgery (procedure, eye, urgency) which sends the patient to counselling. |
-| Surgery counselling | Surgery counsellor (`lata.counselling`), Patient care coordinator (`naveen.coordinator`) | EYE_COUNSELLING | Surgery counselling | Patients advised surgery; package and cost from the price list, payment plan (self, insurance, corporate, scheme), decision; book the OT date and surgeon. |
-| Operation theatre (OT) | Ophthalmic surgeon (`dr.arjun`), OT nurse (`mary.otnurse`) | EYE_SURGEON, EYE_OT_NURSE | Operation theatre | OT list by day; pre-operative checklist (consent, eye marked, fitness, biometry, IOL power, BP, sugar); the surgeon's operative note; completing books the day-1 review. |
-| Accounts | Accountant (`ganesh.accounts`), Accounts manager (`shobha.accounts`) | EYE_ACCOUNTANT, EYE_ACCOUNTS_MANAGER | Accounts | Collections by mode, service and collector; outstanding bills; day close (accountant submits, manager approves); the manager also approves discounts and maintains the price list. |
+| Reception | Receptionist, Front office supervisor | EYE_FRONT_OFFICE, EYE_FRONT_OFFICE_SUPERVISOR | Reception desk | Find or register patients (UHID), book appointments, check in (token), raise bills, collect payment, request discounts, checkout. The supervisor also approves discounts and sees collections. |
+| Optometry | Optometrist, Senior optometrist | EYE_OPTOMETRY | Optometry | Queue of checked-in patients; vision (unaided, glasses, near, best corrected), refraction (sphere, cylinder, axis, add) and IOP for each eye; send to the doctor. |
+| Consultation (eye specialists) | Consultant ophthalmologist, Associate ophthalmologist | EYE_CONSULTANT | Consultation | Queue with optometry done; anterior and posterior segment, diagnosis with ICD-10, medicines, spectacles, follow-up; advise surgery (procedure, eye, urgency) which sends the patient to counselling. |
+| Surgery counselling | Surgery counsellor, Patient care coordinator | EYE_COUNSELLING | Surgery counselling | Patients advised surgery; package and cost from the price list, payment plan (self, insurance, corporate, scheme), decision; book the OT date and surgeon. |
+| Operation theatre (OT) | Ophthalmic surgeon, OT nurse | EYE_SURGEON, EYE_OT_NURSE | Operation theatre | OT list by day; pre-operative checklist (consent, eye marked, fitness, biometry, IOL power, BP, sugar); the surgeon's operative note; completing books the day-1 review. |
+| Accounts | Accountant, Accounts manager | EYE_ACCOUNTANT, EYE_ACCOUNTS_MANAGER | Accounts | Collections by mode, service and collector; outstanding bills; day close (accountant submits, manager approves); the manager also approves discounts and maintains the price list. |
 
 Everyone with `patient.read` has the **Patient database**: search by name, mobile or
 UHID; the record shows visits (with diagnosis and best-corrected vision for clinical
 staff), surgeries, upcoming appointments and bills (for billing staff).
+
+Every login id is the person's **employee number** (E10001 …); the credentials file lists each id with the person's name and position.
 
 ## Loading it on core-node
 
@@ -45,6 +47,6 @@ Browser tests (`e2e/clinic.spec.ts`) sign in as four of the positions against th
 - [ ] `ops/clinic-seed.sh` output and the credentials file name
 - [ ] Each of the 12 logins sees only its department's desks
 - [ ] Walk a new patient: register -> walk-in -> optometry -> consultation (advise surgery) -> counselling -> bill and pay -> checkout
-- [ ] Discount requested by `priya.reception`, approved by `ramesh.frontoffice`
-- [ ] Day close submitted by `ganesh.accounts`, approved by `shobha.accounts`
-- [ ] OT: `mary.otnurse` completes the checklist; `dr.arjun` completes the surgery
+- [ ] Discount requested by the receptionist, approved by the front office supervisor
+- [ ] Day close submitted by the accountant, approved by the accounts manager
+- [ ] OT: the OT nurse completes the checklist; the surgeon completes the surgery

@@ -28,8 +28,8 @@ public final class WorkforceModels {
                                     int activePostings, LocalDate validFrom, LocalDate validTo, int version) {
     }
 
-    public record PersonView(UUID id, String givenName, String familyName, String email, boolean demo, String status,
-                             int version) {
+    public record PersonView(UUID id, String employeeNo, String givenName, String familyName, String email, boolean demo,
+                             String status, int version) {
     }
 
     public record PostingView(UUID id, UUID personId, UUID establishmentId, UUID centreId, String centreName,

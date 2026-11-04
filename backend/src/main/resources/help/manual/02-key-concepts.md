@@ -10,7 +10,7 @@
 | **Hierarchy levels** | The layers the group uses to organise centres. The group chooses them; they are not fixed. | State (rank 1), City (rank 2), Area (rank 3) |
 | **Hierarchy nodes** | The actual places in those levels. Each node has a parent. | Karnataka → Bengaluru |
 | **Legal entity** | The registered company that runs a centre (for invoices and registrations). | Neha Eye and Health Care Pvt Ltd |
-| **Centre** | A hospital, clinic, store or laboratory. It sits under one node and belongs to one legal entity. | Vijay Eye Clinic (VEC) |
+| **Centre** | A hospital, clinic, store or laboratory. It sits under one node and belongs to one legal entity. | Vijaya Eye Clinic (VEC) |
 | **Department library** | The list of departments the group knows about, defined once. | Reception, Optometry, Ophthalmology, Billing… |
 | **Department at a centre** | A library department *enabled* at a centre, optionally with a local name. A centre runs only the departments enabled for it. | "Ophthalmology" called "Consultation (eye specialists)" at VEC |
 
@@ -22,7 +22,7 @@ These five things are **separate on purpose**. Most mistakes come from mixing th
 |---|---|---|
 | **Position** | A job defined once for the group (title, category, grade). | No |
 | **Establishment** | A position created at a centre, in a department, with an approved headcount. | No |
-| **Person** | A staff member's identity (name, work email). | No |
+| **Person** | A staff member's identity: a permanent **employee number** (E10003), name and email. The employee number is also the login id. | No |
 | **Posting** | A person holding an established position, with a start date, an optional end date and an FTE (for example 0.6 for three days a week). One person can have several postings, at several centres. | No |
 | **User account** | The login of a person (username, password, authenticator). | Only together with an assignment |
 | **Role** | A named set of permissions, for example "Eye clinic front office". | Only through an assignment |

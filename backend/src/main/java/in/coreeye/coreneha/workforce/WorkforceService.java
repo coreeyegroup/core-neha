@@ -61,7 +61,7 @@ public class WorkforceService implements WorkforceDirectory, DepartmentRetiremen
 
     @Override
     public Optional<PersonRef> person(UUID personId) {
-        return jdbc.sql("select id, tenant_id, given_name, family_name, email, status from workforce.person where id = :id")
+        return jdbc.sql("select id, tenant_id, employee_no, given_name, family_name, email, status from workforce.person where id = :id")
                 .param("id", personId).query(PersonRef.class).optional();
     }
 
@@ -232,10 +232,16 @@ public class WorkforceService implements WorkforceDirectory, DepartmentRetiremen
     public PersonView insertPerson(UUID tenantId, WorkforceModels.CreatePerson cmd, boolean demo, Actor actorOrNull) {
         UUID id;
         try {
+            // A permanent employee number: the person's login id, unchanged when positions change.
+            String employeeNo = jdbc.sql("""
+                    insert into workforce.employee_counter (tenant_id, last_value) values (:t, 10001)
+                    on conflict (tenant_id) do update set last_value = workforce.employee_counter.last_value + 1
+                    returning prefix || last_value
+                    """).param("t", tenantId).query(String.class).single();
             id = jdbc.sql("""
-                    insert into workforce.person (tenant_id, given_name, family_name, email, is_demo)
-                    values (:t, :g, :f, :e, :demo) returning id
-                    """).param("t", tenantId).param("g", cmd.givenName().trim()).param("f", cmd.familyName().trim())
+                    insert into workforce.person (tenant_id, employee_no, given_name, family_name, email, is_demo)
+                    values (:t, :no, :g, :f, :e, :demo) returning id
+                    """).param("t", tenantId).param("no", employeeNo).param("g", cmd.givenName().trim()).param("f", cmd.familyName().trim())
                     .param("e", cmd.email().trim()).param("demo", demo).query(UUID.class).single();
         } catch (DuplicateKeyException e) {
             throw new ConflictException("duplicate", "A person with this email already exists");
@@ -250,7 +256,7 @@ public class WorkforceService implements WorkforceDirectory, DepartmentRetiremen
     @Transactional(readOnly = true)
     public List<PersonView> people(Actor actor) {
         if (access.holds(actor, Permission.WORKFORCE_READ, Scope.tenant(actor.tenantId()))) {
-            return jdbc.sql("select id, given_name, family_name, email, is_demo as demo, status, version from workforce.person order by family_name, given_name")
+            return jdbc.sql("select id, employee_no, given_name, family_name, email, is_demo as demo, status, version from workforce.person order by family_name, given_name")
                     .query(PersonView.class).list();
         }
         Set<UUID> centres = access.centresWhere(actor, Permission.WORKFORCE_READ);
@@ -258,7 +264,7 @@ public class WorkforceService implements WorkforceDirectory, DepartmentRetiremen
             access.requireAnywhere(actor, Permission.WORKFORCE_READ, "workforce.person.list", "person");
         }
         return jdbc.sql("""
-                select distinct pe.id, pe.given_name, pe.family_name, pe.email, pe.is_demo as demo, pe.status, pe.version
+                select distinct pe.id, pe.employee_no, pe.given_name, pe.family_name, pe.email, pe.is_demo as demo, pe.status, pe.version
                 from workforce.person pe join workforce.posting p on p.person_id = pe.id
                 join workforce.establishment e on e.id = p.establishment_id
                 where e.centre_id in (:centres) and (p.valid_to is null or p.valid_to >= current_date)
@@ -338,7 +344,7 @@ public class WorkforceService implements WorkforceDirectory, DepartmentRetiremen
     }
 
     private PersonView personRow(UUID id) {
-        return jdbc.sql("select id, given_name, family_name, email, is_demo as demo, status, version from workforce.person where id = :id")
+        return jdbc.sql("select id, employee_no, given_name, family_name, email, is_demo as demo, status, version from workforce.person where id = :id")
                 .param("id", id).query(PersonView.class).optional()
                 .orElseThrow(() -> new NotFoundException("Person not found"));
     }

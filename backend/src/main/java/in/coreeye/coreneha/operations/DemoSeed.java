@@ -145,14 +145,15 @@ class DemoSeed {
 
     Summary load() {
         BootstrapService.Result boot = bootstrap.bootstrap(TENANT_CODE, "Neha Health Group (demonstration)", true, List.of(
-                new BootstrapService.Administrator("Asha", "Admin", "asha.admin@demo.core-neha.invalid", "asha.admin", null),
-                new BootstrapService.Administrator("Bala", "Approver", "bala.approver@demo.core-neha.invalid", "bala.approver", null)));
+                new BootstrapService.Administrator("Asha", "Admin", "asha.admin@demo.core-neha.invalid", null, null),
+                new BootstrapService.Administrator("Bala", "Approver", "bala.approver@demo.core-neha.invalid", null, null)));
         UUID tenant = boot.tenantId();
         Actor a = new Actor(boot.userIds().get(0), tenant, null, "demo-seed (as asha.admin)", 0);
         Actor b = new Actor(boot.userIds().get(1), tenant, null, "demo-seed (as bala.approver)", 0);
         List<CredentialsFile.Entry> logins = new ArrayList<>();
-        boot.credentials().forEach(c -> logins.add(new CredentialsFile.Entry(c.username(), c.temporaryPassword(),
-                "Administrator (" + (c.username().startsWith("asha") ? "requests and configures" : "approves") + ")")));
+        List<BootstrapService.Credential> creds = boot.credentials();
+        logins.add(new CredentialsFile.Entry(creds.get(0).username(), creds.get(0).temporaryPassword(), "Asha Admin, administrator (requests and configures)"));
+        logins.add(new CredentialsFile.Entry(creds.get(1).username(), creds.get(1).temporaryPassword(), "Bala Approver, administrator (approves)"));
         int[] people = {0};
         TenantContext.callAs(tenant, () -> {
             build(a, b, tenant, logins, people);
@@ -253,13 +254,12 @@ class DemoSeed {
         UUID meena = namedPeople.get("CENTRE_MANAGER@BLR-IND");
         UUID kiran = namedPeople.get("RECEPTIONIST@BLR-JAY");
         UUID arun = namedPeople.get("OPTICAL_DISPENSER@BLR-KOR");
-        login(a, logins, meena, "meena.manager", "Centre manager, Indiranagar Eye Hospital");
-        login(a, logins, visiting, "ravi.visiting", "Visiting ophthalmologist at two centres");
-        login(a, logins, auditorPerson, "anita.auditor", "Group auditor (read-only, all centres)");
-        login(a, logins, kiran, "kiran.frontdesk", "Receptionist, Jayanagar Eye Clinic");
-        login(a, logins, arun, "arun.optical", "Optical dispenser, Koramangala (stock controller responsibility)");
         Map<String, UUID> userIds = new HashMap<>();
-        users.list(a).forEach(u -> userIds.put(u.username(), u.id()));
+        login(a, logins, userIds, meena, "meena.manager", "Centre manager, Indiranagar Eye Hospital");
+        login(a, logins, userIds, visiting, "ravi.visiting", "Visiting ophthalmologist at two centres");
+        login(a, logins, userIds, auditorPerson, "anita.auditor", "Group auditor (read-only, all centres)");
+        login(a, logins, userIds, kiran, "kiran.frontdesk", "Receptionist, Jayanagar Eye Clinic");
+        login(a, logins, userIds, arun, "arun.optical", "Optical dispenser, Koramangala (stock controller responsibility)");
 
         grant(a, b, "ACCESS", userIds.get("meena.manager"), centreManager, "CENTRE", centres.get("BLR-IND"), "Centre manager");
         grant(a, b, "AUTHORITY", userIds.get("meena.manager"), frontOffice, "CENTRE", centres.get("BLR-IND"),
@@ -291,8 +291,12 @@ class DemoSeed {
         assignments.approve(b, requested.id(), new IamModels.Decision("Approved for demonstration", requested.version()));
     }
 
-    private void login(Actor a, List<CredentialsFile.Entry> logins, UUID personId, String username, String description) {
-        IamModels.UserCreated created = users.create(a, new IamModels.CreateUser(personId, username));
-        logins.add(new CredentialsFile.Entry(username, created.temporaryPassword(), description));
+    /** The login id is the person's employee number; {@code key} only names the account inside this loader. */
+    private void login(Actor a, List<CredentialsFile.Entry> logins, Map<String, UUID> userIds, UUID personId, String key,
+                       String description) {
+        IamModels.UserCreated created = users.create(a, new IamModels.CreateUser(personId, null));
+        userIds.put(key, created.user().id());
+        logins.add(new CredentialsFile.Entry(created.user().username(), created.temporaryPassword(),
+                created.user().personName() + ", " + description));
     }
 }

@@ -54,7 +54,7 @@ If a desk says "You do not have … access at the working centre", either choose
 
 The **Overview** shows:
 
-- **Your positions**: for example "Receptionist · Reception · Vijay Eye Clinic".
+- **Your positions**: for example "Receptionist · Reception · Vijaya Eye Clinic".
 - **Your desks**: a card for every desk you can use. Click a card to open it.
 - For administrators: **Pending approvals** and **Tenant-wide permissions**.
 - **Your centres**, and any **responsibilities** assigned to you.

@@ -109,9 +109,9 @@ public class BootstrapService {
                 var created = users.createForLoader(tenantId, person.id(), a.username(), a.email(), a.givenName(),
                         a.familyName(), demo);
                 userId = created.user().id();
-                credentials.add(new Credential(a.username(), created.temporaryPassword()));
+                credentials.add(new Credential(created.user().username(), created.temporaryPassword()));
             } else {
-                userId = users.insert(tenantId, person.id(), a.username());
+                userId = users.insert(tenantId, person.id(), UserService.loginId(a.username(), person.employeeNo()));
                 users.linkIdentity(tenantId, userId, a.subject());
             }
             for (String kind : List.of("ACCESS", "AUTHORITY")) {
@@ -124,7 +124,7 @@ public class BootstrapService {
                         .param("r", "ACCESS".equals(kind) ? roleId : null).param("from", LocalDate.now())
                         .query(UUID.class).single();
                 audit.record(AuditEntry.system(tenantId, "bootstrap", "iam.assignment.bootstrap", "role_assignment",
-                        assignmentId, tenantScope, Map.of("kind", kind, "username", a.username())));
+                        assignmentId, tenantScope, Map.of("kind", kind, "person", a.givenName() + " " + a.familyName())));
             }
             userIds.add(userId);
         }

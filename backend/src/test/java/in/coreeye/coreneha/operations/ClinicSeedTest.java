@@ -72,12 +72,12 @@ class ClinicSeedTest extends PostgresTestBase {
 
         TenantContext.callAs(tenant, () -> {
             UUID centre = summary.centreId();
-            Actor reception = actor("priya.reception");
-            Actor supervisor = actor("ramesh.frontoffice");
-            Actor optometrist = actor("sunita.optometry");
-            Actor surgeon = actor("dr.arjun");
-            Actor accountant = actor("ganesh.accounts");
-            Actor manager = actor("shobha.accounts");
+            Actor reception = staff("Priya", "Sharma");
+            Actor supervisor = staff("Ramesh", "Kumar");
+            Actor optometrist = staff("Sunita", "Rao");
+            Actor surgeon = staff("Arjun", "Rao");
+            Actor accountant = staff("Ganesh", "Patil");
+            Actor manager = staff("Shobha", "Kulkarni");
             Actor admin = actor("asha-" + code);
 
             // A day at every stage
@@ -197,6 +197,16 @@ class ClinicSeedTest extends PostgresTestBase {
                     .isInstanceOf(RuleViolationException.class).hasMessageContaining("patient.read");
             return null;
         });
+    }
+
+    /** Clinic staff sign in with their employee number; find them by name. */
+    private Actor staff(String given, String family) {
+        String username = jdbc.sql("""
+                select u.username from iam.user_account u join workforce.person p on p.id = u.person_id
+                where p.given_name = :g and p.family_name = :f and p.email like '%@vijaya-eye.demo.core-neha.invalid'""")
+                .param("g", given).param("f", family).query(String.class).single();
+        assertThat(username).matches("e\\d{5}");
+        return actor(username);
     }
 
     private Actor actor(String username) {

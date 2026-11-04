@@ -35,7 +35,7 @@ import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
 /**
- * Synthetic eye clinic for demonstration (ADR-0011): Vijay Eye Clinic with six
+ * Synthetic eye clinic for demonstration (ADR-0011): Vijaya Eye Clinic with six
  * departments, two positions in each, one login per position with a role that
  * fits the department, a price list, and a working day of synthetic patients at
  * every stage. Administration (centre, positions, roles, access) is done by the two
@@ -50,7 +50,7 @@ class ClinicSeed {
     }
 
     static final String CENTRE_CODE = "VEC";
-    static final String CENTRE_NAME = "Vijay Eye Clinic";
+    static final String CENTRE_NAME = "Vijaya Eye Clinic";
 
     /** Department library code, library name, category, local name at the clinic. */
     static final String[][] DEPARTMENTS = {
@@ -246,16 +246,18 @@ class ClinicSeed {
             String given = s[5];
             String family = s[6];
             String username = s[7];
+            // Email and login do not depend on the position: the login id is the employee number.
             UUID person = workforce.createPerson(a, new WorkforceModels.CreatePerson(given, family,
-                    username + "@vijay-eye.demo.core-neha.invalid"), true).id();
+                    (given + "." + family + "@vijaya-eye.demo.core-neha.invalid").toLowerCase()), true).id();
             UUID posting = workforce.addPosting(a, person, new WorkforceModels.AddPosting(establishments.get(s[0]), BigDecimal.ONE, null, null)).id();
-            IamModels.UserCreated created = users.create(a, new IamModels.CreateUser(person, username));
+            IamModels.UserCreated created = users.create(a, new IamModels.CreateUser(person, null));
             IamModels.AssignmentView requested = assignments.request(a, new IamModels.RequestAssignment("ACCESS", created.user().id(),
                     roleIds.get(s[4]), "CENTRE", centre, posting, null, null, s[1] + ", " + CENTRE_NAME));
             assignments.approve(b, requested.id(), new IamModels.Decision("Approved for the clinic demonstration", requested.version()));
             String department = java.util.Arrays.stream(DEPARTMENTS).filter(d -> d[0].equals(s[3])).findFirst().orElseThrow()[3];
-            logins.add(new CredentialsFile.Entry(username, created.temporaryPassword(), s[1] + " · " + department + " · " + CENTRE_NAME));
-            staff.put(username, new Actor(created.user().id(), tenant, person, username, 0));
+            logins.add(new CredentialsFile.Entry(created.user().username(), created.temporaryPassword(),
+                    given + " " + family + ", " + s[1] + ", " + department + ", " + CENTRE_NAME));
+            staff.put(username, new Actor(created.user().id(), tenant, person, created.user().username(), 0));
         }
 
         // ---- price list (accounts manager)
@@ -527,7 +529,7 @@ class ClinicSeed {
     }
 
     private UUID publishRole(Actor a, Actor b, String code, String name, Set<String> permissions) {
-        IamModels.RoleDetail draft = roles.create(a, new IamModels.CreateRole(code, name, "Vijay Eye Clinic demonstration role", permissions, "Initial version"));
+        IamModels.RoleDetail draft = roles.create(a, new IamModels.CreateRole(code, name, "Vijaya Eye Clinic demonstration role", permissions, "Initial version"));
         IamModels.RoleVersionView v = draft.versions().getFirst();
         IamModels.RoleDetail submitted = roles.submit(a, v.id(), new IamModels.Decision("Ready for review", v.version()));
         roles.approve(b, v.id(), new IamModels.Decision("Reviewed", submitted.versions().getFirst().version()));

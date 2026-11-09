@@ -31,6 +31,43 @@ function helpFor(who) {
     .map(({ audience, ...c }) => c);
   return { administrator: admin, chapters };
 }
+// The access guide (GET /v1/access-guide): the catalogue, what the persona holds, and for administrators the whole model.
+const guideCatalogue = [
+  ...['org.structure.read', 'org.structure.manage', 'org.centre.create', 'org.centre.read', 'org.centre.configure', 'workforce.position.define', 'workforce.read',
+    'workforce.establish', 'workforce.person.manage', 'iam.role.read', 'iam.role.draft', 'iam.role.approve', 'iam.user.manage', 'iam.assignment.read',
+    'iam.assignment.request', 'iam.assignment.approve', 'iam.assignment.revoke', 'iam.responsibility.manage', 'audit.read', 'patient.read', 'patient.register',
+    'opd.queue.read', 'opd.appointment.manage', 'opd.checkin'].map((c) => [c, 'CORE']),
+  ...['eye.clinical.read', 'eye.optometry.record', 'eye.consultation.record'].map((c) => [c, 'EYE_CARE']),
+  ...['billing.read', 'billing.charge', 'billing.collect', 'billing.discount.approve'].map((c) => [c, 'BILLING']),
+  ...['pharmacy.read', 'pharmacy.dispense'].map((c) => [c, 'PHARMACY']),
+  ...['lab.read', 'lab.process', 'lab.validate'].map((c) => [c, 'LABORATORY']),
+  ...['radiology.read', 'radiology.report'].map((c) => [c, 'RADIOLOGY']),
+];
+const guideRoles = [
+  { code: 'SYSTEM_ADMINISTRATOR', name: 'System administrator', system: true, status: 'ACTIVE', publishedVersion: 1, activeAssignments: 2, positions: [],
+    permissions: guideCatalogue.filter(([c]) => /^(org|workforce|iam|audit)\./.test(c)).map(([c]) => c) },
+  { code: 'EYE_FRONT_OFFICE', name: 'Eye clinic front office', system: false, status: 'ACTIVE', publishedVersion: 1, activeAssignments: 4, positions: ['Receptionist'],
+    permissions: ['org.centre.read', 'patient.read', 'patient.register', 'opd.queue.read', 'opd.appointment.manage', 'opd.checkin', 'billing.read', 'billing.charge', 'billing.collect'] },
+  { code: 'EYE_PATHOLOGIST', name: 'Eye clinic pathologist', system: false, status: 'ACTIVE', publishedVersion: 1, activeAssignments: 2, positions: ['Consultant pathologist'],
+    permissions: ['org.centre.read', 'patient.read', 'lab.read', 'lab.process', 'lab.validate'] },
+];
+function accessGuideFor(who) {
+  const full = (who.tenantPermissions ?? []).includes('iam.role.approve');
+  const where = new Map();
+  for (const p of who.tenantPermissions ?? []) where.set(p, [{ scopeType: 'TENANT', scopeName: who.tenantName, role: full ? 'SYSTEM_ADMINISTRATOR' : 'ROLE' }]);
+  for (const c of who.centres ?? []) for (const p of c.permissions ?? []) if (!where.has(p)) where.set(p, [{ scopeType: 'CENTRE', scopeName: c.name, role: (who.roles ?? [])[0]?.roleName ?? 'ROLE' }]);
+  const permissions = guideCatalogue.map(([code, module]) => ({
+    code, area: code.split('.')[0], module, description: `Allows ${code.replace(/\./g, ' ')}`, tenantOnly: ['org.structure.manage', 'iam.role.approve'].includes(code),
+    licensed: module !== 'RADIOLOGY', heldAt: where.get(code) ?? [], roles: full ? guideRoles.filter((r) => r.permissions.includes(code)).map((r) => r.code) : [],
+  }));
+  const modules = [...new Set(guideCatalogue.map(([, m]) => m))].map((code) => ({ code, licensed: code !== 'RADIOLOGY', permissions: guideCatalogue.filter(([, m]) => m === code).length }));
+  return {
+    full, chainName: who.tenantName, licence: { licenceNo: 'LIC-DEMO-1', plan: 'ENTERPRISE', status: 'ACTIVE', validFrom: '2026-01-01', validTo: null, maxCentres: 50 },
+    modules, permissions, roles: full ? guideRoles : [],
+    positions: full ? [{ code: 'RECEPTIONIST', title: 'Receptionist', category: 'ADMINISTRATIVE', status: 'ACTIVE', people: 2, roles: ['EYE_FRONT_OFFICE'] },
+      { code: 'PATHOLOGIST', title: 'Consultant pathologist', category: 'CLINICAL', status: 'ACTIVE', people: 2, roles: ['EYE_PATHOLOGIST'] }] : [],
+  };
+}
 const T = '0195f000-0000-7000-8000-000000000001';
 const id = (n) => `0195f000-0000-7000-8000-${String(n).padStart(12, '0')}`;
 const centres = [
@@ -111,6 +148,7 @@ createServer(async (req, res) => {
     const who = /(?:^|; )mock_persona=([^;]+)/.exec(req.headers.cookie ?? '')?.[1] ?? persona;
     const meNow = who ? personaMe(who, T) : me;
     const body = req.method === 'GET' && path === '/v1/help' ? helpFor(meNow)
+      : req.method === 'GET' && path === '/v1/access-guide' ? accessGuideFor(meNow)
       : who && req.method === 'GET' && path === '/v1/me' ? meNow
       : diagnosticsRoute(req.method, path, url.searchParams) ?? supplyRoute(req.method, path, url.searchParams) ?? clinicRoute(req.method, path, url.searchParams) ?? routes[`${req.method} ${path}`]?.() ?? dynamic(req.method, path);
     if (body === undefined) { res.writeHead(404); return res.end('{"status":404,"code":"not-found","detail":"Not found"}'); }

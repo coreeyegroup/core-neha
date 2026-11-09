@@ -13,6 +13,7 @@ import java.util.UUID;
 import in.coreeye.coreneha.diagnostics.DiagnosticsModels;
 import in.coreeye.coreneha.diagnostics.DiagnosticsService;
 import in.coreeye.coreneha.diagnostics.ImagingAccess;
+import in.coreeye.coreneha.iam.AccessGuideService;
 import in.coreeye.coreneha.iam.BootstrapService;
 import in.coreeye.coreneha.iam.IdentityProvisioner;
 import in.coreeye.coreneha.kernel.AccessDeniedException;
@@ -37,6 +38,7 @@ class DiagnosticsTest extends PostgresTestBase {
     @Autowired ClinicDiagnostics demo;
     @Autowired DiagnosticsService diagnostics;
     @Autowired ImagingAccess imaging;
+    @Autowired AccessGuideService guide;
     @Autowired CoreNehaProperties props;
     @Autowired JdbcClient jdbc;
     @MockitoBean IdentityProvisioner provisioner;
@@ -120,6 +122,31 @@ class DiagnosticsTest extends PostgresTestBase {
             assertThat(imaging.allows(radiologist, pacs + "app/explorer.html")).as("archive's own pages").isFalse();
             assertThat(imaging.allows(radiologist, pacs + "patients")).as("archive REST API").isFalse();
             assertThat(imaging.allows(radiologist, pacs + "dicom-web/studies/" + uid + "/../../patients")).isFalse();
+
+            // The access guide: a pharmacist sees their own access and the catalogue, not the roles of others.
+            var mineGuide = guide.guide(pharmacist);
+            assertThat(mineGuide.full()).isFalse();
+            assertThat(mineGuide.roles()).isEmpty();
+            assertThat(mineGuide.positions()).isEmpty();
+            assertThat(mineGuide.permissions()).hasSize(68).allSatisfy(p -> assertThat(p.roles()).isEmpty());
+            assertThat(mineGuide.permissions()).filteredOn(p -> p.code().equals("pharmacy.dispense")).first()
+                    .satisfies(p -> assertThat(p.heldAt()).extracting(AccessGuideService.HeldAt::role).contains("EYE_PHARMACIST"));
+            assertThat(mineGuide.permissions()).filteredOn(p -> p.code().equals("lab.validate")).first()
+                    .satisfies(p -> assertThat(p.heldAt()).isEmpty());
+            assertThat(mineGuide.modules()).extracting(AccessGuideService.ModuleInfo::code).startsWith("CORE").contains("RADIOLOGY");
+            // A group-wide administrator sees the whole model: roles, positions and who holds what.
+            Actor admin = admin();
+            var all = guide.guide(admin);
+            assertThat(all.full()).isTrue();
+            assertThat(all.roles()).filteredOn(r -> r.code().equals("EYE_PHARMACIST")).first().satisfies(r -> {
+                assertThat(r.permissions()).contains("pharmacy.dispense");
+                assertThat(r.positions()).contains("Pharmacist");
+                assertThat(r.activeAssignments()).isGreaterThanOrEqualTo(2);
+            });
+            assertThat(all.positions()).filteredOn(p -> p.code().equals("RADIOLOGIST")).first()
+                    .satisfies(p -> assertThat(p.roles()).contains("EYE_RADIOLOGIST", "DIAGNOSTICS_CATALOGUE"));
+            assertThat(all.permissions()).filteredOn(p -> p.code().equals("lab.validate")).first()
+                    .satisfies(p -> assertThat(p.roles()).contains("EYE_PATHOLOGIST"));
             return null;
         });
     }
@@ -140,6 +167,17 @@ class DiagnosticsTest extends PostgresTestBase {
 
     private UUID id(String sql) {
         return jdbc.sql(sql).query(UUID.class).list().getFirst();
+    }
+
+    private Actor admin() {
+        UUID user = id("select user_id from iam.role_assignment where via_bootstrap and kind = 'ACCESS' order by requested_at, id");
+        return actorOf(user);
+    }
+
+    private Actor actorOf(UUID user) {
+        return jdbc.sql("select id, tenant_id, person_id, username, access_version from iam.user_account where id = :u").param("u", user)
+                .query((rs, i) -> new Actor(rs.getObject("id", UUID.class), rs.getObject("tenant_id", UUID.class),
+                        rs.getObject("person_id", UUID.class), rs.getString("username"), rs.getInt("access_version"))).single();
     }
 
     private Actor staff(String positionCode) {

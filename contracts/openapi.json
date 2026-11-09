@@ -1,6 +1,44 @@
 {
   "components": {
     "schemas": {
+      "AccessGuide": {
+        "properties": {
+          "chainName": {
+            "type": "string"
+          },
+          "full": {
+            "type": "boolean"
+          },
+          "licence": {
+            "$ref": "#/components/schemas/LicenceInfo"
+          },
+          "modules": {
+            "items": {
+              "$ref": "#/components/schemas/ModuleInfo"
+            },
+            "type": "array"
+          },
+          "permissions": {
+            "items": {
+              "$ref": "#/components/schemas/PermissionInfo"
+            },
+            "type": "array"
+          },
+          "positions": {
+            "items": {
+              "$ref": "#/components/schemas/PositionInfo"
+            },
+            "type": "array"
+          },
+          "roles": {
+            "items": {
+              "$ref": "#/components/schemas/RoleInfo"
+            },
+            "type": "array"
+          }
+        },
+        "type": "object"
+      },
       "Acquire": {
         "properties": {
           "expectedVersion": {
@@ -2581,6 +2619,20 @@
         },
         "type": "object"
       },
+      "HeldAt": {
+        "properties": {
+          "role": {
+            "type": "string"
+          },
+          "scopeName": {
+            "type": "string"
+          },
+          "scopeType": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "HelpChapter": {
         "properties": {
           "body": {
@@ -2926,6 +2978,32 @@
         },
         "type": "object"
       },
+      "LicenceInfo": {
+        "properties": {
+          "licenceNo": {
+            "type": "string"
+          },
+          "maxCentres": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "plan": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "validFrom": {
+            "format": "date",
+            "type": "string"
+          },
+          "validTo": {
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "LicenceView": {
         "properties": {
           "centres": {
@@ -3045,6 +3123,21 @@
           },
           "username": {
             "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ModuleInfo": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "licensed": {
+            "type": "boolean"
+          },
+          "permissions": {
+            "format": "int32",
+            "type": "integer"
           }
         },
         "type": "object"
@@ -3684,6 +3777,41 @@
         },
         "type": "object"
       },
+      "PermissionInfo": {
+        "properties": {
+          "area": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "heldAt": {
+            "items": {
+              "$ref": "#/components/schemas/HeldAt"
+            },
+            "type": "array"
+          },
+          "licensed": {
+            "type": "boolean"
+          },
+          "module": {
+            "type": "string"
+          },
+          "roles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "tenantOnly": {
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
       "PermissionView": {
         "properties": {
           "code": {
@@ -3742,6 +3870,33 @@
           "version": {
             "format": "int32",
             "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "PositionInfo": {
+        "properties": {
+          "category": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "people": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "roles": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "status": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
           }
         },
         "type": "object"
@@ -4647,6 +4802,46 @@
               "$ref": "#/components/schemas/RoleVersionView"
             },
             "type": "array"
+          }
+        },
+        "type": "object"
+      },
+      "RoleInfo": {
+        "properties": {
+          "activeAssignments": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "code": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "permissions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "positions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "publishedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "status": {
+            "type": "string"
+          },
+          "system": {
+            "type": "boolean"
           }
         },
         "type": "object"
@@ -6022,6 +6217,26 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/v1/access-guide": {
+      "get": {
+        "operationId": "accessGuide",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AccessGuide"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "access-guide-controller"
+        ]
+      }
+    },
     "/v1/appointments/{appointmentId}/cancel": {
       "post": {
         "operationId": "cancelAppointment",

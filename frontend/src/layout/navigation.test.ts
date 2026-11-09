@@ -6,7 +6,7 @@ describe('navigation', () => {
   it('shows only items whose permission is held somewhere', () => {
     const held = new Set(['org.centre.read']);
     const labels = visibleItems((p) => held.has(p)).map((i) => i.label);
-    expect(labels).toEqual(['Overview', 'Centres', 'Help centre']);
+    expect(labels).toEqual(['Overview', 'Centres', 'Help centre', 'Access guide']);
   });
 
   it('shows approvals for either approval permission', () => {

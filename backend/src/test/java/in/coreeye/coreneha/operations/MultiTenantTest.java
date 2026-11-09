@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.context.request.RequestContextHolder;
 
 /**
  * Two hospital chains on one installation: neither sees the other's patients, staff, centres or
@@ -74,26 +75,20 @@ class MultiTenantTest extends PostgresTestBase {
 
         // The vendor removes eye care from chain A's licence: the consultant's role no longer grants it.
         licensing.setLicence(a, change(a, List.of("BILLING"), null, "Eye care not renewed"));
+        newRequest();
         TenantContext.callAs(tenantA, () -> {
-            String modules = jdbc.sql("select coalesce(string_agg(module_code, ','), '') from org.tenant_module").query(String.class).single();
-            Boolean licensed = jdbc.sql("select org.permission_licensed(:t, 'eye.clinical.read')").param("t", tenantA).query(Boolean.class).single();
-            String grants = jdbc.sql("""
-                    select string_agg(g.permission_code || '@' || org.permission_licensed(u.tenant_id, g.permission_code), ',')
-                    from iam.role_assignment ra join iam.user_account u on u.id = ra.user_id
-                    join iam.role_version rv on rv.role_id = ra.role_id and rv.status = 'PUBLISHED'
-                    join iam.role_version_grant g on g.role_version_id = rv.id where ra.user_id = :u""")
-                    .param("u", consultantA.userId()).query(String.class).single();
-            assertThat(modules).as("licensed modules after the change").isEqualTo("BILLING");
-            assertThat(licensed).as("eye licensed? grants=" + grants).isFalse();
-            assertThat(access.holds(consultantA, Permission.EYE_CLINICAL_READ, Scope.centre(centreA))).as("grants=" + grants).isFalse();
+            assertThat(jdbc.sql("select string_agg(module_code, ',') from org.tenant_module").query(String.class).single()).isEqualTo("BILLING");
+            assertThat(access.holds(consultantA, Permission.EYE_CLINICAL_READ, Scope.centre(centreA))).isFalse();
             assertThat(access.holds(consultantA, Permission.PATIENT_READ, Scope.centre(centreA))).as("core stays").isTrue();
             assertThat(licensing.licence(adminA).modules()).containsExactly("BILLING");
             return null;
         });
         licensing.setLicence(a, change(a, TenantLicensing.ALL_MODULES, null, "Renewed"));
+        newRequest();
 
         // Centre limit: chain A has one centre; a licence for one centre refuses a second.
         licensing.setLicence(a, change(a, TenantLicensing.ALL_MODULES, 1, "Single-centre plan"));
+        newRequest();
         TenantContext.callAs(tenantA, () -> {
             UUID node = jdbc.sql("select node_id from org.centre where id = :c").param("c", centreA).query(UUID.class).single();
             UUID le = jdbc.sql("select legal_entity_id from org.centre where id = :c").param("c", centreA).query(UUID.class).single();
@@ -104,6 +99,7 @@ class MultiTenantTest extends PostgresTestBase {
 
         // Suspension: nobody in chain A holds anything, not even the administrator; chain B is unaffected.
         licensing.setStatus(a, false, "Unpaid invoice");
+        newRequest();
         TenantContext.callAs(tenantA, () -> {
             assertThat(access.holds(adminA, Permission.ORG_STRUCTURE_READ, null)).isFalse();
             assertThat(access.holds(consultantA, Permission.PATIENT_READ, Scope.centre(centreA))).isFalse();
@@ -115,6 +111,7 @@ class MultiTenantTest extends PostgresTestBase {
             return null;
         });
         licensing.setStatus(a, true, "Paid");
+        newRequest();
         TenantContext.callAs(tenantA, () -> {
             assertThat(access.holds(adminA, Permission.ORG_STRUCTURE_READ, null)).isTrue();
             return null;
@@ -138,6 +135,11 @@ class MultiTenantTest extends PostgresTestBase {
     private TenantLicensing.LicenceChange change(String code, List<String> modules, Integer maxCentres, String reason) {
         return new TenantLicensing.LicenceChange("LIC-" + code.toUpperCase(), code + " Hospitals Pvt Ltd", "STANDARD",
                 LocalDate.now().minusDays(1), LocalDate.now().plusYears(1), maxCentres, modules, reason);
+    }
+
+    /** Access is memoised for one web request; the test runs as one request, so start a new one after a change. */
+    private static void newRequest() {
+        RequestContextHolder.resetRequestAttributes();
     }
 
     private long count(String sql) {

@@ -26,3 +26,27 @@ test('the help button opens the chapter for the current screen', async ({ page, 
   await expect(page.getByRole('heading', { name: 'Reception desk', level: 1 })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Checkout: bills, payment, sending the patient home' })).toBeVisible();
 });
+
+test('the access guide shows a receptionist their own access only', async ({ page, context }) => {
+  await context.addCookies([{ name: 'mock_persona', value: 'priya.reception', url: 'http://localhost:4173' }]);
+  await page.goto('./help');
+  await page.getByRole('link', { name: /Access guide/ }).first().click();
+  await expect(page.getByRole('heading', { name: 'Access guide', level: 1 })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'What you can do, and where' })).toBeVisible();
+  await expect(page.getByText('Allows opd checkin')).toBeVisible();
+  await expect(page.getByRole('tab', { name: 'Roles' })).toHaveCount(0);
+  await page.getByRole('tab', { name: 'How access works' }).click();
+  await expect(page.getByRole('heading', { name: 'Two-person rules' })).toBeVisible();
+});
+
+test('the access guide shows an administrator the whole model', async ({ page }) => {
+  await page.goto('./help/access');
+  await page.getByRole('tab', { name: 'Roles' }).click();
+  await expect(page.getByText('Eye clinic pathologist')).toBeVisible();
+  await page.getByRole('tab', { name: 'Modules' }).click();
+  await expect(page.getByText('Not licensed').or(page.getByText('Off')).first()).toBeVisible();
+  await page.getByRole('tab', { name: 'Positions' }).click();
+  await expect(page.getByText('Consultant pathologist')).toBeVisible();
+  await page.getByRole('tab', { name: 'Menus' }).click();
+  await expect(page.getByRole('cell', { name: 'Everyone signed in' }).first()).toBeVisible();
+});

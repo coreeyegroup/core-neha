@@ -2,7 +2,9 @@
 > Every permission in the system, what it allows, and the roles used at Vijaya Eye Clinic.
 <!-- audience: iam.role.read iam.assignment.approve -->
 
-Permissions marked **group-wide only** work only from an assignment that applies to the whole group.
+The live version of this chapter is the **[Access guide](/help/access)**: it is built from the system itself, so it always shows the current roles, which positions hold them, which menus each permission opens, and which modules your organisation's licence includes. This chapter explains the permissions in words.
+
+A permission works only if its module is in your organisation's licence (see [Licence](/licence)). Permissions marked **group-wide only** work only from an assignment that applies to the whole group.
 
 ## Organisation
 
@@ -68,9 +70,68 @@ Permissions marked **group-wide only** work only from an assignment that applies
 | `billing.dayclose.submit` | Submit the daily cash close |
 | `billing.dayclose.approve` | Approve or reject a daily cash close |
 
+## Inventory and stores
+
+| Permission | Allows |
+|---|---|
+| `inventory.item.manage` | Create and change items in the chain item master (group-wide only) |
+| `inventory.read` | See stores, stock by batch and expiry, ledger, receipts, transfers, adjustments |
+| `inventory.store.manage` | Open and retire stores |
+| `inventory.receive` | Goods receipt from supplier into a store |
+| `inventory.transfer` | Send stock between stores |
+| `inventory.adjust.request` | Request damage, expiry, count adjustments |
+| `inventory.adjust.approve` | Approve or reject adjustments (not own) |
+
+## Pharmacy
+
+| Permission | Allows |
+|---|---|
+| `pharmacy.prescribe` | Write and cancel medicine prescriptions |
+| `pharmacy.read` | See prescriptions and sales |
+| `pharmacy.dispense` | Dispense against prescription or over the counter; raises the bill |
+| `pharmacy.return` | Take back dispensed medicines into stock |
+
+## Optical shop
+
+| Permission | Allows |
+|---|---|
+| `optical.read` | See spectacle orders |
+| `optical.order` | Take, mark ready, cancel spectacle orders |
+| `optical.deliver` | Hand finished spectacles to the patient |
+
+## Optical lab (manufacturing)
+
+| Permission | Allows |
+|---|---|
+| `opticallab.read` | See manufacturing jobs |
+| `opticallab.process` | Move a job through surfacing, coating, edging, fitting |
+| `opticallab.qc` | QC pass/fail and dispatch (not own fitting) |
+
+## Laboratory
+
+| Permission | Allows |
+|---|---|
+| `lab.catalogue.manage` | Add tests, parameters, reference and critical ranges (group-wide only) |
+| `lab.order` | Order lab tests; cancel own orders |
+| `lab.read` | See lab orders and released results |
+| `lab.collect` | Collect and label samples |
+| `lab.process` | Receive or reject samples, enter results |
+| `lab.validate` | Validate and release results entered by someone else |
+
+## Imaging (radiology)
+
+| Permission | Allows |
+|---|---|
+| `radiology.catalogue.manage` | Add imaging procedures (group-wide only) |
+| `radiology.order` | Order imaging; cancel own orders |
+| `radiology.read` | See imaging orders, released reports, open images |
+| `radiology.perform` | Schedule, acquire, link the study |
+| `radiology.report` | Write imaging reports |
+| `radiology.verify` | Sign and release reports |
+
 ## Roles at Vijaya Eye Clinic
 
-All are assigned at **one centre**. Every role also includes `org.centre.read`.
+All are assigned at **one centre** unless noted. Every role also includes `org.centre.read`.
 
 | Role | Positions | Main permissions |
 |---|---|---|
@@ -96,5 +157,21 @@ All are assigned at **one centre**. Every role also includes `org.centre.read`.
 | Eye clinic billing | Billing executive | patient read, queue, billing read/charge/collect |
 | Eye clinic cashier | Cashier | patient read, billing read/collect |
 | Eye clinic internal audit (read only) | Internal auditor | billing read, reports, audit |
+| Eye clinic prescribing (medicines) | All doctors (extra role) | pharmacy.prescribe, pharmacy.read |
+| Eye clinic diagnostics ordering (lab and imaging) | All doctors (extra role) | lab.order, lab.read, radiology.order, radiology.read |
+| Eye clinic pharmacist | Chief pharmacist, Pharmacist | patient.read, pharmacy.read, pharmacy.dispense, pharmacy.return, inventory.read, billing.read, billing.collect |
+| Eye clinic pharmacy assistant | Pharmacy assistant | patient.read, pharmacy.read, pharmacy.dispense, inventory.read |
+| Eye clinic optical shop | Optical store in-charge, Optical sales executive | patient.read, eye.clinical.read, optical.read, optical.order, optical.deliver, inventory.read, billing.read, billing.collect |
+| Optical lab technician | Surfacing technician, Edging and fitting technician | opticallab.read, opticallab.process, inventory.read |
+| Optical lab quality check and dispatch | Optical lab supervisor, Optical quality inspector | opticallab.read, opticallab.qc, inventory.read |
+| Eye clinic store keeper | Store keeper | inventory.read, inventory.receive, inventory.transfer, inventory.adjust.request |
+| Eye clinic stores manager | Stores manager | inventory.read, inventory.store.manage, inventory.adjust.approve, audit.read |
+| Item master (drugs, frames, lenses) for the whole organisation | Stores manager (extra role, whole group) | inventory.item.manage |
+| Eye clinic pathologist | Consultant pathologist | patient.read, lab.read, lab.process, lab.validate |
+| Eye clinic laboratory technician | Laboratory technician | patient.read, lab.read, lab.collect, lab.process, inventory.read |
+| Eye clinic phlebotomist | Phlebotomist (sample collection) | patient.read, lab.read, lab.collect |
+| Eye clinic radiologist | Consultant radiologist | patient.read, radiology.read, radiology.report, radiology.verify |
+| Eye clinic radiographer | Radiographer (X-ray, CT, MRI, ultrasound) | patient.read, radiology.read, radiology.perform |
+| Laboratory and imaging catalogue for the whole organisation | Pathologist, radiologist (extra role, whole group) | lab.catalogue.manage, radiology.catalogue.manage |
 
 Use these as the template for every new eye clinic; for a centre of another kind, copy the closest role with **Clone role** and adjust.

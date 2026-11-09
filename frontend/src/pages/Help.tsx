@@ -70,6 +70,21 @@ function YourWork() {
   );
 }
 
+/** The live access guide: everyone's own access; administrators the whole model. */
+function AccessGuideCard({ administrator }: { administrator: boolean }) {
+  return (
+    <Paper component={RouterLink} to="/help/access"
+      sx={{ p: 2, mb: 3, display: 'block', textDecoration: 'none', color: 'inherit', borderLeft: 4, borderColor: 'primary.main', '&:hover': { bgcolor: 'action.hover' } }}>
+      <Typography variant="h3">Access guide</Typography>
+      <Typography variant="body2" color="text.secondary">
+        {administrator
+          ? 'The whole access model, live: licence modules, every permission, role, position and menu, who holds what, and the rules.'
+          : 'What you can do, where, through which role, and which menus that opens. Built from your current roles.'}
+      </Typography>
+    </Paper>
+  );
+}
+
 /** The knowledge centre: only the chapters for the signed-in person's work. */
 export function HelpHome() {
   const [q, setQ] = useState('');
@@ -80,6 +95,7 @@ export function HelpHome() {
     <>
       <PageHeader title="Help centre" subtitle="The chapters for your position and roles. Ask your administrator if you need help with something you do not see here." />
       <YourWork />
+      <AccessGuideCard administrator={!!help.data?.administrator} />
       <SearchBox value={q} onChange={setQ} />
       <ProblemAlert error={help.error} />
       {q.trim().length > 1 && <Results chapters={chapters} query={q} />}

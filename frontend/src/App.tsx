@@ -20,6 +20,7 @@ import { Roles } from './pages/Roles';
 import { SignedOut, SignIn } from './pages/SignIn';
 import { UserDetail } from './pages/UserDetail';
 import { Users } from './pages/Users';
+import { AccessGuide } from './pages/AccessGuide';
 import { HelpChapter, HelpHome } from './pages/Help';
 import { AccountsDesk } from './pages/clinic/AccountsDesk';
 import { BillPage } from './pages/clinic/BillPage';
@@ -62,6 +63,7 @@ const router = createBrowserRouter(
         { path: 'bills/:billId', element: <BillPage /> },
         { path: 'surgeries/:surgeryId', element: <SurgeryPage /> },
         { path: 'help', element: <HelpHome /> },
+        { path: 'help/access', element: <AccessGuide /> },
         { path: 'help/:book/:slug', element: <HelpChapter /> },
         { path: 'centres', element: <Centres /> },
         { path: 'centres/:centreId', element: <CentreWorkspace /> },

@@ -78,7 +78,7 @@ public class InventoryService implements StockLedger {
         requireAnyAnywhere(actor, Permission.INVENTORY_READ, Permission.PHARMACY_PRESCRIBE, Permission.PHARMACY_READ,
                 Permission.OPTICAL_READ, Permission.OPTICALLAB_READ, Permission.INVENTORY_ITEM_MANAGE);
         String q = query == null || query.isBlank() ? null : "%" + query.trim().toLowerCase() + "%";
-        return jdbc.sql(ITEM_SELECT + """
+        return jdbc.sql(ITEM_SELECT + " " + """
                  where (cast(:cat as text) is null or category = :cat) and (:all or status = 'ACTIVE')
                    and (cast(:q as text) is null or lower(name) like :q or lower(code) like :q or lower(coalesce(generic_name, '')) like :q)
                  order by category, name limit 500""")
@@ -205,7 +205,7 @@ public class InventoryService implements StockLedger {
 
     public List<BatchView> batches(Actor actor, UUID storeId, UUID itemId, boolean onlyInStock) {
         StoreView store = readableStore(actor, storeId);
-        return jdbc.sql(BATCH_SELECT + """
+        return jdbc.sql(BATCH_SELECT + " " + """
                  where b.store_id = :s and (cast(:i as uuid) is null or b.item_id = :i) and (not :only or b.qty_on_hand > 0)
                  order by i.name, b.expiry_date nulls last, b.received_at""")
                 .param("s", store.id()).param("i", itemId).param("only", onlyInStock).query(BatchView.class).list();
@@ -228,7 +228,7 @@ public class InventoryService implements StockLedger {
     /** Batches that have expired or expire within {@code days}, with stock, across the centre's stores. */
     public List<BatchView> expiring(Actor actor, UUID centreId, int days) {
         access.require(actor, Permission.INVENTORY_READ, Scope.centre(centreId), "inventory.expiry.read", "centre", centreId.toString());
-        return jdbc.sql(BATCH_SELECT + """
+        return jdbc.sql(BATCH_SELECT + " " + """
                  join inventory.store s on s.id = b.store_id
                  where s.centre_id = :c and b.qty_on_hand > 0 and b.expiry_date is not null and b.expiry_date <= :until
                  order by b.expiry_date, i.name""")

@@ -118,7 +118,7 @@ public class PharmacyService {
         Map<String, Object> p = new HashMap<>();
         p.put("c", centreId);
         p.put("s", status);
-        return jdbc.sql(PRESCRIPTION_SELECT + """
+        return jdbc.sql(PRESCRIPTION_SELECT + " " + """
                  where r.centre_id = :c and (cast(:s as text) is null or r.status = :s)
                    and r.prescribed_at > now() - interval '60 days'
                  order by r.prescribed_at desc limit 300""").params(p).query(PrescriptionRow.class).list()

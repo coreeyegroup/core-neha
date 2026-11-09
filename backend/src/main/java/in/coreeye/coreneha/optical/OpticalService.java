@@ -265,7 +265,7 @@ public class OpticalService {
         Map<String, Object> p = new HashMap<>();
         p.put("c", centreId);
         p.put("s", status);
-        return jdbc.sql(ORDER_SELECT + """
+        return jdbc.sql(ORDER_SELECT + " " + """
                  where o.centre_id = :c and (cast(:s as text) is null or o.status = :s)
                    and (o.status not in ('DELIVERED', 'CANCELLED') or o.ordered_at > now() - interval '30 days')
                  order by o.ordered_at desc limit 300""").params(p).query(OrderView.class).list();
@@ -421,7 +421,7 @@ public class OpticalService {
         Map<String, Object> p = new HashMap<>();
         p.put("c", labCentreId);
         p.put("s", status);
-        return jdbc.sql(JOB_SELECT + """
+        return jdbc.sql(JOB_SELECT + " " + """
                  where j.lab_centre_id = :c and (cast(:s as text) is null or j.status = :s)
                    and (j.status not in ('DISPATCHED', 'CANCELLED') or j.received_at > now() - interval '14 days')
                  order by j.received_at limit 300""").params(p).query(JobRow.class).list().stream().map(r -> toView(r, false)).toList();

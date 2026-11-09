@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import in.coreeye.coreneha.kernel.CurrentActor;
 import in.coreeye.coreneha.pharmacy.PharmacyModels.PrescriptionView;
+import in.coreeye.coreneha.pharmacy.PharmacyModels.ReturnLine;
 import in.coreeye.coreneha.pharmacy.PharmacyModels.SaleView;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -28,7 +29,7 @@ class PharmacyController {
     record CancelPrescription(@NotBlank @Size(max = 300) String reason) {
     }
 
-    record ReturnSale(@NotEmpty @Size(max = 40) List<@Valid PharmacyModels.ReturnLine> lines) {
+    record ReturnSale(@NotEmpty @Size(max = 40) List<@Valid ReturnLine> lines) {
     }
 
     private final PharmacyService pharmacy;

@@ -28,6 +28,7 @@ import in.coreeye.coreneha.patient.PatientDirectory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -419,7 +420,7 @@ public class BillingService implements BillingDirectory {
     }
 
     @Override
-    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.MANDATORY)
+    @Transactional(propagation = Propagation.MANDATORY)
     public void cancelSourcedBill(Actor actor, UUID billId, String reason) {
         BillView bill = lockedBill(billId);
         if (bill.paidAmount().signum() > 0) {
@@ -435,7 +436,7 @@ public class BillingService implements BillingDirectory {
     }
 
     @Override
-    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.MANDATORY)
+    @Transactional(propagation = Propagation.MANDATORY)
     public BillSummary raiseSourcedBill(Actor actor, UUID centreId, UUID patientId, UUID visitRef, String sourceType, UUID sourceRef,
                                         List<BillingDirectory.SourcedLine> lines) {
         Scope scope = activeCentre(centreId);

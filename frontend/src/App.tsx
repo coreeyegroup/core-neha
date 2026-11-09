@@ -25,6 +25,7 @@ import { AccountsDesk } from './pages/clinic/AccountsDesk';
 import { BillPage } from './pages/clinic/BillPage';
 import { CentreActivity } from './pages/clinic/CentreActivity';
 import { Licence } from './pages/Licence';
+import { Imaging, Laboratory } from './pages/diagnostics/Diagnostics';
 import { Inventory } from './pages/supply/Inventory';
 import { OpticalLab, OpticalShop } from './pages/supply/Optical';
 import { Pharmacy } from './pages/supply/Pharmacy';
@@ -43,6 +44,8 @@ const router = createBrowserRouter(
         { index: true, element: <Overview /> },
         { path: 'activity', element: <CentreActivity /> },
         { path: 'licence', element: <Licence /> },
+        { path: 'laboratory', element: <Laboratory /> },
+        { path: 'imaging', element: <Imaging /> },
         { path: 'pharmacy', element: <Pharmacy /> },
         { path: 'optical', element: <OpticalShop /> },
         { path: 'optical-lab', element: <OpticalLab /> },

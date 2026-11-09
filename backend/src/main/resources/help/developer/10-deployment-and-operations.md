@@ -32,6 +32,7 @@ Compose project `core-neha`: `postgres`, `keycloak`, `backend`, `gateway`. Memor
 | `clinic-seed.sh` | Add Vijaya Eye Clinic to the demonstration tenant (demo only, once, after demo-seed) |
 | `clinic-staff.sh` | Add the clinic's full staff: 40 positions in its six departments, two people each, with logins (demo only; safe to run again, adds only what is missing) |
 | `clinic-supply.sh` | Demo only, once: stores, item master, opening stock and a pharmacy, optical and lab day at Vijaya Eye Clinic (after clinic-staff) |
+| `clinic-diagnostics.sh` | Demo only, once: laboratory and imaging catalogue and a day of orders, with synthetic DICOM images stored in the image archive (after clinic-staff) |
 | `tenant.sh` | Software vendor's console: list hospital chains, set a chain's licence (modules, validity, centres), suspend or reactivate a chain (ADR-0013) |
 | `login-check.sh` | Read-only sign-in diagnosis: each step, the accounts in both databases, and the reason for recent failed sign-ins |
 
@@ -73,3 +74,9 @@ The Keycloak admin console is only on `127.0.0.1:18480`. From your computer: `ss
 ## Logs and monitoring
 
 `ops/cn logs` shows JSON logs (ECS format for the backend). The gateway logs paths without query strings. Health: `ops/status.sh`. Nightly backup via the user crontab (see the operations guide), and copy backups off the server.
+
+## Image archive (Orthanc)
+
+- Service `orthanc` (image `orthancteam/orthanc:26.9.1`), data in the volume `core-neha_pacsdata`. **`ops/backup.sh` does not back up images**; back up that volume separately (it can be large) and test restoring it.
+- Machines send DICOM to port 4242 with AE title `CORENEHA`. By default the port listens on this server only; set `CORE_NEHA_DICOM_BIND` in the config file to the server's address on the clinic network (never a public address; use a VPN between sites).
+- Staff reach images only through `/api/pacs/` on the gateway, checked by the backend for every request (ADR-0015). The Orthanc web interface and REST API are not reachable from outside.

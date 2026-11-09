@@ -5,6 +5,17 @@
  * OpenAPI spec version: v0
  */
 import { apiFetch } from '../http';
+export interface Acquire {
+  expectedVersion: number;
+  imageCount?: number;
+  /**
+     * @minLength 0
+     * @maxLength 64
+     * @pattern ^[0-9]+(\.[0-9]+)*$
+     */
+  studyInstanceUid?: string;
+}
+
 export interface LineInput {
   /**
      * @minimum 1
@@ -293,6 +304,51 @@ export interface CancelVisit {
      * @maxLength 500
      */
   reason: string;
+}
+
+export interface ParameterView {
+  code?: string;
+  criticalHigh?: number;
+  criticalLow?: number;
+  id?: string;
+  loincCode?: string;
+  name?: string;
+  refHigh?: number;
+  refLow?: number;
+  refText?: string;
+  sortOrder?: number;
+  unit?: string;
+  valueType?: string;
+}
+
+export interface LabTestView {
+  code?: string;
+  container?: string;
+  id?: string;
+  loincCode?: string;
+  name?: string;
+  parameters?: ParameterView[];
+  price?: number;
+  sampleType?: string;
+  section?: string;
+  status?: string;
+  tatHours?: number;
+}
+
+export interface ProcedureView {
+  bodyPart?: string;
+  code?: string;
+  id?: string;
+  modality?: string;
+  name?: string;
+  preparation?: string;
+  price?: number;
+  status?: string;
+}
+
+export interface Catalogue {
+  labTests?: LabTestView[];
+  procedures?: ProcedureView[];
 }
 
 export interface CentreAccess {
@@ -688,6 +744,28 @@ export interface CreateOrder {
   visitRef?: string;
 }
 
+export interface CreateOrders {
+  /**
+     * @minLength 0
+     * @maxLength 1000
+     */
+  clinicalNotes?: string;
+  /**
+     * @minItems 0
+     * @maxItems 30
+     */
+  labTestIds?: string[];
+  patientId: string;
+  /** @pattern ROUTINE|URGENT|STAT */
+  priority?: string;
+  /**
+     * @minItems 0
+     * @maxItems 10
+     */
+  procedureIds?: string[];
+  visitRef?: string;
+}
+
 export interface CreatePerson {
   /**
      * @minLength 0
@@ -984,6 +1062,71 @@ export interface DepartmentView {
   version?: number;
 }
 
+export interface ResultView {
+  code?: string;
+  flag?: string;
+  loincCode?: string;
+  name?: string;
+  parameterId?: string;
+  reference?: string;
+  unit?: string;
+  valueNumeric?: number;
+  valueText?: string;
+}
+
+export interface DiagnosticOrderView {
+  accessionNo?: string;
+  billId?: string;
+  billNo?: string;
+  billStatus?: string;
+  bodyPart?: string;
+  cancelReason?: string;
+  centreId?: string;
+  clinicalNotes?: string;
+  collectedAt?: string;
+  collectedByName?: string;
+  findings?: string;
+  hasCritical?: boolean;
+  id?: string;
+  imageCount?: number;
+  impression?: string;
+  kind?: string;
+  modality?: string;
+  orderedAt?: string;
+  orderedByName?: string;
+  patientAge?: number;
+  patientId?: string;
+  patientName?: string;
+  patientSex?: string;
+  patientUhid?: string;
+  performedAt?: string;
+  performedByName?: string;
+  priority?: string;
+  receivedAt?: string;
+  rejectionNote?: string;
+  released?: boolean;
+  reportedAt?: string;
+  reportedByName?: string;
+  requestNo?: string;
+  resultAt?: string;
+  resultByName?: string;
+  results?: ResultView[];
+  sampleType?: string;
+  scheduledAt?: string;
+  section?: string;
+  status?: string;
+  studyInstanceUid?: string;
+  testCode?: string;
+  testName?: string;
+  validatedAt?: string;
+  validatedByName?: string;
+  verifiedAt?: string;
+  verifiedByName?: string;
+  version?: number;
+  viewerUrl?: string;
+  visitRef?: string;
+}
+
 export interface DispenseLineInput {
   itemId: string;
   prescriptionLineId?: string;
@@ -1078,6 +1221,25 @@ export interface EnableDepartment {
 export interface EndPosting {
   expectedVersion: number;
   validTo: string;
+}
+
+export interface ResultInput {
+  parameterId: string;
+  valueNumeric?: number;
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  valueText?: string;
+}
+
+export interface EnterResults {
+  expectedVersion: number;
+  /**
+     * @minItems 0
+     * @maxItems 60
+     */
+  results: ResultInput[];
 }
 
 export interface Establish {
@@ -1778,6 +1940,20 @@ export interface RemoveLine {
   lineId: string;
 }
 
+export interface Report {
+  expectedVersion: number;
+  /**
+     * @minLength 0
+     * @maxLength 8000
+     */
+  findings: string;
+  /**
+     * @minLength 0
+     * @maxLength 2000
+     */
+  impression: string;
+}
+
 export interface RequestAdjustment {
   batchId: string;
   /**
@@ -2181,6 +2357,11 @@ export interface SaveOptometry {
   ucvaRe?: string;
 }
 
+export interface Schedule {
+  expectedVersion: number;
+  scheduledAt: string;
+}
+
 export interface ScheduleSurgery {
   expectedVersion: number;
   /**
@@ -2206,6 +2387,15 @@ export interface StartVisit {
      * @pattern NEW|REVIEW|POST_OP
      */
   visitType: string;
+}
+
+export interface Step {
+  expectedVersion: number;
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  note?: string;
 }
 
 export interface StockLine {
@@ -2436,6 +2626,11 @@ date?: string;
 
 export type CentreDepartmentsParams = {
 includeRetired?: boolean;
+};
+
+export type DiagnosticWorklistParams = {
+kind: string;
+status?: string;
 };
 
 export type ExpiringParams = {
@@ -3551,6 +3746,72 @@ export const retireImpact = async (centreId: string,
 
 
 
+export const getDiagnosticWorklistUrl = (centreId: string,
+    params: DiagnosticWorklistParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/centres/${centreId}/diagnostic-orders?${stringifiedParams}` : `/v1/centres/${centreId}/diagnostic-orders`
+}
+
+export const diagnosticWorklist = async (centreId: string,
+    params: DiagnosticWorklistParams, options?: Parameters<typeof apiFetch>[1]): Promise<DiagnosticOrderView[]> => {
+
+  return apiFetch<DiagnosticOrderView[]>(getDiagnosticWorklistUrl(centreId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getOrderDiagnosticsUrl = (centreId: string,) => {
+
+
+
+
+  return `/v1/centres/${centreId}/diagnostic-orders`
+}
+
+export const orderDiagnostics = async (centreId: string,
+    createOrders: CreateOrders, options?: Parameters<typeof apiFetch>[1]): Promise<DiagnosticOrderView[]> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<DiagnosticOrderView[]>(getOrderDiagnosticsUrl(centreId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(createOrders)
+  }
+);}
+
+
+
 export const getPendingDiscountsUrl = (centreId: string,) => {
 
 
@@ -4206,6 +4467,408 @@ return apiFetch<DepartmentView>(getCreateDepartmentUrl(),
 
 
 
+export const getDiagnosticOrderUrl = (orderId: string,) => {
+
+
+
+
+  return `/v1/diagnostic-orders/${orderId}`
+}
+
+export const diagnosticOrder = async (orderId: string, options?: Parameters<typeof apiFetch>[1]): Promise<DiagnosticOrderView> => {
+
+  return apiFetch<DiagnosticOrderView>(getDiagnosticOrderUrl(orderId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getAcquireImagingUrl = (orderId: string,) => {
+
+
+
+
+  return `/v1/diagnostic-orders/${orderId}/acquire`
+}
+
+export const acquireImaging = async (orderId: string,
+    acquire: Acquire, options?: Parameters<typeof apiFetch>[1]): Promise<DiagnosticOrderView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<DiagnosticOrderView>(getAcquireImagingUrl(orderId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(acquire)
+  }
+);}
+
+
+
+export const getCancelDiagnosticOrderUrl = (orderId: string,) => {
+
+
+
+
+  return `/v1/diagnostic-orders/${orderId}/cancel`
+}
+
+export const cancelDiagnosticOrder = async (orderId: string,
+    step: Step, options?: Parameters<typeof apiFetch>[1]): Promise<DiagnosticOrderView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<DiagnosticOrderView>(getCancelDiagnosticOrderUrl(orderId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(step)
+  }
+);}
+
+
+
+export const getCollectSampleUrl = (orderId: string,) => {
+
+
+
+
+  return `/v1/diagnostic-orders/${orderId}/collect`
+}
+
+export const collectSample = async (orderId: string,
+    step: Step, options?: Parameters<typeof apiFetch>[1]): Promise<DiagnosticOrderView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<DiagnosticOrderView>(getCollectSampleUrl(orderId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(step)
+  }
+);}
+
+
+
+export const getReceiveSampleUrl = (orderId: string,) => {
+
+
+
+
+  return `/v1/diagnostic-orders/${orderId}/receive`
+}
+
+export const receiveSample = async (orderId: string,
+    step: Step, options?: Parameters<typeof apiFetch>[1]): Promise<DiagnosticOrderView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<DiagnosticOrderView>(getReceiveSampleUrl(orderId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(step)
+  }
+);}
+
+
+
+export const getRejectSampleUrl = (orderId: string,) => {
+
+
+
+
+  return `/v1/diagnostic-orders/${orderId}/reject`
+}
+
+export const rejectSample = async (orderId: string,
+    step: Step, options?: Parameters<typeof apiFetch>[1]): Promise<DiagnosticOrderView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<DiagnosticOrderView>(getRejectSampleUrl(orderId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(step)
+  }
+);}
+
+
+
+export const getReportImagingUrl = (orderId: string,) => {
+
+
+
+
+  return `/v1/diagnostic-orders/${orderId}/report`
+}
+
+export const reportImaging = async (orderId: string,
+    report: Report, options?: Parameters<typeof apiFetch>[1]): Promise<DiagnosticOrderView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<DiagnosticOrderView>(getReportImagingUrl(orderId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(report)
+  }
+);}
+
+
+
+export const getEnterLabResultsUrl = (orderId: string,) => {
+
+
+
+
+  return `/v1/diagnostic-orders/${orderId}/results`
+}
+
+export const enterLabResults = async (orderId: string,
+    enterResults: EnterResults, options?: Parameters<typeof apiFetch>[1]): Promise<DiagnosticOrderView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<DiagnosticOrderView>(getEnterLabResultsUrl(orderId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(enterResults)
+  }
+);}
+
+
+
+export const getScheduleImagingUrl = (orderId: string,) => {
+
+
+
+
+  return `/v1/diagnostic-orders/${orderId}/schedule`
+}
+
+export const scheduleImaging = async (orderId: string,
+    schedule: Schedule, options?: Parameters<typeof apiFetch>[1]): Promise<DiagnosticOrderView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<DiagnosticOrderView>(getScheduleImagingUrl(orderId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(schedule)
+  }
+);}
+
+
+
+export const getValidateLabResultsUrl = (orderId: string,) => {
+
+
+
+
+  return `/v1/diagnostic-orders/${orderId}/validate`
+}
+
+export const validateLabResults = async (orderId: string,
+    step: Step, options?: Parameters<typeof apiFetch>[1]): Promise<DiagnosticOrderView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<DiagnosticOrderView>(getValidateLabResultsUrl(orderId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(step)
+  }
+);}
+
+
+
+export const getVerifyImagingUrl = (orderId: string,) => {
+
+
+
+
+  return `/v1/diagnostic-orders/${orderId}/verify`
+}
+
+export const verifyImaging = async (orderId: string,
+    step: Step, options?: Parameters<typeof apiFetch>[1]): Promise<DiagnosticOrderView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<DiagnosticOrderView>(getVerifyImagingUrl(orderId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(step)
+  }
+);}
+
+
+
+export const getDiagnosticCatalogueUrl = () => {
+
+
+
+
+  return `/v1/diagnostics/catalogue`
+}
+
+export const diagnosticCatalogue = async ( options?: Parameters<typeof apiFetch>[1]): Promise<Catalogue> => {
+
+  return apiFetch<Catalogue>(getDiagnosticCatalogueUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
 export const getHelpLibraryUrl = () => {
 
 
@@ -4334,6 +4997,27 @@ return apiFetch<NodeView>(getCreateNodeUrl(),
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
     body: JSON.stringify(createNodeBody)
+  }
+);}
+
+
+
+export const getAuthorizeImagingUrl = () => {
+
+
+
+
+  return `/v1/imaging/authorize`
+}
+
+export const authorizeImaging = async ( options?: Parameters<typeof apiFetch>[1]): Promise<void> => {
+
+  return apiFetch<void>(getAuthorizeImagingUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
   }
 );}
 
@@ -5074,6 +5758,27 @@ export const getPatientBillsUrl = (patientId: string,) => {
 export const patientBills = async (patientId: string, options?: Parameters<typeof apiFetch>[1]): Promise<BillView[]> => {
 
   return apiFetch<BillView[]>(getPatientBillsUrl(patientId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getPatientDiagnosticsUrl = (patientId: string,) => {
+
+
+
+
+  return `/v1/patients/${patientId}/diagnostic-orders`
+}
+
+export const patientDiagnostics = async (patientId: string, options?: Parameters<typeof apiFetch>[1]): Promise<DiagnosticOrderView[]> => {
+
+  return apiFetch<DiagnosticOrderView[]>(getPatientDiagnosticsUrl(patientId),
   {
     ...options,
     method: 'GET'

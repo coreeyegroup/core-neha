@@ -212,8 +212,8 @@ class ClinicSeedTest extends PostgresTestBase {
         UUID centre = seed.load(code).centreId();
 
         ClinicStaff.Summary first = clinicStaff.extend(code);
-        assertThat(first.positions()).isEqualTo(52);
-        assertThat(first.added()).isEqualTo(52 * 2 - 12);
+        assertThat(first.positions()).isEqualTo(57);
+        assertThat(first.added()).isEqualTo(57 * 2 - 12);
         assertThat(first.logins()).allSatisfy(l -> assertThat(l.username()).matches("e\\d{5}"));
         assertThat(clinicStaff.extend(code).added()).isZero();
 
@@ -222,11 +222,11 @@ class ClinicSeedTest extends PostgresTestBase {
             assertThat(jdbc.sql("""
                     select count(*) from workforce.establishment e where e.centre_id = :c and e.approved_headcount = 2
                     and (select count(*) from workforce.posting p where p.establishment_id = e.id) = 2""")
-                    .param("c", centre).query(Integer.class).single()).isEqualTo(52);
+                    .param("c", centre).query(Integer.class).single()).isEqualTo(57);
             assertThat(jdbc.sql("""
                     select count(*) from iam.role_assignment where scope_id = :c and status = 'ACTIVE'
                     and decided_by is not null and decided_by <> requested_by""").param("c", centre).query(Integer.class).single())
-                    .isEqualTo(104 + 18);
+                    .isEqualTo(114 + 18 * 2);
             // Employee numbers (login ids) are unique across tenants.
             assertThat(jdbc.sql("select count(*) - count(distinct username) from iam.user_account").query(Integer.class).single()).isZero();
             // Sterilisation staff work in the theatre but have no access to patient records.

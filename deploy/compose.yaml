@@ -129,6 +129,7 @@ services:
       CORE_NEHA_PUBLIC_BASE_URL: ${CORE_NEHA_PUBLIC_BASE_URL}
       CORE_NEHA_BASE_PATH: ${CORE_NEHA_BASE_PATH}
       CORE_NEHA_DB_HOST: postgres
+      CORE_NEHA_PACS_URL: http://orthanc:8042
     secrets:
       - core_neha_app_password
       - core_neha_owner_password
@@ -155,6 +156,37 @@ services:
         limits:
           memory: 1536m
           cpus: "1.5"
+
+  # Image archive (PACS): Orthanc 26.9.1 with the DICOMweb and OHIF viewer plugins. Reached by staff
+  # only through the gateway (/api/pacs/, every request checked by the backend). Modalities send
+  # images over DICOM to port 4242, published on CORE_NEHA_DICOM_BIND (default: this server only).
+  orthanc:
+    <<: *hardening
+    image: orthancteam/orthanc:26.9.1
+    environment:
+      ORTHANC__NAME: core-neha
+      ORTHANC__DICOM_AET: CORENEHA
+      ORTHANC__AUTHENTICATION_ENABLED: "false"
+      ORTHANC__REMOTE_ACCESS_ALLOWED: "true"
+      ORTHANC__DICOM_WEB__ENABLE: "true"
+      ORTHANC__DICOM_WEB__ROOT: /dicom-web/
+      ORTHANC__DICOM_WEB__PUBLIC_ROOT: ${CORE_NEHA_BASE_PATH}/api/pacs/dicom-web/
+      DICOM_WEB_PLUGIN_ENABLED: "true"
+      OHIF_PLUGIN_ENABLED: "true"
+      ORTHANC__OHIF__DATA_SOURCE: dicom-web
+      VERBOSE_ENABLED: "false"
+    volumes:
+      - pacsdata:/var/lib/orthanc/db
+    ports:
+      - "${CORE_NEHA_DICOM_BIND:-127.0.0.1}:${CORE_NEHA_DICOM_PORT:-4242}:4242"
+    networks:
+      backplane: {}
+      edge: {}
+    deploy:
+      resources:
+        limits:
+          memory: 1024m
+          cpus: "1.0"
 
   gateway:
     <<: *hardening
@@ -214,6 +246,8 @@ networks:
 volumes:
   pgdata:
     name: core-neha_pgdata
+  pacsdata:
+    name: core-neha_pacsdata
 
 secrets:
   pg_superuser_password:

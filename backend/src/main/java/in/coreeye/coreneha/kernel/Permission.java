@@ -73,7 +73,21 @@ public enum Permission {
     // Optical manufacturing (lab)
     OPTICALLAB_READ("opticallab.read", false),
     OPTICALLAB_PROCESS("opticallab.process", false),
-    OPTICALLAB_QC("opticallab.qc", false);
+    OPTICALLAB_QC("opticallab.qc", false),
+    // Laboratory
+    LAB_CATALOGUE_MANAGE("lab.catalogue.manage", true),
+    LAB_ORDER("lab.order", false),
+    LAB_READ("lab.read", false),
+    LAB_COLLECT("lab.collect", false),
+    LAB_PROCESS("lab.process", false),
+    LAB_VALIDATE("lab.validate", false),
+    // Imaging (radiology)
+    RADIOLOGY_CATALOGUE_MANAGE("radiology.catalogue.manage", true),
+    RADIOLOGY_ORDER("radiology.order", false),
+    RADIOLOGY_READ("radiology.read", false),
+    RADIOLOGY_PERFORM("radiology.perform", false),
+    RADIOLOGY_REPORT("radiology.report", false),
+    RADIOLOGY_VERIFY("radiology.verify", false);
 
     private final String code;
     private final boolean tenantOnly;

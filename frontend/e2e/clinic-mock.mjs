@@ -18,6 +18,8 @@ const ROLE_PERMISSIONS = {
   opticalsales: ['org.centre.read', 'patient.read', 'eye.clinical.read', 'optical.read', 'optical.order', 'optical.deliver', 'inventory.read', 'billing.read', 'billing.collect'],
   labtech: ['org.centre.read', 'opticallab.read', 'opticallab.process', 'inventory.read'],
   storekeeper: ['org.centre.read', 'inventory.read', 'inventory.receive', 'inventory.transfer', 'inventory.adjust.request'],
+  pathologist: ['org.centre.read', 'patient.read', 'lab.read', 'lab.process', 'lab.validate'],
+  radiologist: ['org.centre.read', 'patient.read', 'radiology.read', 'radiology.report', 'radiology.verify'],
   accounts: ['org.centre.read', 'billing.read', 'billing.report.read', 'billing.dayclose.approve', 'billing.discount.approve', 'billing.tariff.manage', 'audit.read'],
 };
 const PERSONAS = {
@@ -31,6 +33,8 @@ const PERSONAS = {
   'rohit.optical': ['Rohit Shenoy', 'opticalsales', 'Optical sales executive', 'Optical shop'],
   'dinesh.lab': ['Dinesh Poojary', 'labtech', 'Edging and fitting technician', 'Optical lab (manufacturing)'],
   'nagaraj.stores': ['Nagaraj Hegde', 'storekeeper', 'Store keeper', 'Stores'],
+  'sudha.lab': ['Sudha Raghavan', 'pathologist', 'Consultant pathologist', 'Laboratory'],
+  'harish.radiology': ['Harish Bhat', 'radiologist', 'Consultant radiologist', 'Imaging and diagnostics'],
   'radhika.director': ['Radhika Narayan', 'director', 'Centre director', undefined],
 };
 
@@ -116,6 +120,28 @@ const orders = [order(8501, 3, 'READY', { labJobStatus: 'DISPATCHED' }), order(8
 const job = (n, o, status) => ({ id: id(n), labCentreId: VEC.id, labCentreName: VEC.name, labStoreId: stores[2].id, jobNo: `VEC/LAB/2026-27/00000${n % 10}`, orderId: o.id, orderNo: o.orderNo, shopCentreName: VEC.name, patientName: o.patientName,
   specification: { orderNo: o.orderNo, right: { sph: -2.25, cyl: -0.5, axis: 90 }, left: { sph: -2 }, pdRight: 32, pdLeft: 31.5, lens: items[3].name, frame: items[2].name }, status, remakeCount: 0, receivedAt: ago(180), version: 2, events: [{ toStatus: 'RECEIVED', actorName: 'Rohit Shenoy', at: ago(180), note: `From order ${o.orderNo}` }] });
 const jobs = [job(8601, orders[1], 'SURFACING'), job(8602, orders[0], 'FITTING')];
+
+// ---------------------------------------------------------------- laboratory and imaging
+const dxBase = (n, i, kind, test, status, extra) => ({ id: id(n), centreId: VEC.id, requestNo: 'VECDX2627000001', accessionNo: `VEC${kind === 'LAB' ? 'LB' : 'RD'}2627${String(n).padStart(6, '0')}`,
+  ...P(i), kind, testName: test, priority: 'ROUTINE', status, billNo: 'VEC/2026-27/000007', billStatus: 'OPEN', orderedByName: 'Vijay Kumar', orderedAt: ago(90), hasCritical: false, released: false, version: 3, results: [], ...extra });
+const dxOrders = [
+  dxBase(9001, 0, 'LAB', 'Fasting blood sugar', 'RESULTED', { testCode: 'FBS', sampleType: 'PLASMA', resultByName: 'Mallikarjun Patil', resultAt: ago(20),
+    results: [{ parameterId: id(9101), code: 'GLU', name: 'Glucose, fasting', unit: 'mg/dL', loincCode: '1558-6', valueNumeric: 168, flag: 'H', reference: '70 – 100' }] }),
+  dxBase(9002, 1, 'LAB', 'Random blood sugar', 'RESULTED', { testCode: 'RBS', hasCritical: true, results: [{ parameterId: id(9102), code: 'GLU', name: 'Glucose, random', unit: 'mg/dL', valueNumeric: 462, flag: 'HH', reference: '70 – 140' }] }),
+  dxBase(9003, 2, 'LAB', 'Urine routine examination', 'ORDERED', { testCode: 'URINE' }),
+  dxBase(9004, 0, 'IMAGING', 'Chest X-ray PA (pre-operative)', 'VERIFIED', { testCode: 'CXR', modality: 'DX', released: true, studyInstanceUid: '2.25.1234', viewerUrl: '/core-neha/api/pacs/ohif/viewer?StudyInstanceUIDs=2.25.1234', findings: 'Lung fields are clear.', impression: 'Normal chest radiograph.', reportedByName: 'Harish Bhat', verifiedByName: 'Harish Bhat', verifiedAt: ago(10) }),
+  dxBase(9005, 1, 'IMAGING', 'OCT macula', 'ACQUIRED', { testCode: 'OCTMAC', modality: 'OPT', studyInstanceUid: '2.25.5678', imageCount: 6, viewerUrl: '/core-neha/api/pacs/ohif/viewer?StudyInstanceUIDs=2.25.5678', performedByName: 'Vinod Gowda', performedAt: ago(40) }),
+];
+
+export function diagnosticsRoute(method, path, query) {
+  let m;
+  if (method === 'GET' && /^\/v1\/centres\/[^/]+\/diagnostic-orders$/.test(path)) return dxOrders.filter((o) => o.kind === query.get('kind'));
+  if (method === 'GET' && /^\/v1\/patients\/[^/]+\/diagnostic-orders$/.test(path)) return dxOrders;
+  if (method === 'GET' && (m = path.match(/^\/v1\/diagnostic-orders\/([^/]+)$/))) return dxOrders.find((o) => o.id === m[1]) ?? dxOrders[0];
+  if (method === 'POST' && (m = path.match(/^\/v1\/diagnostic-orders\/([^/]+)\/validate$/))) return { ...(dxOrders.find((o) => o.id === m[1]) ?? dxOrders[0]), status: 'VALIDATED', released: true };
+  if (method === 'GET' && path === '/v1/diagnostics/catalogue') return { labTests: [], procedures: [] };
+  return undefined;
+}
 
 export function supplyRoute(method, path, query) {
   let m;

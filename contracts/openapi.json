@@ -1,6 +1,28 @@
 {
   "components": {
     "schemas": {
+      "Acquire": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "imageCount": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "studyInstanceUid": {
+            "maxLength": 64,
+            "minLength": 0,
+            "pattern": "^[0-9]+(\\.[0-9]+)*$",
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion"
+        ],
+        "type": "object"
+      },
       "AddLines": {
         "properties": {
           "expectedVersion": {
@@ -723,6 +745,23 @@
           "expectedVersion",
           "reason"
         ],
+        "type": "object"
+      },
+      "Catalogue": {
+        "properties": {
+          "labTests": {
+            "items": {
+              "$ref": "#/components/schemas/LabTestView"
+            },
+            "type": "array"
+          },
+          "procedures": {
+            "items": {
+              "$ref": "#/components/schemas/ProcedureView"
+            },
+            "type": "array"
+          }
+        },
         "type": "object"
       },
       "CentreAccess": {
@@ -1545,6 +1584,49 @@
         ],
         "type": "object"
       },
+      "CreateOrders": {
+        "properties": {
+          "clinicalNotes": {
+            "maxLength": 1000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "labTestIds": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 30,
+            "minItems": 0,
+            "type": "array"
+          },
+          "patientId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "priority": {
+            "pattern": "ROUTINE|URGENT|STAT",
+            "type": "string"
+          },
+          "procedureIds": {
+            "items": {
+              "format": "uuid",
+              "type": "string"
+            },
+            "maxItems": 10,
+            "minItems": 0,
+            "type": "array"
+          },
+          "visitRef": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "patientId"
+        ],
+        "type": "object"
+      },
       "CreatePerson": {
         "properties": {
           "email": {
@@ -2006,6 +2088,181 @@
         },
         "type": "object"
       },
+      "DiagnosticOrderView": {
+        "properties": {
+          "accessionNo": {
+            "type": "string"
+          },
+          "billId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "billNo": {
+            "type": "string"
+          },
+          "billStatus": {
+            "type": "string"
+          },
+          "bodyPart": {
+            "type": "string"
+          },
+          "cancelReason": {
+            "type": "string"
+          },
+          "centreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "clinicalNotes": {
+            "type": "string"
+          },
+          "collectedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "collectedByName": {
+            "type": "string"
+          },
+          "findings": {
+            "type": "string"
+          },
+          "hasCritical": {
+            "type": "boolean"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "imageCount": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "impression": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "modality": {
+            "type": "string"
+          },
+          "orderedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "orderedByName": {
+            "type": "string"
+          },
+          "patientAge": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "patientId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "patientName": {
+            "type": "string"
+          },
+          "patientSex": {
+            "type": "string"
+          },
+          "patientUhid": {
+            "type": "string"
+          },
+          "performedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "performedByName": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string"
+          },
+          "receivedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "rejectionNote": {
+            "type": "string"
+          },
+          "released": {
+            "type": "boolean"
+          },
+          "reportedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "reportedByName": {
+            "type": "string"
+          },
+          "requestNo": {
+            "type": "string"
+          },
+          "resultAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "resultByName": {
+            "type": "string"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/ResultView"
+            },
+            "type": "array"
+          },
+          "sampleType": {
+            "type": "string"
+          },
+          "scheduledAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "section": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "studyInstanceUid": {
+            "type": "string"
+          },
+          "testCode": {
+            "type": "string"
+          },
+          "testName": {
+            "type": "string"
+          },
+          "validatedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "validatedByName": {
+            "type": "string"
+          },
+          "verifiedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "verifiedByName": {
+            "type": "string"
+          },
+          "version": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "viewerUrl": {
+            "type": "string"
+          },
+          "visitRef": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "Dispense": {
         "properties": {
           "lines": {
@@ -2147,6 +2404,27 @@
         "required": [
           "expectedVersion",
           "validTo"
+        ],
+        "type": "object"
+      },
+      "EnterResults": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/ResultInput"
+            },
+            "maxItems": 60,
+            "minItems": 0,
+            "type": "array"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "results"
         ],
         "type": "object"
       },
@@ -2551,6 +2829,49 @@
             "type": "string"
           },
           "version": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "LabTestView": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "container": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "loincCode": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parameters": {
+            "items": {
+              "$ref": "#/components/schemas/ParameterView"
+            },
+            "type": "array"
+          },
+          "price": {
+            "type": "number"
+          },
+          "sampleType": {
+            "type": "string"
+          },
+          "section": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "tatHours": {
             "format": "int32",
             "type": "integer"
           }
@@ -3155,6 +3476,49 @@
         },
         "type": "object"
       },
+      "ParameterView": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "criticalHigh": {
+            "type": "number"
+          },
+          "criticalLow": {
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "loincCode": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "refHigh": {
+            "type": "number"
+          },
+          "refLow": {
+            "type": "number"
+          },
+          "refText": {
+            "type": "string"
+          },
+          "sortOrder": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "valueType": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "PatientEyeHistory": {
         "properties": {
           "clinicalVisible": {
@@ -3658,6 +4022,36 @@
         },
         "type": "object"
       },
+      "ProcedureView": {
+        "properties": {
+          "bodyPart": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "modality": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "preparation": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "QualityCheck": {
         "properties": {
           "expectedVersion": {
@@ -3905,6 +4299,30 @@
         ],
         "type": "object"
       },
+      "Report": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "findings": {
+            "maxLength": 8000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "impression": {
+            "maxLength": 2000,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "findings",
+          "impression"
+        ],
+        "type": "object"
+      },
       "RequestAdjustment": {
         "properties": {
           "batchId": {
@@ -4062,6 +4480,59 @@
           },
           "validTo": {
             "format": "date",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "ResultInput": {
+        "properties": {
+          "parameterId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "valueNumeric": {
+            "type": "number"
+          },
+          "valueText": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "parameterId"
+        ],
+        "type": "object"
+      },
+      "ResultView": {
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "flag": {
+            "type": "string"
+          },
+          "loincCode": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "parameterId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "valueNumeric": {
+            "type": "number"
+          },
+          "valueText": {
             "type": "string"
           }
         },
@@ -4697,6 +5168,23 @@
         },
         "type": "object"
       },
+      "Schedule": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "scheduledAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "scheduledAt"
+        ],
+        "type": "object"
+      },
       "ScheduleSurgery": {
         "properties": {
           "expectedVersion": {
@@ -4775,6 +5263,23 @@
         "required": [
           "patientId",
           "visitType"
+        ],
+        "type": "object"
+      },
+      "Step": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "note": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion"
         ],
         "type": "object"
       },
@@ -6875,6 +7380,98 @@
         ]
       }
     },
+    "/v1/centres/{centreId}/diagnostic-orders": {
+      "get": {
+        "operationId": "diagnosticWorklist",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "kind",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DiagnosticOrderView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "diagnostics-controller"
+        ]
+      },
+      "post": {
+        "operationId": "orderDiagnostics",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrders"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DiagnosticOrderView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "diagnostics-controller"
+        ]
+      }
+    },
     "/v1/centres/{centreId}/discounts/pending": {
       "get": {
         "operationId": "pendingDiscounts",
@@ -7740,6 +8337,467 @@
         ]
       }
     },
+    "/v1/diagnostic-orders/{orderId}": {
+      "get": {
+        "operationId": "diagnosticOrder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticOrderView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "diagnostics-controller"
+        ]
+      }
+    },
+    "/v1/diagnostic-orders/{orderId}/acquire": {
+      "post": {
+        "operationId": "acquireImaging",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Acquire"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticOrderView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "diagnostics-controller"
+        ]
+      }
+    },
+    "/v1/diagnostic-orders/{orderId}/cancel": {
+      "post": {
+        "operationId": "cancelDiagnosticOrder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Step"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticOrderView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "diagnostics-controller"
+        ]
+      }
+    },
+    "/v1/diagnostic-orders/{orderId}/collect": {
+      "post": {
+        "operationId": "collectSample",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Step"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticOrderView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "diagnostics-controller"
+        ]
+      }
+    },
+    "/v1/diagnostic-orders/{orderId}/receive": {
+      "post": {
+        "operationId": "receiveSample",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Step"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticOrderView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "diagnostics-controller"
+        ]
+      }
+    },
+    "/v1/diagnostic-orders/{orderId}/reject": {
+      "post": {
+        "operationId": "rejectSample",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Step"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticOrderView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "diagnostics-controller"
+        ]
+      }
+    },
+    "/v1/diagnostic-orders/{orderId}/report": {
+      "post": {
+        "operationId": "reportImaging",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Report"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticOrderView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "diagnostics-controller"
+        ]
+      }
+    },
+    "/v1/diagnostic-orders/{orderId}/results": {
+      "post": {
+        "operationId": "enterLabResults",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/EnterResults"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticOrderView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "diagnostics-controller"
+        ]
+      }
+    },
+    "/v1/diagnostic-orders/{orderId}/schedule": {
+      "post": {
+        "operationId": "scheduleImaging",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Schedule"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticOrderView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "diagnostics-controller"
+        ]
+      }
+    },
+    "/v1/diagnostic-orders/{orderId}/validate": {
+      "post": {
+        "operationId": "validateLabResults",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Step"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticOrderView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "diagnostics-controller"
+        ]
+      }
+    },
+    "/v1/diagnostic-orders/{orderId}/verify": {
+      "post": {
+        "operationId": "verifyImaging",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Step"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DiagnosticOrderView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "diagnostics-controller"
+        ]
+      }
+    },
+    "/v1/diagnostics/catalogue": {
+      "get": {
+        "operationId": "diagnosticCatalogue",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Catalogue"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "diagnostics-controller"
+        ]
+      }
+    },
     "/v1/help": {
       "get": {
         "operationId": "helpLibrary",
@@ -7859,6 +8917,29 @@
         },
         "tags": [
           "org-controller"
+        ]
+      }
+    },
+    "/v1/imaging/authorize": {
+      "get": {
+        "operationId": "authorizeImaging",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "X-Original-URI",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "diagnostics-controller"
         ]
       }
     },
@@ -8680,6 +9761,40 @@
         },
         "tags": [
           "billing-controller"
+        ]
+      }
+    },
+    "/v1/patients/{patientId}/diagnostic-orders": {
+      "get": {
+        "operationId": "patientDiagnostics",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "patientId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DiagnosticOrderView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "diagnostics-controller"
         ]
       }
     },

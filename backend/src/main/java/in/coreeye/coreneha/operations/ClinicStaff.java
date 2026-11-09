@@ -105,6 +105,13 @@ class ClinicStaff {
             // Stores
             {"STORE_KEEPER", "Store keeper", "SUPPORT", "STORES", "EYE_STORE_KEEPER", "Nagaraj", "Hegde", "Sunanda", "Rai"},
             {"STORES_MANAGER", "Stores manager", "MANAGEMENT", "STORES", "EYE_STORES_MANAGER", "Ashok", "Menon", "Revathi", "Iyer"},
+            // Laboratory
+            {"PATHOLOGIST", "Consultant pathologist", "CLINICAL", "LABORATORY", "EYE_PATHOLOGIST", "Sudha", "Raghavan", "Prakash", "Joshi"},
+            {"LAB_TECHNICIAN", "Laboratory technician", "TECHNICAL", "LABORATORY", "EYE_LAB_TECHNICIAN", "Mallikarjun", "Patil", "Rekha", "Nayak"},
+            {"PHLEBOTOMIST", "Phlebotomist (sample collection)", "TECHNICAL", "LABORATORY", "EYE_PHLEBOTOMIST", "Santhosh", "Kumar", "Jyothi", "Shetty"},
+            // Imaging and diagnostics
+            {"RADIOLOGIST", "Consultant radiologist", "CLINICAL", "RADIOLOGY", "EYE_RADIOLOGIST", "Harish", "Bhat", "Nirmala", "Rao"},
+            {"RADIOGRAPHER", "Radiographer (X-ray, CT, MRI, ultrasound)", "TECHNICAL", "RADIOLOGY", "EYE_RADIOGRAPHER", "Vinod", "Gowda", "Asha", "Naik"},
     };
 
     /** Departments added to the clinic for pharmacy, optical, stores and diagnostics: code, library name, category, local name. */
@@ -147,6 +154,20 @@ class ClinicStaff {
                 "org.centre.read", "inventory.read", "inventory.receive", "inventory.transfer", "inventory.adjust.request"});
         ROLES.put("EYE_STORES_MANAGER", new String[] {"Eye clinic stores manager",
                 "org.centre.read", "inventory.read", "inventory.store.manage", "inventory.adjust.approve", "audit.read"});
+        ROLES.put("EYE_DIAGNOSTICS_ORDERING", new String[] {"Eye clinic diagnostics ordering (lab and imaging)",
+                "org.centre.read", "lab.order", "lab.read", "radiology.order", "radiology.read"});
+        ROLES.put("EYE_PATHOLOGIST", new String[] {"Eye clinic pathologist",
+                "org.centre.read", "patient.read", "lab.read", "lab.process", "lab.validate"});
+        ROLES.put("EYE_LAB_TECHNICIAN", new String[] {"Eye clinic laboratory technician",
+                "org.centre.read", "patient.read", "lab.read", "lab.collect", "lab.process", "inventory.read"});
+        ROLES.put("EYE_PHLEBOTOMIST", new String[] {"Eye clinic phlebotomist",
+                "org.centre.read", "patient.read", "lab.read", "lab.collect"});
+        ROLES.put("EYE_RADIOLOGIST", new String[] {"Eye clinic radiologist",
+                "org.centre.read", "patient.read", "radiology.read", "radiology.report", "radiology.verify"});
+        ROLES.put("EYE_RADIOGRAPHER", new String[] {"Eye clinic radiographer",
+                "org.centre.read", "patient.read", "radiology.read", "radiology.perform"});
+        ROLES.put("DIAGNOSTICS_CATALOGUE", new String[] {"Laboratory and imaging catalogue for the whole organisation",
+                "lab.catalogue.manage", "radiology.catalogue.manage"});
         ROLES.put("ITEM_MASTER", new String[] {"Item master (drugs, frames, lenses) for the whole organisation",
                 "inventory.item.manage"});
         ROLES.put("EYE_APPOINTMENTS", new String[] {"Eye clinic appointments and call centre",
@@ -307,23 +328,30 @@ class ClinicStaff {
                 from iam.user_account u join workforce.posting p on p.person_id = u.person_id
                 join workforce.establishment e on e.id = p.establishment_id and e.centre_id = :c
                 join workforce.position_definition pos on pos.id = e.position_id
-                where pos.code in ('STORES_MANAGER', 'MEDICAL_DIRECTOR', 'CONSULTANT_OPHTHALMOLOGIST', 'ASSOCIATE_OPHTHALMOLOGIST',
+                where pos.code in ('STORES_MANAGER', 'PATHOLOGIST', 'RADIOLOGIST', 'MEDICAL_DIRECTOR', 'CONSULTANT_OPHTHALMOLOGIST', 'ASSOCIATE_OPHTHALMOLOGIST',
                     'RETINA_CONSULTANT', 'GLAUCOMA_CONSULTANT', 'CORNEA_CONSULTANT', 'PAEDIATRIC_OPHTHALMOLOGIST', 'RESIDENT_MEDICAL_OFFICER',
                     'OPHTHALMIC_SURGEON')""").param("c", centre).query((rs, i) -> new Holder(rs.getObject("user_id", UUID.class),
                 rs.getObject("posting_id", UUID.class), rs.getString("position_code"))).list();
         for (Holder h : holders) {
-            boolean stores = "STORES_MANAGER".equals(h.positionCode());
-            UUID role = roleIds.get(stores ? "ITEM_MASTER" : "EYE_PRESCRIBER");
-            boolean has = jdbc.sql("""
-                    select exists(select 1 from iam.role_assignment where user_id = :u and role_id = :r and status in ('ACTIVE', 'PENDING'))""")
-                    .param("u", h.userId()).param("r", role).query(Boolean.class).single();
-            if (has) {
-                continue;
+            boolean tenantWide = List.of("STORES_MANAGER", "PATHOLOGIST", "RADIOLOGIST").contains(h.positionCode());
+            List<String> extra = switch (h.positionCode()) {
+                case "STORES_MANAGER" -> List.of("ITEM_MASTER");
+                case "PATHOLOGIST", "RADIOLOGIST" -> List.of("DIAGNOSTICS_CATALOGUE");
+                default -> List.of("EYE_PRESCRIBER", "EYE_DIAGNOSTICS_ORDERING");
+            };
+            for (String code : extra) {
+                UUID role = roleIds.get(code);
+                boolean has = jdbc.sql("""
+                        select exists(select 1 from iam.role_assignment where user_id = :u and role_id = :r and status in ('ACTIVE', 'PENDING'))""")
+                        .param("u", h.userId()).param("r", role).query(Boolean.class).single();
+                if (has) {
+                    continue;
+                }
+                IamModels.AssignmentView requested = assignments.request(a, new IamModels.RequestAssignment("ACCESS", h.userId(), role,
+                        tenantWide ? "TENANT" : "CENTRE", tenantWide ? tenant : centre, h.postingId(), null, null,
+                        tenantWide ? "Keeps a catalogue for the organisation" : "Prescribes and orders tests at " + ClinicSeed.CENTRE_NAME));
+                assignments.approve(b, requested.id(), new IamModels.Decision("Approved for the clinic demonstration", requested.version()));
             }
-            IamModels.AssignmentView requested = assignments.request(a, new IamModels.RequestAssignment("ACCESS", h.userId(), role,
-                    stores ? "TENANT" : "CENTRE", stores ? tenant : centre, h.postingId(), null, null,
-                    stores ? "Keeps the item master for the organisation" : "Prescribes medicines at " + ClinicSeed.CENTRE_NAME));
-            assignments.approve(b, requested.id(), new IamModels.Decision("Approved for the clinic demonstration", requested.version()));
         }
     }
 

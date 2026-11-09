@@ -41,7 +41,7 @@ export function AppShell() {
   const [menuAnchor, setMenuAnchor] = useState<HTMLElement | null>(null);
   const location = useLocation();
   const items = visibleItems(session.hasAnywhere);
-  const groups = ['Workspace', 'Clinic', 'Pharmacy and optical', 'Organisation', 'People', 'Access', 'Help'] as const;
+  const groups = ['Workspace', 'Clinic', 'Diagnostics', 'Pharmacy and optical', 'Organisation', 'People', 'Access', 'Help'] as const;
   const centres = me.centres ?? [];
 
   const centreSelect = centres.length > 0 && (

@@ -38,6 +38,7 @@ ops/caddy-route.sh add  # publish https://coreeye.in/core-neha (needs sudo)
 ops/demo-seed.sh        # load the synthetic 20-centre demonstration tenant (demo environment only)
 ops/clinic-staff.sh     # demo only: add the clinic's full staff (52 positions, two people each)
 ops/clinic-supply.sh    # demo only: pharmacy, optical shop, optical lab and stores with stock
+ops/clinic-diagnostics.sh # demo only: laboratory and imaging with synthetic images
 ops/demo-reset.sh       # demo only: wipe and reload the demo data (type RESET DEMO)
 ops/login-check.sh      # read-only sign-in diagnosis
 ops/tenant.sh list      # vendor: hospital chains and licences (also: licence, suspend, activate)

@@ -30,11 +30,12 @@ class OperationsRunner implements ApplicationRunner {
     private final DemoSeed demoSeed;
     private final ClinicSeed clinicSeed;
     private final ClinicStaff clinicStaff;
+    private final ClinicSupply clinicSupply;
     private final TenantLicensing licensing;
     private final ConfigurableApplicationContext context;
 
     OperationsRunner(CoreNehaProperties props, Environment env, BootstrapService bootstrap, DemoSeed demoSeed,
-                     ClinicSeed clinicSeed, ClinicStaff clinicStaff, TenantLicensing licensing,
+                     ClinicSeed clinicSeed, ClinicStaff clinicStaff, ClinicSupply clinicSupply, TenantLicensing licensing,
                      ConfigurableApplicationContext context) {
         this.props = props;
         this.env = env;
@@ -42,6 +43,7 @@ class OperationsRunner implements ApplicationRunner {
         this.demoSeed = demoSeed;
         this.clinicSeed = clinicSeed;
         this.clinicStaff = clinicStaff;
+        this.clinicSupply = clinicSupply;
         this.licensing = licensing;
         this.context = context;
     }
@@ -59,6 +61,7 @@ class OperationsRunner implements ApplicationRunner {
                 case "demo-seed" -> runDemoSeed();
                 case "clinic-seed" -> runClinicSeed();
                 case "clinic-staff" -> runClinicStaff();
+                case "clinic-supply" -> runClinicSupply();
                 case "tenant-list" -> runTenantList();
                 case "tenant-licence" -> runTenantLicence();
                 case "tenant-suspend" -> licensing.setStatus(required("CORE_NEHA_TENANT_CODE"), false, required("CORE_NEHA_REASON"));
@@ -133,6 +136,16 @@ class OperationsRunner implements ApplicationRunner {
                 summary.logins());
         log.info("{} staff: {} positions, {} people added; one-time passwords written to {}", ClinicSeed.CENTRE_NAME,
                 summary.positions(), summary.added(), file.getFileName());
+    }
+
+    /** Stores, item master, opening stock and a pharmacy and optical day for the eye clinic (demo, once). */
+    private void runClinicSupply() {
+        if (!props.demo()) {
+            throw new IllegalStateException("Demonstration data is loaded only when CORE_NEHA_ENVIRONMENT=demo");
+        }
+        ClinicSupply.Summary s = clinicSupply.load(env.getProperty("CORE_NEHA_SEED_TENANT", DemoSeed.TENANT_CODE));
+        log.info("{} supply: {} stores, {} items, {} receipts, {} prescriptions, {} pharmacy sales, {} spectacle orders, {} lab jobs",
+                ClinicSeed.CENTRE_NAME, s.stores(), s.items(), s.receipts(), s.prescriptions(), s.sales(), s.spectacleOrders(), s.labJobs());
     }
 
     private String required(String name) {

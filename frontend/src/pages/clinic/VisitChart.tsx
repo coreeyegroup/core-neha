@@ -31,6 +31,7 @@ import { StatusChip } from '../../components/StatusChip';
 import { BillActions } from './BillActions';
 import { ageSex, clock, dateLabel, eyeLabel, money, StageChip, VisitStepper } from './common';
 import { ReasonDialog } from './dialogs';
+import { PatientPrescriptions, PrescribeDialog } from '../supply/Pharmacy';
 
 export const VISUAL_ACUITY = ['6/5', '6/6', '6/6P', '6/7.5', '6/9', '6/9P', '6/12', '6/18', '6/24', '6/36', '6/60', '5/60', '4/60', '3/60', '2/60', '1/60', 'CF', 'HM', 'PL', 'PR', 'NPL'];
 export const NEAR_VISION = ['N5', 'N6', 'N8', 'N10', 'N12', 'N18', 'N24', 'N36'];
@@ -55,6 +56,7 @@ export function VisitChartPage() {
   const session = useSession();
   const chart = useVisitChart(visitId);
   const [cancel, setCancel] = useState(false);
+  const [prescribing, setPrescribing] = useState(false);
   if (chart.error) {
     return <ProblemAlert error={chart.error} />;
   }
@@ -89,6 +91,12 @@ export function VisitChartPage() {
           {c.clinicalVisible && <OptometrySection chart={c} />}
           {c.clinicalVisible && <ConsultationSection chart={c} />}
           {c.clinicalVisible && c.surgery && <SurgerySummary surgery={c.surgery} />}
+          {(session.hasAtCentre('pharmacy.prescribe', v.centreId) || session.hasAtCentre('pharmacy.read', v.centreId)) && (
+            <Section title="Medicines" actions={session.hasAtCentre('pharmacy.prescribe', v.centreId) && <Button onClick={() => setPrescribing(true)}>Prescribe</Button>}>
+              <Paper sx={{ p: 1.5 }}><PatientPrescriptions patientId={v.patientId!} /></Paper>
+            </Section>
+          )}
+          {prescribing && <PrescribeDialog centreId={v.centreId!} patientId={v.patientId!} patientName={v.patientName} visitId={v.id} onClose={() => setPrescribing(false)} />}
         </Grid>
         <Grid size={{ xs: 12, lg: 4 }}>
           <Section title="Visit">

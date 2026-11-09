@@ -90,7 +90,37 @@ class ClinicStaff {
             {"CASHIER", "Cashier", "ADMINISTRATIVE", "BILLING", "EYE_CASHIER", "Yashodha", "Gowda", "Feroz", "Ahmed"},
             {"ACCOUNTS_ASSISTANT", "Accounts assistant", "ADMINISTRATIVE", "BILLING", "EYE_ACCOUNTANT", "Pavan", "Kumar", "Nisha", "Shenoy"},
             {"INTERNAL_AUDITOR", "Internal auditor", "MANAGEMENT", "BILLING", "EYE_AUDITOR", "Subramanya", "Bhat", "Latha", "Ramesh"},
+            // Pharmacy
+            {"CHIEF_PHARMACIST", "Chief pharmacist", "ALLIED_HEALTH", "PHARMACY", "EYE_PHARMACIST", "Venkatesh", "Iyengar", "Shanthi", "Murali"},
+            {"PHARMACIST", "Pharmacist", "ALLIED_HEALTH", "PHARMACY", "EYE_PHARMACIST", "Arvind", "Bhat", "Pooja", "Nair"},
+            {"PHARMACY_ASSISTANT", "Pharmacy assistant", "ALLIED_HEALTH", "PHARMACY", "EYE_PHARMACY_ASSISTANT", "Manoj", "Shetty", "Leela", "Gowda"},
+            // Optical shop
+            {"OPTICAL_STORE_INCHARGE", "Optical store in-charge", "ADMINISTRATIVE", "OPTICAL_RETAIL", "EYE_OPTICAL_SHOP", "Sandeep", "Kini", "Asha", "Pai"},
+            {"OPTICAL_SALES_EXECUTIVE", "Optical sales executive", "ADMINISTRATIVE", "OPTICAL_RETAIL", "EYE_OPTICAL_SHOP", "Rohit", "Shenoy", "Nayana", "Hegde"},
+            // Optical manufacturing (lab)
+            {"OPTICAL_LAB_SUPERVISOR", "Optical lab supervisor", "TECHNICAL", "OPTICAL_MANUFACTURING", "EYE_OPTICAL_LAB_QC", "Gururaj", "Acharya", "Vidya", "Kulkarni"},
+            {"SURFACING_TECHNICIAN", "Surfacing technician", "TECHNICAL", "OPTICAL_MANUFACTURING", "EYE_OPTICAL_LAB_TECH", "Ramu", "Naik", "Sharath", "Gowda"},
+            {"FITTING_TECHNICIAN", "Edging and fitting technician", "TECHNICAL", "OPTICAL_MANUFACTURING", "EYE_OPTICAL_LAB_TECH", "Dinesh", "Poojary", "Yamuna", "Rao"},
+            {"OPTICAL_QUALITY_INSPECTOR", "Optical quality inspector", "TECHNICAL", "OPTICAL_MANUFACTURING", "EYE_OPTICAL_LAB_QC", "Prema", "Shetty", "Kishore", "Bhat"},
+            // Stores
+            {"STORE_KEEPER", "Store keeper", "SUPPORT", "STORES", "EYE_STORE_KEEPER", "Nagaraj", "Hegde", "Sunanda", "Rai"},
+            {"STORES_MANAGER", "Stores manager", "MANAGEMENT", "STORES", "EYE_STORES_MANAGER", "Ashok", "Menon", "Revathi", "Iyer"},
     };
+
+    /** Departments added to the clinic for pharmacy, optical, stores and diagnostics: code, library name, category, local name. */
+    static final String[][] EXTRA_DEPARTMENTS = {
+            {"PHARMACY", "Pharmacy", "CLINICAL_SUPPORT", "Pharmacy"},
+            {"OPTICAL_RETAIL", "Optical retail and dispensing", "OPERATIONS", "Optical shop"},
+            {"OPTICAL_MANUFACTURING", "Optical manufacturing", "OPERATIONS", "Optical lab (manufacturing)"},
+            {"STORES", "Stores", "OPERATIONS", "Stores"},
+            {"LABORATORY", "Laboratory", "CLINICAL_SUPPORT", "Laboratory"},
+            {"RADIOLOGY", "Radiology and imaging", "CLINICAL_SUPPORT", "Imaging and diagnostics"},
+    };
+
+    /** Doctors also prescribe medicines; stores managers also keep the chain's item master (tenant-wide). */
+    static final java.util.List<String> PRESCRIBING_POSITIONS = java.util.List.of("MEDICAL_DIRECTOR", "CONSULTANT_OPHTHALMOLOGIST",
+            "ASSOCIATE_OPHTHALMOLOGIST", "RETINA_CONSULTANT", "GLAUCOMA_CONSULTANT", "CORNEA_CONSULTANT", "PAEDIATRIC_OPHTHALMOLOGIST",
+            "RESIDENT_MEDICAL_OFFICER", "OPHTHALMIC_SURGEON");
 
     /** Roles added for the full staff (the clinic seed already has the core ones). Code, name, then permissions. */
     static final Map<String, String[]> ROLES = new LinkedHashMap<>();
@@ -99,6 +129,26 @@ class ClinicStaff {
         ROLES.put("EYE_CENTRE_DIRECTOR", new String[] {"Eye clinic centre director (sees all centre data)",
                 "org.centre.read", "workforce.read", "iam.assignment.read", "patient.read", "opd.queue.read", "eye.clinical.read",
                 "billing.read", "billing.report.read", "billing.discount.approve", "billing.dayclose.approve", "audit.read"});
+        ROLES.put("EYE_PRESCRIBER", new String[] {"Eye clinic prescribing (medicines)",
+                "org.centre.read", "pharmacy.prescribe", "pharmacy.read"});
+        ROLES.put("EYE_PHARMACIST", new String[] {"Eye clinic pharmacist",
+                "org.centre.read", "patient.read", "pharmacy.read", "pharmacy.dispense", "pharmacy.return", "inventory.read", "billing.read",
+                "billing.collect"});
+        ROLES.put("EYE_PHARMACY_ASSISTANT", new String[] {"Eye clinic pharmacy assistant",
+                "org.centre.read", "patient.read", "pharmacy.read", "pharmacy.dispense", "inventory.read"});
+        ROLES.put("EYE_OPTICAL_SHOP", new String[] {"Eye clinic optical shop",
+                "org.centre.read", "patient.read", "eye.clinical.read", "optical.read", "optical.order", "optical.deliver", "inventory.read",
+                "billing.read", "billing.collect"});
+        ROLES.put("EYE_OPTICAL_LAB_TECH", new String[] {"Optical lab technician",
+                "org.centre.read", "opticallab.read", "opticallab.process", "inventory.read"});
+        ROLES.put("EYE_OPTICAL_LAB_QC", new String[] {"Optical lab quality check and dispatch",
+                "org.centre.read", "opticallab.read", "opticallab.qc", "inventory.read"});
+        ROLES.put("EYE_STORE_KEEPER", new String[] {"Eye clinic store keeper",
+                "org.centre.read", "inventory.read", "inventory.receive", "inventory.transfer", "inventory.adjust.request"});
+        ROLES.put("EYE_STORES_MANAGER", new String[] {"Eye clinic stores manager",
+                "org.centre.read", "inventory.read", "inventory.store.manage", "inventory.adjust.approve", "audit.read"});
+        ROLES.put("ITEM_MASTER", new String[] {"Item master (drugs, frames, lenses) for the whole organisation",
+                "inventory.item.manage"});
         ROLES.put("EYE_APPOINTMENTS", new String[] {"Eye clinic appointments and call centre",
                 "org.centre.read", "patient.read", "patient.register", "opd.queue.read", "opd.appointment.manage"});
         ROLES.put("EYE_PATIENT_RELATIONS", new String[] {"Eye clinic patient relations",
@@ -173,6 +223,15 @@ class ClinicStaff {
                 .findFirst().orElseThrow(() -> new NotFoundException(ClinicSeed.CENTRE_NAME + " not found; run ops/clinic-seed.sh first"));
         Map<String, OrgModels.CentreDepartmentView> departments = new HashMap<>();
         org.centreDepartments(a, centre, false).forEach(d -> departments.put(d.departmentCode(), d));
+        Map<String, UUID> library = new HashMap<>();
+        org.departments(a).forEach(d -> library.put(d.code(), d.id()));
+        for (String[] d : EXTRA_DEPARTMENTS) {
+            if (!departments.containsKey(d[0])) {
+                UUID dep = library.computeIfAbsent(d[0], k -> org.createDepartment(a, new OrgModels.CreateDepartment(d[0], d[1], d[2])).id());
+                org.enableDepartment(a, centre, new OrgModels.EnableDepartment(dep, d[3], null));
+            }
+        }
+        org.centreDepartments(a, centre, false).forEach(d -> departments.put(d.departmentCode(), d));
 
         // Roles: drafted by the first administrator, approved by the second.
         Map<String, UUID> roleIds = new HashMap<>();
@@ -235,7 +294,37 @@ class ClinicStaff {
                         given + " " + family + ", " + s[1] + ", " + departmentLabel + ", " + ClinicSeed.CENTRE_NAME));
             }
         }
+        extraAssignments(a, b, tenant, centre, roleIds);
         return new Summary(POSITIONS.length, logins.size(), logins);
+    }
+
+    /** Prescribing for doctors at the centre, and the item master (tenant-wide) for stores managers; skips what exists. */
+    private void extraAssignments(Actor a, Actor b, UUID tenant, UUID centre, Map<String, UUID> roleIds) {
+        record Holder(UUID userId, UUID postingId, String positionCode) {
+        }
+        List<Holder> holders = jdbc.sql("""
+                select u.id as user_id, p.id as posting_id, pos.code as position_code
+                from iam.user_account u join workforce.posting p on p.person_id = u.person_id
+                join workforce.establishment e on e.id = p.establishment_id and e.centre_id = :c
+                join workforce.position_definition pos on pos.id = e.position_id
+                where pos.code in ('STORES_MANAGER', 'MEDICAL_DIRECTOR', 'CONSULTANT_OPHTHALMOLOGIST', 'ASSOCIATE_OPHTHALMOLOGIST',
+                    'RETINA_CONSULTANT', 'GLAUCOMA_CONSULTANT', 'CORNEA_CONSULTANT', 'PAEDIATRIC_OPHTHALMOLOGIST', 'RESIDENT_MEDICAL_OFFICER',
+                    'OPHTHALMIC_SURGEON')""").param("c", centre).query((rs, i) -> new Holder(rs.getObject("user_id", UUID.class),
+                rs.getObject("posting_id", UUID.class), rs.getString("position_code"))).list();
+        for (Holder h : holders) {
+            boolean stores = "STORES_MANAGER".equals(h.positionCode());
+            UUID role = roleIds.get(stores ? "ITEM_MASTER" : "EYE_PRESCRIBER");
+            boolean has = jdbc.sql("""
+                    select exists(select 1 from iam.role_assignment where user_id = :u and role_id = :r and status in ('ACTIVE', 'PENDING'))""")
+                    .param("u", h.userId()).param("r", role).query(Boolean.class).single();
+            if (has) {
+                continue;
+            }
+            IamModels.AssignmentView requested = assignments.request(a, new IamModels.RequestAssignment("ACCESS", h.userId(), role,
+                    stores ? "TENANT" : "CENTRE", stores ? tenant : centre, h.postingId(), null, null,
+                    stores ? "Keeps the item master for the organisation" : "Prescribes medicines at " + ClinicSeed.CENTRE_NAME));
+            assignments.approve(b, requested.id(), new IamModels.Decision("Approved for the clinic demonstration", requested.version()));
+        }
     }
 
     private UUID publishRole(Actor a, Actor b, String code, String name, Set<String> permissions) {

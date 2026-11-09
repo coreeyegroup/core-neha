@@ -69,6 +69,9 @@ The actor is re-resolved on **every** request, so disabling a user or revoking a
 | patient | `patient` | kernel, audit, org |
 | billing | `billing` | kernel, audit, org, patient |
 | eyecare | `eyecare` | kernel, audit, org, patient, workforce, billing |
+| inventory | `inventory` | kernel, audit, org |
+| pharmacy | `pharmacy` | kernel, audit, patient, billing, inventory |
+| optical | `optical` | kernel, audit, patient, billing, inventory, eyecare |
 | help | — (classpath `help/`) | kernel |
 | operations | — | everything (seed and bootstrap commands) |
 

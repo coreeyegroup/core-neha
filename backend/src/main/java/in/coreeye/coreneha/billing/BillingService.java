@@ -28,6 +28,7 @@ import in.coreeye.coreneha.patient.PatientDirectory;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
@@ -173,20 +174,8 @@ public class BillingService implements BillingDirectory {
         if (!"ACTIVE".equals(patient.status())) {
             throw new RuleViolationException("patient.inactive", "The patient record is inactive");
         }
-        LocalDate today = BusinessTime.today();
-        String period = financialYear(today);
-        int seq = jdbc.sql("""
-                insert into billing.counter (tenant_id, centre_id, period, last_value) values (:t, :c, :p, 1)
-                on conflict (centre_id, period) do update set last_value = billing.counter.last_value + 1 returning last_value
-                """).param("t", actor.tenantId()).param("c", centreId).param("p", period).query(Integer.class).single();
-        String centreCode = org.centre(centreId).orElseThrow().code();
-        String billNo = centreCode + "/" + period + "/" + String.format("%06d", seq);
-        UUID id = jdbc.sql("""
-                insert into billing.bill (tenant_id, centre_id, patient_id, bill_no, bill_date, visit_ref, surgery_ref, created_by)
-                values (:t, :c, :p, :no, :d, :v, :s, :by) returning id
-                """).param("t", actor.tenantId()).param("c", centreId).param("p", cmd.patientId()).param("no", billNo)
-                .param("d", today).param("v", cmd.visitRef()).param("s", cmd.surgeryRef()).param("by", actor.userId())
-                .query(UUID.class).single();
+        UUID id = newBill(actor, centreId, cmd.patientId(), cmd.visitRef(), cmd.surgeryRef());
+        String billNo = jdbc.sql("select bill_no from billing.bill where id = :id").param("id", id).query(String.class).single();
         insertLines(actor, centreId, id, cmd.lines());
         recompute(id);
         audit.record(AuditEntry.success(actor, "billing.bill.create", "bill", id, scope,
@@ -219,6 +208,12 @@ public class BillingService implements BillingDirectory {
         requireOpen(bill, cmd.expectedVersion());
         if (bill.paidAmount().signum() > 0 || !"NONE".equals(bill.discountStatus()) && !"REJECTED".equals(bill.discountStatus())) {
             throw new RuleViolationException("billing.bill.locked", "Charges cannot be removed after a payment or a discount");
+        }
+        boolean sourced = jdbc.sql("select source_type is not null from billing.bill_line where id = :l and bill_id = :b")
+                .param("l", cmd.lineId()).param("b", billId).query(Boolean.class).optional().orElse(false);
+        if (sourced) {
+            throw new RuleViolationException("billing.line.sourced",
+                    "This charge came from the pharmacy or optical counter; return the goods there instead of removing the charge");
         }
         String description = jdbc.sql("delete from billing.bill_line where id = :l and bill_id = :b returning description")
                 .param("l", cmd.lineId()).param("b", billId).query(String.class).optional()
@@ -399,6 +394,75 @@ public class BillingService implements BillingDirectory {
     }
 
     // ---------------------------------------------------------------- helpers
+
+    private UUID newBill(Actor actor, UUID centreId, UUID patientId, UUID visitRef, UUID surgeryRef) {
+        LocalDate today = BusinessTime.today();
+        String period = financialYear(today);
+        int seq = jdbc.sql("""
+                insert into billing.counter (tenant_id, centre_id, period, last_value) values (:t, :c, :p, 1)
+                on conflict (centre_id, period) do update set last_value = billing.counter.last_value + 1 returning last_value
+                """).param("t", actor.tenantId()).param("c", centreId).param("p", period).query(Integer.class).single();
+        String centreCode = org.centre(centreId).orElseThrow().code();
+        String billNo = centreCode + "/" + period + "/" + String.format("%06d", seq);
+        return jdbc.sql("""
+                insert into billing.bill (tenant_id, centre_id, patient_id, bill_no, bill_date, visit_ref, surgery_ref, created_by)
+                values (:t, :c, :p, :no, :d, :v, :s, :by) returning id
+                """).param("t", actor.tenantId()).param("c", centreId).param("p", patientId).param("no", billNo)
+                .param("d", today).param("v", visitRef).param("s", surgeryRef).param("by", actor.userId())
+                .query(UUID.class).single();
+    }
+
+    @Override
+    public java.util.Optional<BillSummary> bill(UUID billId) {
+        return jdbc.sql("""
+                select id, bill_no, status, net_amount, paid_amount, net_amount - paid_amount as balance, discount_status
+                from billing.bill where id = :id""").param("id", billId).query(BillSummary.class).optional();
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
+    public void cancelSourcedBill(Actor actor, UUID billId, String reason) {
+        BillView bill = lockedBill(billId);
+        if (bill.paidAmount().signum() > 0) {
+            throw new RuleViolationException("billing.bill.paid", "Bill " + bill.billNo() + " has payments; refund them through accounts first");
+        }
+        if ("CANCELLED".equals(bill.status())) {
+            return;
+        }
+        jdbc.sql("update billing.bill set status = 'CANCELLED', cancel_reason = :r, closed_at = now(), version = version + 1 where id = :id")
+                .param("r", reason).param("id", billId).update();
+        audit.record(AuditEntry.success(actor, "billing.bill.cancel-sourced", "bill", billId, Scope.centre(bill.centreId()),
+                Map.of("billNo", bill.billNo(), "reason", reason)));
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.MANDATORY)
+    public BillSummary raiseSourcedBill(Actor actor, UUID centreId, UUID patientId, UUID visitRef, String sourceType, UUID sourceRef,
+                                        List<BillingDirectory.SourcedLine> lines) {
+        Scope scope = activeCentre(centreId);
+        if (lines.isEmpty()) {
+            throw new RuleViolationException("billing.no-lines", "Nothing to bill");
+        }
+        UUID id = newBill(actor, centreId, patientId, visitRef, null);
+        for (BillingDirectory.SourcedLine line : lines) {
+            BigDecimal amount = money(line.unitPrice().multiply(BigDecimal.valueOf(line.quantity())));
+            BigDecimal tax = money(amount.multiply(line.gstRate()).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP));
+            jdbc.sql("""
+                    insert into billing.bill_line (tenant_id, bill_id, source_type, source_ref, description, category, quantity, unit_price,
+                        gst_rate, amount, tax_amount, added_by)
+                    values (:t, :b, :st, :sr, :d, :c, :q, :p, :g, :a, :x, :by)
+                    """).param("t", actor.tenantId()).param("b", id).param("st", sourceType).param("sr", sourceRef)
+                    .param("d", line.description()).param("c", line.category()).param("q", line.quantity()).param("p", money(line.unitPrice()))
+                    .param("g", line.gstRate()).param("a", amount).param("x", tax).param("by", actor.userId()).update();
+        }
+        recompute(id);
+        String billNo = jdbc.sql("select bill_no from billing.bill where id = :id").param("id", id).query(String.class).single();
+        audit.record(AuditEntry.success(actor, "billing.bill.raise-sourced", "bill", id, scope,
+                Map.of("billNo", billNo, "source", sourceType, "sourceRef", sourceRef.toString(), "lines", lines.size())));
+        return jdbc.sql("""
+                select id, bill_no, status, net_amount, paid_amount, net_amount - paid_amount as balance, discount_status
+                from billing.bill where id = :id""").param("id", id).query(BillSummary.class).single();
+    }
 
     private void insertLines(Actor actor, UUID centreId, UUID billId, List<BillingModels.LineInput> lines) {
         for (BillingModels.LineInput line : lines) {

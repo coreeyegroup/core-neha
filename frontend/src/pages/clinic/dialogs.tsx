@@ -243,7 +243,7 @@ export function ReasonDialog({ title, label = 'Reason', submitLabel, onClose, ru
 }) {
   const [reason, setReason] = useState('');
   const [flag, setFlag] = useState(false);
-  const action = useAction(() => run(reason, flag), { invalidate: [['appointments'], ['visits'], ['clinic-board'], ['bill'], ['bills'], ['surgeries'], ['surgery'], ['visit']], success, onDone: onClose });
+  const action = useAction(() => run(reason, flag), { invalidate: [['appointments'], ['visits'], ['clinic-board'], ['bill'], ['bills'], ['surgeries'], ['surgery'], ['visit'], ['spectacle-orders']], success, onDone: onClose });
   return (
     <FormDialog open title={title} submitLabel={submitLabel} onClose={onClose} onSubmit={() => action.mutate(undefined)} busy={action.isPending} error={action.error}>
       <TextField label={label} value={reason} onChange={(e) => setReason(e.target.value)} required autoFocus multiline minRows={2} />

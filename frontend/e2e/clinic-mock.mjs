@@ -14,6 +14,10 @@ const ROLE_PERMISSIONS = {
   counselling: ['org.centre.read', 'patient.read', 'opd.queue.read', 'opd.appointment.manage', 'eye.clinical.read', 'eye.counselling.record', 'eye.surgery.schedule', 'billing.read'],
   surgeon: ['org.centre.read', 'patient.read', 'opd.queue.read', 'eye.clinical.read', 'eye.surgery.prepare', 'eye.surgery.operate'],
   director: ['org.centre.read', 'workforce.read', 'iam.assignment.read', 'patient.read', 'opd.queue.read', 'eye.clinical.read', 'billing.read', 'billing.report.read', 'billing.discount.approve', 'billing.dayclose.approve', 'audit.read'],
+  pharmacist: ['org.centre.read', 'patient.read', 'pharmacy.read', 'pharmacy.dispense', 'pharmacy.return', 'inventory.read', 'billing.read', 'billing.collect'],
+  opticalsales: ['org.centre.read', 'patient.read', 'eye.clinical.read', 'optical.read', 'optical.order', 'optical.deliver', 'inventory.read', 'billing.read', 'billing.collect'],
+  labtech: ['org.centre.read', 'opticallab.read', 'opticallab.process', 'inventory.read'],
+  storekeeper: ['org.centre.read', 'inventory.read', 'inventory.receive', 'inventory.transfer', 'inventory.adjust.request'],
   accounts: ['org.centre.read', 'billing.read', 'billing.report.read', 'billing.dayclose.approve', 'billing.discount.approve', 'billing.tariff.manage', 'audit.read'],
 };
 const PERSONAS = {
@@ -23,6 +27,10 @@ const PERSONAS = {
   'lata.counselling': ['Lata Menon', 'counselling', 'Surgery counsellor', 'Surgery counselling'],
   'dr.arjun': ['Arjun Rao', 'surgeon', 'Ophthalmic surgeon', 'Operation theatre (OT)'],
   'shobha.accounts': ['Shobha Kulkarni', 'accounts', 'Accounts manager', 'Accounts'],
+  'arvind.pharmacy': ['Arvind Bhat', 'pharmacist', 'Pharmacist', 'Pharmacy'],
+  'rohit.optical': ['Rohit Shenoy', 'opticalsales', 'Optical sales executive', 'Optical shop'],
+  'dinesh.lab': ['Dinesh Poojary', 'labtech', 'Edging and fitting technician', 'Optical lab (manufacturing)'],
+  'nagaraj.stores': ['Nagaraj Hegde', 'storekeeper', 'Store keeper', 'Stores'],
   'radhika.director': ['Radhika Narayan', 'director', 'Centre director', undefined],
 };
 
@@ -74,6 +82,61 @@ const tariff = [
 const bill = { id: id(7001), centreId: VEC.id, centreName: VEC.name, ...P(1), billNo: 'VEC/2026-27/000002', billDate: today, visitRef: visits[1].id, status: 'OPEN', grossAmount: 2300, taxAmount: 0, discountAmount: 0, netAmount: 2300, paidAmount: 0, balance: 2300, discountStatus: 'NONE', createdByName: 'Priya Sharma', createdAt: ago(10), version: 0 };
 const pendingBill = { ...bill, id: id(7002), ...P(0), billNo: 'VEC/2026-27/000003', visitRef: visits[0].id, discountRequested: 300, discountReason: 'Senior citizen concession', discountStatus: 'PENDING', discountRequestedByName: 'Priya Sharma' };
 const board = { centreId: VEC.id, date: today, appointmentsBooked: 4, appointmentsArrived: 6, appointmentsCancelled: 1, visits: 6, waitingOptometry: 2, waitingConsultation: 1, waitingCounselling: 1, waitingCheckout: 1, completed: 1, cancelled: 0, averageWaitMinutes: 24, longestWaitMinutes: 45, newPatients: 6, surgeriesAdvised: 1, surgeriesToSchedule: 0, surgeriesToday: 2, surgeriesReadyToday: 1, surgeriesCompletedToday: 0, surgeriesUpcoming: 0 };
+
+// ---------------------------------------------------------------- pharmacy, optical, inventory
+const stores = [
+  { id: id(8001), centreId: VEC.id, centreName: VEC.name, code: 'PHARM', name: 'Pharmacy', storeType: 'PHARMACY', status: 'ACTIVE', version: 0 },
+  { id: id(8002), centreId: VEC.id, centreName: VEC.name, code: 'OPTICAL', name: 'Optical shop', storeType: 'OPTICAL', status: 'ACTIVE', version: 0 },
+  { id: id(8003), centreId: VEC.id, centreName: VEC.name, code: 'OPTLAB', name: 'Optical lab', storeType: 'OPTICAL_LAB', status: 'ACTIVE', version: 0 },
+];
+const items = [
+  { id: id(8101), code: 'MOXI-ED', name: 'Moxifloxacin 0.5% eye drops, 5 ml', category: 'DRUG', unit: 'bottle', gstRate: 5, mrp: 150, genericName: 'Moxifloxacin', schedule: 'H', dosageForm: 'Eye drops', status: 'ACTIVE', reorderLevel: 10, version: 0 },
+  { id: id(8102), code: 'CMC-ED', name: 'Carboxymethylcellulose 0.5% lubricant eye drops, 10 ml', category: 'DRUG', unit: 'bottle', gstRate: 5, mrp: 180, schedule: 'OTC', dosageForm: 'Eye drops', status: 'ACTIVE', reorderLevel: 10, version: 0 },
+  { id: id(8103), code: 'FR-TITAN-01', name: 'Titanium full-rim frame, black, 52-18', category: 'FRAME', unit: 'piece', gstRate: 5, mrp: 2500, status: 'ACTIVE', reorderLevel: 2, version: 0 },
+  { id: id(8104), code: 'LN-SV160-BLUE', name: 'Single vision 1.60, blue-cut coating (pair)', category: 'SPECTACLE_LENS', unit: 'pair', gstRate: 5, mrp: 2400, lensType: 'SINGLE_VISION', lensIndex: 1.6, status: 'ACTIVE', reorderLevel: 0, version: 0 },
+  { id: id(8105), code: 'BL-160-SV', name: 'Semi-finished lens blank 1.60, single vision', category: 'LENS_BLANK', unit: 'piece', gstRate: 5, mrp: 260, status: 'ACTIVE', reorderLevel: 2, version: 0 },
+];
+const batch = (n, store, item, no, exp, qty) => ({ id: id(n), storeId: store.id, itemId: item.id, itemCode: item.code, itemName: item.name, category: item.category, batchNo: no, expiryDate: exp, mrp: item.mrp, unitCost: Math.round(item.mrp * 0.62), qtyOnHand: qty, receivedAt: now });
+const soon = new Date(Date.now() + 40 * 86400000).toISOString().slice(0, 10);
+const later = new Date(Date.now() + 600 * 86400000).toISOString().slice(0, 10);
+const batchList = [batch(8201, stores[0], items[0], 'B271A', soon, 9), batch(8202, stores[0], items[0], 'B271B', later, 40), batch(8203, stores[0], items[1], 'B533B', later, 39),
+  batch(8204, stores[1], items[2], 'FR2611', null, 5), batch(8205, stores[2], items[4], 'BK2611', null, 38)];
+const stockLines = (store) => items.filter((i) => batchList.some((b) => b.storeId === store && b.itemId === i.id)).map((i) => {
+  const bs = batchList.filter((b) => b.storeId === store && b.itemId === i.id);
+  const q = bs.reduce((n, b) => n + b.qtyOnHand, 0);
+  return { itemId: i.id, itemCode: i.code, itemName: i.name, category: i.category, unit: i.unit, quantity: q, batches: bs.length, nearestExpiry: bs.map((b) => b.expiryDate).filter(Boolean).sort()[0], reorderLevel: i.reorderLevel, belowReorder: q <= i.reorderLevel, stockValue: bs.reduce((n, b) => n + b.qtyOnHand * b.unitCost, 0) };
+});
+const rx = { id: id(8301), centreId: VEC.id, ...P(1), patientName: patients[1].fullName, visitRef: visits[1].id, prescriptionNo: 'VEC/RX/2026-27/000002', status: 'OPEN', prescribedByName: 'Vijay Kumar', prescribedAt: ago(30), version: 0,
+  lines: [{ id: id(8311), itemId: items[0].id, itemCode: items[0].code, itemName: items[0].name, schedule: 'H', dose: '1 drop', frequency: 'twice a day', durationDays: 30, eye: 'BE', route: 'TOPICAL', quantity: 1, dispensedQty: 0 }] };
+const sale = { id: id(8401), centreId: VEC.id, storeId: stores[0].id, storeName: 'Pharmacy', saleNo: 'VEC/PH/2026-27/000001', ...P(0), prescriptionNo: undefined, billId: bill.id, billNo: 'VEC/2026-27/000004', billStatus: 'OPEN', totalAmount: 205, returnedAmount: 0, soldByName: 'Arvind Bhat', soldAt: ago(20),
+  lines: [{ id: id(8411), itemId: items[1].id, itemCode: items[1].code, itemName: items[1].name, batchNo: 'B533B', expiryDate: later, quantity: 1, mrp: 180, gstRate: 5, amount: 180, returnedQty: 0 }] };
+const order = (n, i, status, extra) => ({ id: id(n), centreId: VEC.id, storeId: stores[1].id, orderNo: `VEC/OPT/2026-27/00000${n % 10}`, ...P(i), sphRe: -2.25, cylRe: -0.5, axisRe: 90, sphLe: -2, pdRe: 32, pdLe: 31.5, lensType: 'SINGLE_VISION', lensIndex: 1.6,
+  frameSource: 'STOCK', frameName: items[2].name, lensSource: 'LAB', lensName: items[3].name, framePrice: 2500, lensPrice: 2400, totalAmount: 4900, billId: bill.id, billNo: 'VEC/2026-27/000005', billStatus: 'OPEN', billBalance: 4900, promisedDate: today, status, orderedByName: 'Rohit Shenoy', orderedAt: ago(200), version: 1, ...extra });
+const orders = [order(8501, 3, 'READY', { labJobStatus: 'DISPATCHED' }), order(8502, 4, 'IN_LAB', { labJobStatus: 'SURFACING' })];
+const job = (n, o, status) => ({ id: id(n), labCentreId: VEC.id, labCentreName: VEC.name, labStoreId: stores[2].id, jobNo: `VEC/LAB/2026-27/00000${n % 10}`, orderId: o.id, orderNo: o.orderNo, shopCentreName: VEC.name, patientName: o.patientName,
+  specification: { orderNo: o.orderNo, right: { sph: -2.25, cyl: -0.5, axis: 90 }, left: { sph: -2 }, pdRight: 32, pdLeft: 31.5, lens: items[3].name, frame: items[2].name }, status, remakeCount: 0, receivedAt: ago(180), version: 2, events: [{ toStatus: 'RECEIVED', actorName: 'Rohit Shenoy', at: ago(180), note: `From order ${o.orderNo}` }] });
+const jobs = [job(8601, orders[1], 'SURFACING'), job(8602, orders[0], 'FITTING')];
+
+export function supplyRoute(method, path, query) {
+  let m;
+  if (method === 'GET' && /^\/v1\/centres\/[^/]+\/stores$/.test(path)) return stores;
+  if (method === 'GET' && (m = path.match(/^\/v1\/stores\/([^/]+)\/stock$/))) return stockLines(m[1]);
+  if (method === 'GET' && (m = path.match(/^\/v1\/stores\/([^/]+)\/batches$/))) return batchList.filter((b) => b.storeId === m[1] && (!query.get('itemId') || b.itemId === query.get('itemId')));
+  if (method === 'GET' && /^\/v1\/stores\/[^/]+\/movements$/.test(path)) return [];
+  if (method === 'GET' && /^\/v1\/centres\/[^/]+\/expiring$/.test(path)) return batchList.filter((b) => b.expiryDate === soon);
+  if (method === 'GET' && /^\/v1\/centres\/[^/]+\/(receipts|transfers)$/.test(path)) return [];
+  if (method === 'GET' && /^\/v1\/centres\/[^/]+\/adjustments$/.test(path)) return [{ id: id(8701), storeId: stores[0].id, storeName: 'Pharmacy', batchId: batchList[1].id, itemCode: items[0].code, itemName: items[0].name, batchNo: 'B271B', quantity: -1, reason: 'DAMAGED', note: 'Bottle cracked on the shelf', status: 'PENDING', requestedByName: 'Nagaraj Hegde', requestedAt: ago(60), version: 0 }];
+  if (method === 'GET' && path === '/v1/inventory/items') return items.filter((i) => !query.get('category') || i.category === query.get('category'));
+  if (method === 'GET' && /^\/v1\/centres\/[^/]+\/prescriptions$/.test(path)) return [rx];
+  if (method === 'GET' && /^\/v1\/patients\/[^/]+\/prescriptions$/.test(path)) return [rx];
+  if (method === 'GET' && /^\/v1\/centres\/[^/]+\/pharmacy-sales$/.test(path)) return [sale];
+  if (method === 'POST' && path === '/v1/pharmacy/sales') return { ...sale, id: id(8402), saleNo: 'VEC/PH/2026-27/000002', ...P(1), prescriptionId: rx.id, prescriptionNo: rx.prescriptionNo, totalAmount: 150, lines: [{ ...sale.lines[0], itemName: items[0].name, batchNo: 'B271A', mrp: 150, amount: 150 }] };
+  if (method === 'GET' && /^\/v1\/centres\/[^/]+\/spectacle-orders$/.test(path)) return orders;
+  if (method === 'GET' && /^\/v1\/centres\/[^/]+\/lab-jobs$/.test(path)) return jobs;
+  if (method === 'GET' && (m = path.match(/^\/v1\/lab-jobs\/([^/]+)$/))) return jobs.find((j) => j.id === m[1]) ?? jobs[0];
+  if (method === 'POST' && (m = path.match(/^\/v1\/lab-jobs\/([^/]+)\/advance$/))) return { ...(jobs.find((j) => j.id === m[1]) ?? jobs[0]), status: 'QC' };
+  return undefined;
+}
 
 export function clinicRoute(method, path, query) {
   let m;

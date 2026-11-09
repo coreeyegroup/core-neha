@@ -87,6 +87,16 @@ public class BootstrapService {
         } catch (DuplicateKeyException e) {
             throw new ConflictException("bootstrap.tenant-exists", "A tenant with this code already exists; bootstrap runs only once");
         }
+        // A first licence with every module; the vendor narrows it with ops/tenant-licence.sh (V8).
+        jdbc.sql("""
+                insert into org.tenant_licence (tenant_id, licence_no, licensee_name, plan, valid_from, notes)
+                values (:t, :no, :n, :plan, current_date, 'Created at bootstrap')
+                """).param("t", tenantId).param("no", "LIC-" + code.toUpperCase(java.util.Locale.ROOT)).param("n", name)
+                .param("plan", demo ? "DEMO" : "STANDARD").update();
+        jdbc.sql("""
+                insert into org.tenant_module (tenant_id, module_code)
+                select :t, m from unnest(cast(:modules as text[])) as m
+                """).param("t", tenantId).param("modules", in.coreeye.coreneha.org.TenantLicensing.ALL_MODULES.toArray(new String[0])).update();
         Scope tenantScope = Scope.tenant(tenantId);
         audit.record(AuditEntry.system(tenantId, "bootstrap", "org.tenant.create", "tenant", tenantId, tenantScope,
                 Map.of("code", code, "demo", demo)));

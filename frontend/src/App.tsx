@@ -24,6 +24,7 @@ import { HelpChapter, HelpHome } from './pages/Help';
 import { AccountsDesk } from './pages/clinic/AccountsDesk';
 import { BillPage } from './pages/clinic/BillPage';
 import { CentreActivity } from './pages/clinic/CentreActivity';
+import { Licence } from './pages/Licence';
 import { ConsultationDesk, OptometryDesk } from './pages/clinic/ClinicalDesks';
 import { PatientRecord, Patients } from './pages/clinic/Patients';
 import { ReceptionDesk } from './pages/clinic/ReceptionDesk';
@@ -38,6 +39,7 @@ const router = createBrowserRouter(
       children: [
         { index: true, element: <Overview /> },
         { path: 'activity', element: <CentreActivity /> },
+        { path: 'licence', element: <Licence /> },
         { path: 'reception', element: <ReceptionDesk /> },
         { path: 'optometry', element: <OptometryDesk /> },
         { path: 'consultation', element: <ConsultationDesk /> },

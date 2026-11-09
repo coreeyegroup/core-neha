@@ -18,6 +18,7 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/accounts', label: 'Accounts', anyOf: ['billing.report.read', 'billing.dayclose.submit', 'billing.dayclose.approve', 'billing.tariff.manage'], group: 'Clinic' },
   { to: '/patients', label: 'Patient database', permission: 'patient.read', group: 'Clinic' },
   { to: '/centres', label: 'Centres', permission: 'org.centre.read', group: 'Organisation' },
+  { to: '/licence', label: 'Licence', permission: 'org.structure.read', group: 'Organisation' },
   { to: '/organisation', label: 'Hierarchy and legal entities', permission: 'org.structure.read', group: 'Organisation' },
   { to: '/departments', label: 'Department library', permission: 'org.structure.read', group: 'Organisation' },
   { to: '/positions', label: 'Position library', permission: 'workforce.read', group: 'People' },

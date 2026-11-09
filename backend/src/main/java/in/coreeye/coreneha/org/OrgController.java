@@ -28,10 +28,18 @@ class OrgController {
 
     private final OrgService org;
     private final CurrentActor actor;
+    private final TenantLicensing licensing;
 
-    OrgController(OrgService org, CurrentActor actor) {
+    OrgController(OrgService org, CurrentActor actor, TenantLicensing licensing) {
         this.org = org;
         this.actor = actor;
+        this.licensing = licensing;
+    }
+
+    /** The organisation's own licence: modules, validity, centres (read only; the vendor changes it). */
+    @GetMapping("/licence")
+    TenantLicensing.LicenceView licence() {
+        return licensing.licence(actor.require());
     }
 
     @GetMapping("/legal-entities")

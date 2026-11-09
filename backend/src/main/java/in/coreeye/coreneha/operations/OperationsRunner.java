@@ -5,6 +5,7 @@ import java.util.List;
 
 import in.coreeye.coreneha.iam.BootstrapService;
 import in.coreeye.coreneha.kernel.CoreNehaProperties;
+import in.coreeye.coreneha.org.TenantLicensing;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
@@ -29,16 +30,19 @@ class OperationsRunner implements ApplicationRunner {
     private final DemoSeed demoSeed;
     private final ClinicSeed clinicSeed;
     private final ClinicStaff clinicStaff;
+    private final TenantLicensing licensing;
     private final ConfigurableApplicationContext context;
 
     OperationsRunner(CoreNehaProperties props, Environment env, BootstrapService bootstrap, DemoSeed demoSeed,
-                     ClinicSeed clinicSeed, ClinicStaff clinicStaff, ConfigurableApplicationContext context) {
+                     ClinicSeed clinicSeed, ClinicStaff clinicStaff, TenantLicensing licensing,
+                     ConfigurableApplicationContext context) {
         this.props = props;
         this.env = env;
         this.bootstrap = bootstrap;
         this.demoSeed = demoSeed;
         this.clinicSeed = clinicSeed;
         this.clinicStaff = clinicStaff;
+        this.licensing = licensing;
         this.context = context;
     }
 
@@ -55,6 +59,10 @@ class OperationsRunner implements ApplicationRunner {
                 case "demo-seed" -> runDemoSeed();
                 case "clinic-seed" -> runClinicSeed();
                 case "clinic-staff" -> runClinicStaff();
+                case "tenant-list" -> runTenantList();
+                case "tenant-licence" -> runTenantLicence();
+                case "tenant-suspend" -> licensing.setStatus(required("CORE_NEHA_TENANT_CODE"), false, required("CORE_NEHA_REASON"));
+                case "tenant-activate" -> licensing.setStatus(required("CORE_NEHA_TENANT_CODE"), true, required("CORE_NEHA_REASON"));
                 default -> throw new IllegalArgumentException("Unknown command: " + command);
             }
         } catch (Exception e) {
@@ -125,5 +133,59 @@ class OperationsRunner implements ApplicationRunner {
                 summary.logins());
         log.info("{} staff: {} positions, {} people added; one-time passwords written to {}", ClinicSeed.CENTRE_NAME,
                 summary.positions(), summary.added(), file.getFileName());
+    }
+
+    private String required(String name) {
+        String v = env.getProperty(name);
+        if (v == null || v.isBlank()) {
+            throw new IllegalArgumentException(name + " is required");
+        }
+        return v.trim();
+    }
+
+    private String optional(String name) {
+        String v = env.getProperty(name);
+        return v == null || v.isBlank() ? null : v.trim();
+    }
+
+    /** Prints every hospital chain on this installation: licence and size only (no patient or staff data). */
+    private void runTenantList() {
+        System.out.printf("%-14s %-34s %-9s %-16s %-10s %-11s %-7s %-7s %s%n", "CODE", "NAME", "STATUS", "LICENCE", "PLAN", "VALID TO",
+                "CENTRES", "USERS", "MODULES");
+        for (TenantLicensing.TenantSummary t : licensing.tenants()) {
+            System.out.printf("%-14s %-34s %-9s %-16s %-10s %-11s %-7s %-7d %s%n", t.code(), abbreviate(t.name(), 34), t.status(),
+                    t.licenceNo(), t.plan(), t.validTo() == null ? "open" : t.validTo(),
+                    t.centres() + (t.maxCentres() == null ? "" : "/" + t.maxCentres()), t.users(), String.join(",", t.modules()));
+        }
+    }
+
+    /** Sets one chain's licence terms and modules (CORE_NEHA_TENANT_CODE, CORE_NEHA_LICENCE_*, CORE_NEHA_REASON). */
+    private void runTenantLicence() {
+        String code = required("CORE_NEHA_TENANT_CODE");
+        TenantLicensing.TenantSummary current = licensing.tenants().stream().filter(t -> t.code().equals(code)).findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("No tenant with code '" + code + "'"));
+        String modules = optional("CORE_NEHA_LICENCE_MODULES");
+        String validTo = optional("CORE_NEHA_LICENCE_VALID_TO");
+        String validFrom = optional("CORE_NEHA_LICENCE_VALID_FROM");
+        String maxCentres = optional("CORE_NEHA_LICENCE_MAX_CENTRES");
+        licensing.setLicence(code, new TenantLicensing.LicenceChange(
+                orElse(optional("CORE_NEHA_LICENCE_NO"), current.licenceNo()),
+                orElse(optional("CORE_NEHA_LICENSEE"), current.licenseeName()),
+                orElse(optional("CORE_NEHA_LICENCE_PLAN"), current.plan()),
+                validFrom == null ? orElse(current.validFrom(), java.time.LocalDate.now()) : java.time.LocalDate.parse(validFrom),
+                validTo == null ? current.validTo() : "open".equalsIgnoreCase(validTo) ? null : java.time.LocalDate.parse(validTo),
+                maxCentres == null ? current.maxCentres() : "unlimited".equalsIgnoreCase(maxCentres) ? null : Integer.valueOf(maxCentres),
+                modules == null ? current.modules() : "ALL".equalsIgnoreCase(modules) ? TenantLicensing.ALL_MODULES
+                        : List.of(modules.toUpperCase(java.util.Locale.ROOT).split("\\s*,\\s*")),
+                required("CORE_NEHA_REASON")));
+        runTenantList();
+    }
+
+    private static <T> T orElse(T value, T fallback) {
+        return value == null ? fallback : value;
+    }
+
+    private static String abbreviate(String s, int n) {
+        return s == null || s.length() <= n ? s : s.substring(0, n - 1) + "…";
     }
 }

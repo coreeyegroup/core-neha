@@ -898,6 +898,20 @@ export interface LevelView {
   version?: number;
 }
 
+export interface LicenceView {
+  centres?: number;
+  current?: boolean;
+  licenceNo?: string;
+  licenseeName?: string;
+  maxCentres?: number;
+  modules?: string[];
+  plan?: string;
+  status?: string;
+  tenantName?: string;
+  validFrom?: string;
+  validTo?: string;
+}
+
 export interface MyPosting {
   centreId?: string;
   centreName?: string;
@@ -3281,6 +3295,27 @@ return apiFetch<LegalEntityView>(getCreateLegalEntityUrl(),
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
     body: JSON.stringify(createLegalEntityBody)
+  }
+);}
+
+
+
+export const getLicenceUrl = () => {
+
+
+
+
+  return `/v1/licence`
+}
+
+export const licence = async ( options?: Parameters<typeof apiFetch>[1]): Promise<LicenceView> => {
+
+  return apiFetch<LicenceView>(getLicenceUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
   }
 );}
 

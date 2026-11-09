@@ -63,6 +63,7 @@ const routes = {
   'GET /v1/departments': () => depts,
   'GET /v1/hierarchy/levels': () => [{ id: id(11), code: 'STATE', name: 'State', rank: 1, status: 'ACTIVE', version: 0 }, { id: id(12), code: 'CITY', name: 'City', rank: 2, status: 'ACTIVE', version: 0 }],
   'GET /v1/hierarchy/nodes': () => [{ id: id(21), levelCode: 'STATE', code: 'KA', name: 'Karnataka', path: `/${id(21)}/`, status: 'ACTIVE' }, { id: id(22), levelCode: 'CITY', code: 'BLR', name: 'Bengaluru', path: `/${id(21)}/${id(22)}/`, status: 'ACTIVE' }],
+  'GET /v1/licence': () => ({ tenantName: 'Neha Health Group (demonstration)', licenceNo: 'LIC-DEMO', licenseeName: 'Neha Health Group (demonstration)', plan: 'DEMO', validFrom: '2026-11-01', current: true, status: 'ACTIVE', modules: ['BILLING', 'EYE_CARE', 'INVENTORY', 'LABORATORY', 'OPTICAL', 'OPTICAL_LAB', 'PHARMACY', 'RADIOLOGY'], centres: 21, maxCentres: 25 }),
   'GET /v1/legal-entities': () => [{ id: id(31), code: 'HOSP', name: 'Neha Hospitals Pvt Ltd (demo)', status: 'ACTIVE', version: 0 }],
   'GET /v1/positions': () => [{ id: id(41), code: 'OPTOMETRIST', title: 'Optometrist', category: 'ALLIED_HEALTH', status: 'ACTIVE', version: 0 }],
   'GET /v1/people': () => [{ id: id(601), givenName: 'Kiran', familyName: 'Reddy', email: 'kiran@demo.core-neha.invalid', demo: true, status: 'ACTIVE', version: 0 }],

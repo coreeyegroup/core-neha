@@ -40,3 +40,11 @@ test('role approval shows the impact before publishing', async ({ page }) => {
   await expect(page.getByText(/changes the access of 1 user/)).toBeVisible();
   await expect(page.getByText('audit.read').last()).toBeVisible();
 });
+
+test('an administrator reads the organisation licence and its modules', async ({ page }) => {
+  await page.goto('./licence');
+  await expect(page.getByRole('heading', { name: 'Licence' })).toBeVisible();
+  await expect(page.getByText('LIC-DEMO')).toBeVisible();
+  await expect(page.getByText('21 in use of 25 licensed')).toBeVisible();
+  await expect(page.getByRole('row', { name: /Optical manufacturing/ }).getByText('Licensed')).toBeVisible();
+});

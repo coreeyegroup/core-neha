@@ -1949,6 +1949,51 @@
         },
         "type": "object"
       },
+      "LicenceView": {
+        "properties": {
+          "centres": {
+            "format": "int64",
+            "type": "integer"
+          },
+          "current": {
+            "type": "boolean"
+          },
+          "licenceNo": {
+            "type": "string"
+          },
+          "licenseeName": {
+            "type": "string"
+          },
+          "maxCentres": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "modules": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "plan": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "tenantName": {
+            "type": "string"
+          },
+          "validFrom": {
+            "format": "date",
+            "type": "string"
+          },
+          "validTo": {
+            "format": "date",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
       "LineInput": {
         "properties": {
           "quantity": {
@@ -5821,6 +5866,26 @@
               }
             },
             "description": "Created"
+          }
+        },
+        "tags": [
+          "org-controller"
+        ]
+      }
+    },
+    "/v1/licence": {
+      "get": {
+        "operationId": "licence",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LicenceView"
+                }
+              }
+            },
+            "description": "OK"
           }
         },
         "tags": [

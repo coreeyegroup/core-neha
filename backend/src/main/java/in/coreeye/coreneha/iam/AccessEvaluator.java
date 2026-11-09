@@ -26,7 +26,9 @@ import org.springframework.web.context.request.RequestContextHolder;
  * published version, for an active user. Evaluated on every request (cached
  * only for the duration of one request), so revocation takes effect on the
  * next request. Restrictions win: a permission is either held at a covering
- * scope or refused; nothing else grants access.
+ * scope or refused; nothing else grants access. A suspended tenant has no
+ * access, and a permission of a module the tenant is not licensed for (V8) is
+ * never granted, whatever the roles say.
  */
 @Service
 class AccessEvaluator implements AccessControl {
@@ -39,11 +41,13 @@ class AccessEvaluator implements AccessControl {
                    g.permission_code as permission
             from iam.role_assignment ra
             join iam.user_account u on u.id = ra.user_id and u.status = 'ACTIVE'
+            join org.tenant t on t.id = u.tenant_id and t.status = 'ACTIVE'
             join iam.role r on r.id = ra.role_id and r.status = 'ACTIVE'
             join iam.role_version rv on rv.role_id = r.id and rv.status = 'PUBLISHED'
             join iam.role_version_grant g on g.role_version_id = rv.id
             where ra.user_id = :u and ra.kind = 'ACCESS' and ra.status = 'ACTIVE'
               and ra.valid_from <= current_date and (ra.valid_to is null or ra.valid_to >= current_date)
+              and org.permission_licensed(u.tenant_id, g.permission_code)
             """;
 
     private final JdbcClient jdbc;

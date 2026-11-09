@@ -39,9 +39,12 @@ public class OrgService {
     private final List<DepartmentRetirementCheck> retirementChecks;
     private final OrgDirectory directory;
 
+    private final TenantLicensing licensing;
+
     OrgService(JdbcClient jdbc, AccessControl access, AuditLog audit, List<DepartmentRetirementCheck> retirementChecks,
-               OrgDirectory directory) {
+               OrgDirectory directory, TenantLicensing licensing) {
         this.directory = directory;
+        this.licensing = licensing;
         this.jdbc = jdbc;
         this.access = access;
         this.audit = audit;
@@ -181,6 +184,7 @@ public class OrgService {
         OrgDirectory.NodeRef node = directory.node(cmd.nodeId()).orElseThrow(() -> new NotFoundException("Hierarchy node not found"));
         Scope scope = Scope.node(node.id());
         access.require(actor, Permission.ORG_CENTRE_CREATE, scope, "org.centre.create", "centre", null);
+        licensing.requireCentreAllowance(actor.tenantId());
         boolean legalEntityActive = jdbc.sql("select count(*) from org.legal_entity where id = :id and status = 'ACTIVE'")
                 .param("id", cmd.legalEntityId()).query(Integer.class).single() == 1;
         if (!legalEntityActive) {

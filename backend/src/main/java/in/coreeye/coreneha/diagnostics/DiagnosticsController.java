@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import in.coreeye.coreneha.diagnostics.DiagnosticsModels.Catalogue;
-import in.coreeye.coreneha.diagnostics.DiagnosticsModels.OrderView;
+import in.coreeye.coreneha.diagnostics.DiagnosticsModels.DiagnosticOrderView;
 import in.coreeye.coreneha.kernel.CurrentActor;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -40,72 +40,72 @@ class DiagnosticsController {
 
     @PostMapping("/centres/{centreId}/diagnostic-orders")
     @ResponseStatus(HttpStatus.CREATED)
-    List<OrderView> orderDiagnostics(@PathVariable UUID centreId, @Valid @RequestBody DiagnosticsModels.CreateOrders cmd) {
+    List<DiagnosticOrderView> orderDiagnostics(@PathVariable UUID centreId, @Valid @RequestBody DiagnosticsModels.CreateOrders cmd) {
         return diagnostics.order(actor.require(), centreId, cmd);
     }
 
     @GetMapping("/centres/{centreId}/diagnostic-orders")
-    List<OrderView> diagnosticWorklist(@PathVariable UUID centreId, @RequestParam String kind, @RequestParam(required = false) String status) {
+    List<DiagnosticOrderView> diagnosticWorklist(@PathVariable UUID centreId, @RequestParam String kind, @RequestParam(required = false) String status) {
         return diagnostics.worklist(actor.require(), centreId, kind, status);
     }
 
     @GetMapping("/patients/{patientId}/diagnostic-orders")
-    List<OrderView> patientDiagnostics(@PathVariable UUID patientId) {
+    List<DiagnosticOrderView> patientDiagnostics(@PathVariable UUID patientId) {
         return diagnostics.forPatient(actor.require(), patientId);
     }
 
     @GetMapping("/diagnostic-orders/{orderId}")
-    OrderView diagnosticOrder(@PathVariable UUID orderId) {
+    DiagnosticOrderView diagnosticOrder(@PathVariable UUID orderId) {
         return diagnostics.get(actor.require(), orderId);
     }
 
     @PostMapping("/diagnostic-orders/{orderId}/cancel")
-    OrderView cancelDiagnosticOrder(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Step cmd) {
+    DiagnosticOrderView cancelDiagnosticOrder(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Step cmd) {
         return diagnostics.cancel(actor.require(), orderId, cmd);
     }
 
     @PostMapping("/diagnostic-orders/{orderId}/collect")
-    OrderView collectSample(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Step cmd) {
+    DiagnosticOrderView collectSample(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Step cmd) {
         return diagnostics.collect(actor.require(), orderId, cmd);
     }
 
     @PostMapping("/diagnostic-orders/{orderId}/receive")
-    OrderView receiveSample(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Step cmd) {
+    DiagnosticOrderView receiveSample(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Step cmd) {
         return diagnostics.receive(actor.require(), orderId, cmd);
     }
 
     @PostMapping("/diagnostic-orders/{orderId}/reject")
-    OrderView rejectSample(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Step cmd) {
+    DiagnosticOrderView rejectSample(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Step cmd) {
         return diagnostics.reject(actor.require(), orderId, cmd);
     }
 
     @PostMapping("/diagnostic-orders/{orderId}/results")
-    OrderView enterLabResults(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.EnterResults cmd) {
+    DiagnosticOrderView enterLabResults(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.EnterResults cmd) {
         return diagnostics.enterResults(actor.require(), orderId, cmd);
     }
 
     @PostMapping("/diagnostic-orders/{orderId}/validate")
-    OrderView validateLabResults(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Step cmd) {
+    DiagnosticOrderView validateLabResults(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Step cmd) {
         return diagnostics.validate(actor.require(), orderId, cmd);
     }
 
     @PostMapping("/diagnostic-orders/{orderId}/schedule")
-    OrderView scheduleImaging(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Schedule cmd) {
+    DiagnosticOrderView scheduleImaging(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Schedule cmd) {
         return diagnostics.schedule(actor.require(), orderId, cmd);
     }
 
     @PostMapping("/diagnostic-orders/{orderId}/acquire")
-    OrderView acquireImaging(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Acquire cmd) {
+    DiagnosticOrderView acquireImaging(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Acquire cmd) {
         return diagnostics.acquire(actor.require(), orderId, cmd);
     }
 
     @PostMapping("/diagnostic-orders/{orderId}/report")
-    OrderView reportImaging(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Report cmd) {
+    DiagnosticOrderView reportImaging(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Report cmd) {
         return diagnostics.report(actor.require(), orderId, cmd);
     }
 
     @PostMapping("/diagnostic-orders/{orderId}/verify")
-    OrderView verifyImaging(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Step cmd) {
+    DiagnosticOrderView verifyImaging(@PathVariable UUID orderId, @Valid @RequestBody DiagnosticsModels.Step cmd) {
         return diagnostics.verify(actor.require(), orderId, cmd);
     }
 

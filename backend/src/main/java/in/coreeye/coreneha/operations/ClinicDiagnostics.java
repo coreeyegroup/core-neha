@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import in.coreeye.coreneha.diagnostics.DiagnosticsModels;
-import in.coreeye.coreneha.diagnostics.DiagnosticsModels.OrderView;
+import in.coreeye.coreneha.diagnostics.DiagnosticsModels.DiagnosticOrderView;
 import in.coreeye.coreneha.diagnostics.DiagnosticsModels.ParameterView;
 import in.coreeye.coreneha.diagnostics.DiagnosticsService;
 import in.coreeye.coreneha.diagnostics.ImagingArchive;
@@ -124,11 +124,11 @@ class ClinicDiagnostics {
         Actor technician = staff("LAB_TECHNICIAN");
         Actor radiographer = staff("RADIOGRAPHER");
 
-        List<OrderView> preOp = diagnostics.order(doctor, centre, new DiagnosticsModels.CreateOrders(patients.get(0), null, "ROUTINE",
+        List<DiagnosticOrderView> preOp = diagnostics.order(doctor, centre, new DiagnosticsModels.CreateOrders(patients.get(0), null, "ROUTINE",
                 "Pre-operative work-up for cataract surgery", List.of(t.get("FBS"), t.get("CBC"), t.get("HBSAG")), List.of(p.get("CXR"))));
-        List<OrderView> diabetic = diagnostics.order(doctor, centre, new DiagnosticsModels.CreateOrders(patients.get(1), null, "URGENT",
+        List<DiagnosticOrderView> diabetic = diagnostics.order(doctor, centre, new DiagnosticsModels.CreateOrders(patients.get(1), null, "URGENT",
                 "Diabetic retinopathy review", List.of(t.get("HBA1C"), t.get("RBS")), List.of(p.get("OCTMAC"), p.get("FUNDUS"))));
-        List<OrderView> orbit = diagnostics.order(staff("ASSOCIATE_OPHTHALMOLOGIST"), centre, new DiagnosticsModels.CreateOrders(patients.get(2),
+        List<DiagnosticOrderView> orbit = diagnostics.order(staff("ASSOCIATE_OPHTHALMOLOGIST"), centre, new DiagnosticsModels.CreateOrders(patients.get(2),
                 null, "ROUTINE", "Proptosis of the left eye", List.of(t.get("URINE"), t.get("CONJ")), List.of(p.get("CTORBIT"))));
 
         // Laboratory: collect, receive, result, and validate some (by the pathologist, not the technician).
@@ -136,7 +136,7 @@ class ClinicDiagnostics {
                 "FBS", new Object[] {"168"}, "CBC", new Object[] {"13.1", "7.8", "265"}, "HBSAG", new Object[] {"Non-reactive"},
                 "HBA1C", new Object[] {"8.4"}, "RBS", new Object[] {"462"});
         int validated = 0;
-        for (OrderView o : concat(preOp, diabetic)) {
+        for (DiagnosticOrderView o : concat(preOp, diabetic)) {
             if (!"LAB".equals(o.kind())) {
                 continue;
             }
@@ -161,13 +161,13 @@ class ClinicDiagnostics {
                 validated++;
             }
         }
-        OrderView conj = orbit.stream().filter(o -> "CONJ".equals(o.testCode())).findFirst().orElseThrow();
+        DiagnosticOrderView conj = orbit.stream().filter(o -> "CONJ".equals(o.testCode())).findFirst().orElseThrow();
         diagnostics.collect(phlebotomist, conj.id(), new DiagnosticsModels.Step(conj.version(), null));
 
         // Imaging: schedule and perform; images go to the archive when one is connected.
         int verified = 0;
         Instant now = Instant.now().truncatedTo(ChronoUnit.MINUTES);
-        for (OrderView o : concat(preOp, concat(diabetic, orbit))) {
+        for (DiagnosticOrderView o : concat(preOp, concat(diabetic, orbit))) {
             if (!"IMAGING".equals(o.kind())) {
                 continue;
             }
@@ -205,7 +205,7 @@ class ClinicDiagnostics {
     }
 
     /** Synthetic images for an imaging order, stored in the archive under the order's accession number. */
-    private void storeImages(OrderView o) {
+    private void storeImages(DiagnosticOrderView o) {
         SyntheticDicom.Study study = SyntheticDicom.newStudy();
         String kind = switch (o.testCode()) {
             case "OCTMAC", "OCTRNFL" -> "OCT";
@@ -223,8 +223,8 @@ class ClinicDiagnostics {
         }
     }
 
-    private static List<OrderView> concat(List<OrderView> a, List<OrderView> b) {
-        List<OrderView> all = new java.util.ArrayList<>(a);
+    private static List<DiagnosticOrderView> concat(List<DiagnosticOrderView> a, List<DiagnosticOrderView> b) {
+        List<DiagnosticOrderView> all = new java.util.ArrayList<>(a);
         all.addAll(b);
         return all;
     }

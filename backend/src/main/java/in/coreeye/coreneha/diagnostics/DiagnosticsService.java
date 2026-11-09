@@ -13,7 +13,7 @@ import in.coreeye.coreneha.audit.AuditLog;
 import in.coreeye.coreneha.billing.BillingDirectory;
 import in.coreeye.coreneha.diagnostics.DiagnosticsModels.Catalogue;
 import in.coreeye.coreneha.diagnostics.DiagnosticsModels.LabTestView;
-import in.coreeye.coreneha.diagnostics.DiagnosticsModels.OrderView;
+import in.coreeye.coreneha.diagnostics.DiagnosticsModels.DiagnosticOrderView;
 import in.coreeye.coreneha.diagnostics.DiagnosticsModels.ParameterView;
 import in.coreeye.coreneha.diagnostics.DiagnosticsModels.ProcedureView;
 import in.coreeye.coreneha.diagnostics.DiagnosticsModels.ResultView;
@@ -163,7 +163,7 @@ public class DiagnosticsService {
 
     /** Orders tests and imaging for a patient in one request: one accession number each, one bill for the request. */
     @Transactional
-    public List<OrderView> order(Actor actor, UUID centreId, DiagnosticsModels.CreateOrders cmd) {
+    public List<DiagnosticOrderView> order(Actor actor, UUID centreId, DiagnosticsModels.CreateOrders cmd) {
         Scope scope = Scope.centre(centreId);
         List<UUID> tests = cmd.labTestIds() == null ? List.of() : cmd.labTestIds();
         List<UUID> procedures = cmd.procedureIds() == null ? List.of() : cmd.procedureIds();
@@ -224,7 +224,7 @@ public class DiagnosticsService {
     }
 
     @Transactional
-    public OrderView cancel(Actor actor, UUID orderId, DiagnosticsModels.Step cmd) {
+    public DiagnosticOrderView cancel(Actor actor, UUID orderId, DiagnosticsModels.Step cmd) {
         OrderRow o = locked(orderId, cmd.expectedVersion());
         Permission p = "LAB".equals(o.kind()) ? Permission.LAB_ORDER : Permission.RADIOLOGY_ORDER;
         access.require(actor, p, Scope.centre(o.centreId()), "diagnostics.cancel", "diagnostic-order", orderId.toString());
@@ -242,7 +242,7 @@ public class DiagnosticsService {
     // ---------------------------------------------------------------- laboratory
 
     @Transactional
-    public OrderView collect(Actor actor, UUID orderId, DiagnosticsModels.Step cmd) {
+    public DiagnosticOrderView collect(Actor actor, UUID orderId, DiagnosticsModels.Step cmd) {
         OrderRow o = lab(locked(orderId, cmd.expectedVersion()));
         access.require(actor, Permission.LAB_COLLECT, Scope.centre(o.centreId()), "lab.collect", "diagnostic-order", orderId.toString());
         requireStatus(o, "ORDERED");
@@ -252,7 +252,7 @@ public class DiagnosticsService {
     }
 
     @Transactional
-    public OrderView receive(Actor actor, UUID orderId, DiagnosticsModels.Step cmd) {
+    public DiagnosticOrderView receive(Actor actor, UUID orderId, DiagnosticsModels.Step cmd) {
         OrderRow o = lab(locked(orderId, cmd.expectedVersion()));
         access.require(actor, Permission.LAB_PROCESS, Scope.centre(o.centreId()), "lab.receive", "diagnostic-order", orderId.toString());
         requireStatus(o, "COLLECTED");
@@ -263,7 +263,7 @@ public class DiagnosticsService {
 
     /** Rejects an unsuitable sample (haemolysed, clotted, mislabelled): back to collection, with the reason. */
     @Transactional
-    public OrderView reject(Actor actor, UUID orderId, DiagnosticsModels.Step cmd) {
+    public DiagnosticOrderView reject(Actor actor, UUID orderId, DiagnosticsModels.Step cmd) {
         OrderRow o = lab(locked(orderId, cmd.expectedVersion()));
         access.require(actor, Permission.LAB_PROCESS, Scope.centre(o.centreId()), "lab.reject", "diagnostic-order", orderId.toString());
         requireStatus(o, "COLLECTED", "IN_LAB");
@@ -277,7 +277,7 @@ public class DiagnosticsService {
     }
 
     @Transactional
-    public OrderView enterResults(Actor actor, UUID orderId, DiagnosticsModels.EnterResults cmd) {
+    public DiagnosticOrderView enterResults(Actor actor, UUID orderId, DiagnosticsModels.EnterResults cmd) {
         OrderRow o = lab(locked(orderId, cmd.expectedVersion()));
         access.require(actor, Permission.LAB_PROCESS, Scope.centre(o.centreId()), "lab.result", "diagnostic-order", orderId.toString());
         requireStatus(o, "IN_LAB", "RESULTED");
@@ -318,7 +318,7 @@ public class DiagnosticsService {
 
     /** Validation by a second person (pathologist) releases the report to the doctor. */
     @Transactional
-    public OrderView validate(Actor actor, UUID orderId, DiagnosticsModels.Step cmd) {
+    public DiagnosticOrderView validate(Actor actor, UUID orderId, DiagnosticsModels.Step cmd) {
         OrderRow o = lab(locked(orderId, cmd.expectedVersion()));
         access.require(actor, Permission.LAB_VALIDATE, Scope.centre(o.centreId()), "lab.validate", "diagnostic-order", orderId.toString());
         requireStatus(o, "RESULTED");
@@ -358,7 +358,7 @@ public class DiagnosticsService {
     // ---------------------------------------------------------------- imaging
 
     @Transactional
-    public OrderView schedule(Actor actor, UUID orderId, DiagnosticsModels.Schedule cmd) {
+    public DiagnosticOrderView schedule(Actor actor, UUID orderId, DiagnosticsModels.Schedule cmd) {
         OrderRow o = imaging(locked(orderId, cmd.expectedVersion()));
         access.require(actor, Permission.RADIOLOGY_PERFORM, Scope.centre(o.centreId()), "radiology.schedule", "diagnostic-order", orderId.toString());
         requireStatus(o, "ORDERED", "SCHEDULED");
@@ -372,7 +372,7 @@ public class DiagnosticsService {
      * entered on the machine; without an archive, the technician gives the Study Instance UID.
      */
     @Transactional
-    public OrderView acquire(Actor actor, UUID orderId, DiagnosticsModels.Acquire cmd) {
+    public DiagnosticOrderView acquire(Actor actor, UUID orderId, DiagnosticsModels.Acquire cmd) {
         OrderRow o = imaging(locked(orderId, cmd.expectedVersion()));
         access.require(actor, Permission.RADIOLOGY_PERFORM, Scope.centre(o.centreId()), "radiology.acquire", "diagnostic-order", orderId.toString());
         requireStatus(o, "ORDERED", "SCHEDULED", "ACQUIRED");
@@ -395,7 +395,7 @@ public class DiagnosticsService {
     }
 
     @Transactional
-    public OrderView report(Actor actor, UUID orderId, DiagnosticsModels.Report cmd) {
+    public DiagnosticOrderView report(Actor actor, UUID orderId, DiagnosticsModels.Report cmd) {
         OrderRow o = imaging(locked(orderId, cmd.expectedVersion()));
         access.require(actor, Permission.RADIOLOGY_REPORT, Scope.centre(o.centreId()), "radiology.report", "diagnostic-order", orderId.toString());
         requireStatus(o, "ACQUIRED", "REPORTED");
@@ -406,7 +406,7 @@ public class DiagnosticsService {
     }
 
     @Transactional
-    public OrderView verify(Actor actor, UUID orderId, DiagnosticsModels.Step cmd) {
+    public DiagnosticOrderView verify(Actor actor, UUID orderId, DiagnosticsModels.Step cmd) {
         OrderRow o = imaging(locked(orderId, cmd.expectedVersion()));
         access.require(actor, Permission.RADIOLOGY_VERIFY, Scope.centre(o.centreId()), "radiology.verify", "diagnostic-order", orderId.toString());
         requireStatus(o, "REPORTED");
@@ -417,7 +417,7 @@ public class DiagnosticsService {
 
     // ---------------------------------------------------------------- reading
 
-    public List<OrderView> worklist(Actor actor, UUID centreId, String kind, String status) {
+    public List<DiagnosticOrderView> worklist(Actor actor, UUID centreId, String kind, String status) {
         Scope scope = Scope.centre(centreId);
         boolean lab = "LAB".equals(kind);
         List<Permission> perms = lab ? List.of(Permission.LAB_READ, Permission.LAB_COLLECT, Permission.LAB_PROCESS, Permission.LAB_VALIDATE)
@@ -437,12 +437,12 @@ public class DiagnosticsService {
     }
 
     /** A patient's orders that the actor may see (by centre); unreleased results only to the department's own staff. */
-    public List<OrderView> forPatient(Actor actor, UUID patientId) {
+    public List<DiagnosticOrderView> forPatient(Actor actor, UUID patientId) {
         return jdbc.sql(ORDER_SELECT + " where o.patient_id = :p order by o.ordered_at desc limit 200").param("p", patientId)
                 .query(OrderRow.class).list().stream().filter(r -> canRead(actor, r)).map(r -> view(actor, r)).toList();
     }
 
-    public OrderView get(Actor actor, UUID orderId) {
+    public DiagnosticOrderView get(Actor actor, UUID orderId) {
         OrderRow r = row(orderId);
         if (!canRead(actor, r)) {
             access.require(actor, "LAB".equals(r.kind()) ? Permission.LAB_READ : Permission.RADIOLOGY_READ, Scope.centre(r.centreId()),
@@ -459,7 +459,7 @@ public class DiagnosticsService {
         return perms.stream().anyMatch(p -> access.holds(actor, p, s));
     }
 
-    private OrderView view(Actor actor, OrderRow r) {
+    private DiagnosticOrderView view(Actor actor, OrderRow r) {
         boolean lab = "LAB".equals(r.kind());
         Scope s = Scope.centre(r.centreId());
         boolean released = lab ? "VALIDATED".equals(r.status()) : "VERIFIED".equals(r.status());
@@ -478,7 +478,7 @@ public class DiagnosticsService {
                 : List.of();
         boolean images = !lab && r.studyInstanceUid() != null && (department || access.holds(actor, Permission.RADIOLOGY_READ, s));
         String viewer = images ? props.basePath() + "/api/pacs/ohif/viewer?StudyInstanceUIDs=" + r.studyInstanceUid() : null;
-        return new OrderView(r.id(), r.centreId(), r.requestNo(), r.accessionNo(), r.patientId(), r.patientUhid(), r.patientName(),
+        return new DiagnosticOrderView(r.id(), r.centreId(), r.requestNo(), r.accessionNo(), r.patientId(), r.patientUhid(), r.patientName(),
                 r.patientSex(), r.patientAge(), r.visitRef(), r.kind(), r.testCode(), r.testName(), r.section(), r.sampleType(), r.modality(),
                 r.bodyPart(), r.priority(), r.clinicalNotes(), r.status(), r.billId(), r.billNo(), r.billStatus(), r.orderedByName(),
                 r.orderedAt(), r.collectedByName(), r.collectedAt(), r.receivedAt(), r.rejectionNote(), r.resultByName(), r.resultAt(),

@@ -41,7 +41,7 @@ public final class DiagnosticsModels {
                              String valueText, String flag, String reference) {
     }
 
-    public record OrderView(UUID id, UUID centreId, String requestNo, String accessionNo, UUID patientId, String patientUhid,
+    public record DiagnosticOrderView(UUID id, UUID centreId, String requestNo, String accessionNo, UUID patientId, String patientUhid,
                             String patientName, String patientSex, Integer patientAge, UUID visitRef, String kind, String testCode,
                             String testName, String section, String sampleType, String modality, String bodyPart, String priority,
                             String clinicalNotes, String status, UUID billId, String billNo, String billStatus, String orderedByName,

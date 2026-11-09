@@ -4,7 +4,7 @@ export interface NavItem {
   /** Shown only if the permission is held at some scope; the server still checks every action. */
   permission?: string;
   anyOf?: string[];
-  group: 'Workspace' | 'Clinic' | 'Organisation' | 'People' | 'Access' | 'Help';
+  group: 'Workspace' | 'Clinic' | 'Pharmacy and optical' | 'Organisation' | 'People' | 'Access' | 'Help';
 }
 
 export const NAV_ITEMS: NavItem[] = [
@@ -16,6 +16,10 @@ export const NAV_ITEMS: NavItem[] = [
   { to: '/counselling', label: 'Surgery counselling', anyOf: ['eye.counselling.record', 'eye.surgery.schedule'], group: 'Clinic' },
   { to: '/ot', label: 'Operation theatre', anyOf: ['eye.surgery.prepare', 'eye.surgery.operate'], group: 'Clinic' },
   { to: '/accounts', label: 'Accounts', anyOf: ['billing.report.read', 'billing.dayclose.submit', 'billing.dayclose.approve', 'billing.tariff.manage'], group: 'Clinic' },
+  { to: '/pharmacy', label: 'Pharmacy', anyOf: ['pharmacy.read', 'pharmacy.dispense'], group: 'Pharmacy and optical' },
+  { to: '/optical', label: 'Optical shop', anyOf: ['optical.read', 'optical.order'], group: 'Pharmacy and optical' },
+  { to: '/optical-lab', label: 'Optical lab', anyOf: ['opticallab.read', 'opticallab.process', 'opticallab.qc'], group: 'Pharmacy and optical' },
+  { to: '/inventory', label: 'Inventory and stores', anyOf: ['inventory.read', 'inventory.item.manage'], group: 'Pharmacy and optical' },
   { to: '/patients', label: 'Patient database', permission: 'patient.read', group: 'Clinic' },
   { to: '/centres', label: 'Centres', permission: 'org.centre.read', group: 'Organisation' },
   { to: '/licence', label: 'Licence', permission: 'org.structure.read', group: 'Organisation' },

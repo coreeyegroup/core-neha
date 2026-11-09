@@ -34,6 +34,41 @@ export interface AddPosting {
   validTo?: string;
 }
 
+export interface AdjustmentView {
+  batchId?: string;
+  batchNo?: string;
+  decidedAt?: string;
+  decidedByName?: string;
+  decisionNote?: string;
+  id?: string;
+  itemCode?: string;
+  itemName?: string;
+  note?: string;
+  quantity?: number;
+  reason?: string;
+  requestedAt?: string;
+  requestedByName?: string;
+  status?: string;
+  storeId?: string;
+  storeName?: string;
+  version?: number;
+}
+
+export interface AdvanceJob {
+  blankItemId?: string;
+  expectedVersion: number;
+  /**
+     * @minLength 0
+     * @maxLength 300
+     */
+  note?: string;
+  /**
+     * @minLength 1
+     * @pattern SURFACING|COATING|EDGING|FITTING|QC|DISPATCHED
+     */
+  toStatus: string;
+}
+
 export interface AmountRow {
   amount?: number;
   count?: number;
@@ -108,6 +143,21 @@ export interface AssignmentView {
   validTo?: string;
   version?: number;
   viaBootstrap?: boolean;
+}
+
+export interface BatchView {
+  batchNo?: string;
+  category?: string;
+  expiryDate?: string;
+  id?: string;
+  itemCode?: string;
+  itemId?: string;
+  itemName?: string;
+  mrp?: number;
+  qtyOnHand?: number;
+  receivedAt?: string;
+  storeId?: string;
+  unitCost?: number;
 }
 
 export interface BillView {
@@ -215,6 +265,14 @@ export interface CancelBill {
   /**
      * @minLength 0
      * @maxLength 500
+     */
+  reason: string;
+}
+
+export interface CancelPrescription {
+  /**
+     * @minLength 0
+     * @maxLength 300
      */
   reason: string;
 }
@@ -545,6 +603,91 @@ export interface CreateNode {
   parentId?: string;
 }
 
+export interface CreateOrder {
+  /**
+     * @minimum 0
+     * @maximum 4
+     */
+  addLe?: number;
+  /**
+     * @minimum 0
+     * @maximum 4
+     */
+  addRe?: number;
+  /**
+     * @minimum 0
+     * @maximum 180
+     */
+  axisLe?: number;
+  /**
+     * @minimum 0
+     * @maximum 180
+     */
+  axisRe?: number;
+  /**
+     * @minimum -10
+     * @maximum 10
+     */
+  cylLe?: number;
+  /**
+     * @minimum -10
+     * @maximum 10
+     */
+  cylRe?: number;
+  /**
+     * @minimum 10
+     * @maximum 40
+     */
+  fittingHeight?: number;
+  frameBatchId?: string;
+  /**
+     * @minLength 1
+     * @pattern STOCK|PATIENT_OWN
+     */
+  frameSource: string;
+  lensBatchId?: string;
+  lensItemId: string;
+  /**
+     * @minLength 1
+     * @pattern STOCK|LAB
+     */
+  lensSource: string;
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  notes?: string;
+  patientId: string;
+  /**
+     * @minimum 20
+     * @maximum 45
+     */
+  pdLe: number;
+  /**
+     * @minimum 20
+     * @maximum 45
+     */
+  pdRe: number;
+  promisedDate?: string;
+  /**
+     * @minimum -30
+     * @maximum 30
+     */
+  sphLe?: number;
+  /**
+     * @minimum -30
+     * @maximum 30
+     */
+  sphRe?: number;
+  storeId: string;
+  /**
+     * @minLength 0
+     * @maxLength 60
+     */
+  tint?: string;
+  visitRef?: string;
+}
+
 export interface CreatePerson {
   /**
      * @minLength 0
@@ -561,6 +704,93 @@ export interface CreatePerson {
      * @maxLength 100
      */
   givenName: string;
+}
+
+export interface PrescriptionLineInput {
+  /**
+     * @minLength 0
+     * @maxLength 60
+     */
+  dose: string;
+  /**
+     * @minimum 1
+     * @maximum 365
+     */
+  durationDays: number;
+  /** @pattern RE|LE|BE */
+  eye?: string;
+  /**
+     * @minLength 0
+     * @maxLength 60
+     */
+  frequency: string;
+  /**
+     * @minLength 0
+     * @maxLength 300
+     */
+  instructions?: string;
+  itemId: string;
+  /**
+     * @minimum 1
+     * @maximum 999
+     */
+  quantity: number;
+  /** @pattern TOPICAL|ORAL|INJECTION|OTHER */
+  route?: string;
+}
+
+export interface CreatePrescription {
+  /**
+     * @minItems 0
+     * @maxItems 30
+     */
+  lines: PrescriptionLineInput[];
+  /**
+     * @minLength 0
+     * @maxLength 1000
+     */
+  notes?: string;
+  patientId: string;
+  visitRef?: string;
+}
+
+export interface ReceiptLineInput {
+  /**
+     * @minLength 0
+     * @maxLength 40
+     */
+  batchNo: string;
+  expiryDate?: string;
+  itemId: string;
+  /** @minimum 0 */
+  mrp: number;
+  /**
+     * @minimum 1
+     * @maximum 100000
+     */
+  quantity: number;
+  /** @minimum 0 */
+  unitCost: number;
+}
+
+export interface CreateReceipt {
+  invoiceDate: string;
+  /**
+     * @minItems 0
+     * @maxItems 200
+     */
+  lines: ReceiptLineInput[];
+  storeId: string;
+  /**
+     * @minLength 0
+     * @maxLength 60
+     */
+  supplierInvoiceNo: string;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  supplierName: string;
 }
 
 export interface CreateRole {
@@ -588,6 +818,24 @@ export interface CreateRole {
   permissions: string[];
 }
 
+export interface CreateStore {
+  /**
+     * @minLength 1
+     * @pattern ^[A-Z0-9][A-Z0-9_-]{1,39}$
+     */
+  code: string;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  name: string;
+  /**
+     * @minLength 1
+     * @pattern PHARMACY|OPTICAL|OPTICAL_LAB|OT|CENTRAL
+     */
+  storeType: string;
+}
+
 export interface CreateTariffItem {
   /**
      * @minLength 1
@@ -610,6 +858,30 @@ export interface CreateTariffItem {
      * @maximum 9999999
      */
   price: number;
+}
+
+export interface TransferLineInput {
+  batchId: string;
+  /**
+     * @minimum 1
+     * @maximum 100000
+     */
+  quantity: number;
+}
+
+export interface CreateTransfer {
+  fromStoreId: string;
+  /**
+     * @minItems 0
+     * @maxItems 100
+     */
+  lines: TransferLineInput[];
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  note?: string;
+  toStoreId: string;
 }
 
 export interface CreateUser {
@@ -646,6 +918,16 @@ export interface DayClosePreview {
   systemCash?: number;
   systemOther?: number;
   systemUpi?: number;
+}
+
+export interface DecideAdjustment {
+  approve: boolean;
+  expectedVersion: number;
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  note: string;
 }
 
 export interface Decision {
@@ -700,6 +982,27 @@ export interface DepartmentView {
   name?: string;
   status?: string;
   version?: number;
+}
+
+export interface DispenseLineInput {
+  itemId: string;
+  prescriptionLineId?: string;
+  /**
+     * @minimum 1
+     * @maximum 999
+     */
+  quantity: number;
+}
+
+export interface Dispense {
+  /**
+     * @minItems 0
+     * @maxItems 40
+     */
+  lines: DispenseLineInput[];
+  patientId: string;
+  prescriptionId?: string;
+  storeId: string;
 }
 
 export interface DraftVersion {
@@ -881,6 +1184,71 @@ export interface HistoryVisit {
   visit?: VisitView;
 }
 
+export interface ItemView {
+  batchTracked?: boolean;
+  brand?: string;
+  category?: string;
+  coating?: string;
+  code?: string;
+  colour?: string;
+  dosageForm?: string;
+  expiryTracked?: boolean;
+  genericName?: string;
+  gstRate?: number;
+  hsnCode?: string;
+  id?: string;
+  lensIndex?: number;
+  lensType?: string;
+  manufacturer?: string;
+  model?: string;
+  mrp?: number;
+  name?: string;
+  reorderLevel?: number;
+  schedule?: string;
+  sizeText?: string;
+  status?: string;
+  strength?: string;
+  unit?: string;
+  version?: number;
+}
+
+export interface JobEvent {
+  actorName?: string;
+  at?: string;
+  fromStatus?: string;
+  note?: string;
+  toStatus?: string;
+}
+
+export type JobViewQcMeasured = {[key: string]: unknown};
+
+export type JobViewSpecification = {[key: string]: unknown};
+
+export interface JobView {
+  blankItemName?: string;
+  dispatchedAt?: string;
+  events?: JobEvent[];
+  fittedByName?: string;
+  id?: string;
+  jobNo?: string;
+  labCentreId?: string;
+  labCentreName?: string;
+  labStoreId?: string;
+  orderId?: string;
+  orderNo?: string;
+  patientName?: string;
+  qcByName?: string;
+  qcMeasured?: JobViewQcMeasured;
+  qcNote?: string;
+  qcResult?: string;
+  receivedAt?: string;
+  remakeCount?: number;
+  shopCentreName?: string;
+  specification?: JobViewSpecification;
+  status?: string;
+  version?: number;
+}
+
 export interface LegalEntityView {
   code?: string;
   id?: string;
@@ -939,6 +1307,24 @@ export interface Me {
   tenantPermissions?: string[];
   userId?: string;
   username?: string;
+}
+
+export interface MovementView {
+  balanceAfter?: number;
+  batchNo?: string;
+  id?: string;
+  itemCode?: string;
+  itemName?: string;
+  movedAt?: string;
+  movedByName?: string;
+  movementType?: string;
+  quantity?: number;
+  reason?: string;
+  refId?: string;
+  refNo?: string;
+  refType?: string;
+  storeId?: string;
+  storeName?: string;
 }
 
 export interface NodeView {
@@ -1006,6 +1392,64 @@ export interface OptometryView {
   ucvaRe?: string;
   version?: number;
   visitId?: string;
+}
+
+export interface OrderAction {
+  expectedVersion: number;
+  /**
+     * @minLength 0
+     * @maxLength 300
+     */
+  reason?: string;
+}
+
+export interface OrderView {
+  addLe?: number;
+  addRe?: number;
+  axisLe?: number;
+  axisRe?: number;
+  billBalance?: number;
+  billId?: string;
+  billNo?: string;
+  billStatus?: string;
+  cancelReason?: string;
+  centreId?: string;
+  coating?: string;
+  cylLe?: number;
+  cylRe?: number;
+  deliveredAt?: string;
+  deliveredByName?: string;
+  fittingHeight?: number;
+  frameName?: string;
+  framePrice?: number;
+  frameSource?: string;
+  id?: string;
+  labJobId?: string;
+  labJobNo?: string;
+  labJobStatus?: string;
+  lensIndex?: number;
+  lensName?: string;
+  lensPrice?: number;
+  lensSource?: string;
+  lensType?: string;
+  notes?: string;
+  orderNo?: string;
+  orderedAt?: string;
+  orderedByName?: string;
+  patientId?: string;
+  patientName?: string;
+  patientUhid?: string;
+  pdLe?: number;
+  pdRe?: number;
+  promisedDate?: string;
+  sphLe?: number;
+  sphRe?: number;
+  status?: string;
+  storeId?: string;
+  tint?: string;
+  totalAmount?: number;
+  version?: number;
+  visitRef?: string;
 }
 
 export interface SurgeryView {
@@ -1175,6 +1619,93 @@ export interface PreOp {
   siteMarked?: boolean;
 }
 
+export interface PrescriptionLineView {
+  dispensedQty?: number;
+  dose?: string;
+  durationDays?: number;
+  eye?: string;
+  frequency?: string;
+  id?: string;
+  instructions?: string;
+  itemCode?: string;
+  itemId?: string;
+  itemName?: string;
+  quantity?: number;
+  route?: string;
+  schedule?: string;
+}
+
+export interface PrescriptionView {
+  centreId?: string;
+  id?: string;
+  lines?: PrescriptionLineView[];
+  notes?: string;
+  patientId?: string;
+  patientName?: string;
+  patientUhid?: string;
+  prescribedAt?: string;
+  prescribedByName?: string;
+  prescriptionNo?: string;
+  status?: string;
+  version?: number;
+  visitRef?: string;
+}
+
+export interface QualityCheck {
+  expectedVersion: number;
+  /**
+     * @minimum 0
+     * @maximum 180
+     */
+  measuredAxisLe?: number;
+  /**
+     * @minimum 0
+     * @maximum 180
+     */
+  measuredAxisRe?: number;
+  /**
+     * @minimum -10
+     * @maximum 10
+     */
+  measuredCylLe?: number;
+  /**
+     * @minimum -10
+     * @maximum 10
+     */
+  measuredCylRe?: number;
+  /**
+     * @minimum -30
+     * @maximum 30
+     */
+  measuredSphLe?: number;
+  /**
+     * @minimum -30
+     * @maximum 30
+     */
+  measuredSphRe?: number;
+  /**
+     * @minLength 0
+     * @maxLength 300
+     */
+  note: string;
+  pass: boolean;
+}
+
+export interface ReceiptView {
+  centreId?: string;
+  id?: string;
+  invoiceDate?: string;
+  lines?: number;
+  receiptNo?: string;
+  receivedAt?: string;
+  receivedByName?: string;
+  storeId?: string;
+  storeName?: string;
+  supplierInvoiceNo?: string;
+  supplierName?: string;
+  totalCost?: number;
+}
+
 export interface RegisterPatient {
   /** @pattern ^[0-9]{2}-[0-9]{4}-[0-9]{4}-[0-9]{4}$ */
   abhaNumber?: string;
@@ -1247,6 +1778,25 @@ export interface RemoveLine {
   lineId: string;
 }
 
+export interface RequestAdjustment {
+  batchId: string;
+  /**
+     * @minLength 0
+     * @maxLength 500
+     */
+  note: string;
+  /**
+     * @minimum -100000
+     * @maximum 100000
+     */
+  quantity: number;
+  /**
+     * @minLength 1
+     * @pattern DAMAGED|EXPIRED|COUNT_CORRECTION|LOST|OTHER
+     */
+  reason: string;
+}
+
 export interface RequestAssignment {
   /** @pattern ACCESS|AUTHORITY */
   kind: string;
@@ -1295,6 +1845,28 @@ export interface RetireImpact {
   openEstablishments?: number;
 }
 
+export interface ReturnLine {
+  /**
+     * @minimum 1
+     * @maximum 999
+     */
+  quantity: number;
+  /**
+     * @minLength 0
+     * @maxLength 300
+     */
+  reason: string;
+  saleLineId: string;
+}
+
+export interface ReturnSale {
+  /**
+     * @minItems 0
+     * @maxItems 40
+     */
+  lines: ReturnLine[];
+}
+
 export interface Revoke {
   expectedVersion: number;
   /**
@@ -1336,6 +1908,41 @@ export interface RoleVersionView {
 export interface RoleDetail {
   role?: RoleSummary;
   versions?: RoleVersionView[];
+}
+
+export interface SaleLineView {
+  amount?: number;
+  batchNo?: string;
+  expiryDate?: string;
+  gstRate?: number;
+  id?: string;
+  itemCode?: string;
+  itemId?: string;
+  itemName?: string;
+  mrp?: number;
+  quantity?: number;
+  returnedQty?: number;
+}
+
+export interface SaleView {
+  billId?: string;
+  billNo?: string;
+  billStatus?: string;
+  centreId?: string;
+  id?: string;
+  lines?: SaleLineView[];
+  patientId?: string;
+  patientName?: string;
+  patientUhid?: string;
+  prescriptionId?: string;
+  prescriptionNo?: string;
+  returnedAmount?: number;
+  saleNo?: string;
+  soldAt?: string;
+  soldByName?: string;
+  storeId?: string;
+  storeName?: string;
+  totalAmount?: number;
 }
 
 export interface SaveConsultation {
@@ -1401,6 +2008,94 @@ export interface SaveConsultation {
   surgeryProcedure?: string;
   /** @pattern ^$|ROUTINE|SOON|URGENT */
   surgeryUrgency?: string;
+}
+
+export interface SaveItem {
+  /**
+     * @minLength 0
+     * @maxLength 100
+     */
+  brand?: string;
+  /**
+     * @minLength 1
+     * @pattern DRUG|CONSUMABLE|SURGICAL|FRAME|SPECTACLE_LENS|LENS_BLANK|CONTACT_LENS|OPTICAL_ACCESSORY|LAB_REAGENT
+     */
+  category: string;
+  /**
+     * @minLength 0
+     * @maxLength 60
+     */
+  coating?: string;
+  /**
+     * @minLength 1
+     * @pattern ^[A-Z0-9][A-Z0-9_-]{1,39}$
+     */
+  code: string;
+  /**
+     * @minLength 0
+     * @maxLength 60
+     */
+  colour?: string;
+  /**
+     * @minLength 0
+     * @maxLength 60
+     */
+  dosageForm?: string;
+  expectedVersion?: number;
+  expiryTracked?: boolean;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  genericName?: string;
+  gstRate: number;
+  /**
+     * @minLength 0
+     * @maxLength 12
+     */
+  hsnCode?: string;
+  lensIndex?: number;
+  /** @pattern SINGLE_VISION|BIFOCAL|PROGRESSIVE */
+  lensType?: string;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  manufacturer?: string;
+  /**
+     * @minLength 0
+     * @maxLength 100
+     */
+  model?: string;
+  /** @minimum 0 */
+  mrp?: number;
+  /**
+     * @minLength 0
+     * @maxLength 200
+     */
+  name: string;
+  /**
+     * @minimum 0
+     * @maximum 100000
+     */
+  reorderLevel?: number;
+  /** @pattern OTC|G|H|H1|X */
+  schedule?: string;
+  /**
+     * @minLength 0
+     * @maxLength 40
+     */
+  sizeText?: string;
+  /**
+     * @minLength 0
+     * @maxLength 60
+     */
+  strength?: string;
+  /**
+     * @minLength 0
+     * @maxLength 20
+     */
+  unit: string;
 }
 
 export interface SaveOptometry {
@@ -1513,6 +2208,31 @@ export interface StartVisit {
   visitType: string;
 }
 
+export interface StockLine {
+  batches?: number;
+  belowReorder?: boolean;
+  category?: string;
+  itemCode?: string;
+  itemId?: string;
+  itemName?: string;
+  nearestExpiry?: string;
+  quantity?: number;
+  reorderLevel?: number;
+  stockValue?: number;
+  unit?: string;
+}
+
+export interface StoreView {
+  centreId?: string;
+  centreName?: string;
+  code?: string;
+  id?: string;
+  name?: string;
+  status?: string;
+  storeType?: string;
+  version?: number;
+}
+
 export interface SubmitDayClose {
   businessDate: string;
   /** @minimum 0 */
@@ -1535,6 +2255,18 @@ export interface TariffItemView {
   status?: string;
   updatedAt?: string;
   version?: number;
+}
+
+export interface TransferView {
+  fromStoreId?: string;
+  fromStoreName?: string;
+  id?: string;
+  note?: string;
+  sentAt?: string;
+  sentByName?: string;
+  toStoreId?: string;
+  toStoreName?: string;
+  transferNo?: string;
 }
 
 export interface UpdateDraft {
@@ -1671,6 +2403,10 @@ beforeId?: number;
 limit?: number;
 };
 
+export type AdjustmentsParams = {
+status?: string;
+};
+
 export type AppointmentsParams = {
 date?: string;
 };
@@ -1702,6 +2438,26 @@ export type CentreDepartmentsParams = {
 includeRetired?: boolean;
 };
 
+export type ExpiringParams = {
+days?: number;
+};
+
+export type LabJobsParams = {
+status?: string;
+};
+
+export type SalesParams = {
+date?: string;
+};
+
+export type PrescriptionsParams = {
+status?: string;
+};
+
+export type SpectacleOrdersParams = {
+status?: string;
+};
+
 export type SurgeriesParams = {
 view?: string;
 date?: string;
@@ -1716,9 +2472,33 @@ date?: string;
 stage?: string;
 };
 
+export type ItemsParams = {
+category?: string;
+q?: string;
+includeRetired?: boolean;
+};
+
+export type UpdateItemParams = {
+retire?: boolean;
+};
+
 export type SearchPatientsParams = {
 q?: string;
 limit?: number;
+};
+
+export type BatchesParams = {
+itemId?: string;
+inStock?: boolean;
+};
+
+export type MovementsParams = {
+from?: string;
+to?: string;
+};
+
+export type StockParams = {
+category?: string;
 };
 
 export type ExplainParams = {
@@ -2305,6 +3085,36 @@ export const centre = async (centreId: string, options?: Parameters<typeof apiFe
 
 
 
+export const getAdjustmentsUrl = (centreId: string,
+    params?: AdjustmentsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/centres/${centreId}/adjustments?${stringifiedParams}` : `/v1/centres/${centreId}/adjustments`
+}
+
+export const adjustments = async (centreId: string,
+    params?: AdjustmentsParams, options?: Parameters<typeof apiFetch>[1]): Promise<AdjustmentView[]> => {
+
+  return apiFetch<AdjustmentView[]>(getAdjustmentsUrl(centreId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
 export const getAppointmentsUrl = (centreId: string,
     params?: AppointmentsParams,) => {
   const normalizedParams = new URLSearchParams();
@@ -2819,6 +3629,270 @@ return apiFetch<EstablishmentView>(getEstablishUrl(centreId),
 
 
 
+export const getExpiringUrl = (centreId: string,
+    params?: ExpiringParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/centres/${centreId}/expiring?${stringifiedParams}` : `/v1/centres/${centreId}/expiring`
+}
+
+export const expiring = async (centreId: string,
+    params?: ExpiringParams, options?: Parameters<typeof apiFetch>[1]): Promise<BatchView[]> => {
+
+  return apiFetch<BatchView[]>(getExpiringUrl(centreId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getLabJobsUrl = (centreId: string,
+    params?: LabJobsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/centres/${centreId}/lab-jobs?${stringifiedParams}` : `/v1/centres/${centreId}/lab-jobs`
+}
+
+export const labJobs = async (centreId: string,
+    params?: LabJobsParams, options?: Parameters<typeof apiFetch>[1]): Promise<JobView[]> => {
+
+  return apiFetch<JobView[]>(getLabJobsUrl(centreId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSalesUrl = (centreId: string,
+    params?: SalesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/centres/${centreId}/pharmacy-sales?${stringifiedParams}` : `/v1/centres/${centreId}/pharmacy-sales`
+}
+
+export const sales = async (centreId: string,
+    params?: SalesParams, options?: Parameters<typeof apiFetch>[1]): Promise<SaleView[]> => {
+
+  return apiFetch<SaleView[]>(getSalesUrl(centreId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getPrescriptionsUrl = (centreId: string,
+    params?: PrescriptionsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/centres/${centreId}/prescriptions?${stringifiedParams}` : `/v1/centres/${centreId}/prescriptions`
+}
+
+export const prescriptions = async (centreId: string,
+    params?: PrescriptionsParams, options?: Parameters<typeof apiFetch>[1]): Promise<PrescriptionView[]> => {
+
+  return apiFetch<PrescriptionView[]>(getPrescriptionsUrl(centreId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getPrescribeUrl = (centreId: string,) => {
+
+
+
+
+  return `/v1/centres/${centreId}/prescriptions`
+}
+
+export const prescribe = async (centreId: string,
+    createPrescription: CreatePrescription, options?: Parameters<typeof apiFetch>[1]): Promise<PrescriptionView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<PrescriptionView>(getPrescribeUrl(centreId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(createPrescription)
+  }
+);}
+
+
+
+export const getReceiptsUrl = (centreId: string,) => {
+
+
+
+
+  return `/v1/centres/${centreId}/receipts`
+}
+
+export const receipts = async (centreId: string, options?: Parameters<typeof apiFetch>[1]): Promise<ReceiptView[]> => {
+
+  return apiFetch<ReceiptView[]>(getReceiptsUrl(centreId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getSpectacleOrdersUrl = (centreId: string,
+    params?: SpectacleOrdersParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/centres/${centreId}/spectacle-orders?${stringifiedParams}` : `/v1/centres/${centreId}/spectacle-orders`
+}
+
+export const spectacleOrders = async (centreId: string,
+    params?: SpectacleOrdersParams, options?: Parameters<typeof apiFetch>[1]): Promise<OrderView[]> => {
+
+  return apiFetch<OrderView[]>(getSpectacleOrdersUrl(centreId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getStoresUrl = (centreId: string,) => {
+
+
+
+
+  return `/v1/centres/${centreId}/stores`
+}
+
+export const stores = async (centreId: string, options?: Parameters<typeof apiFetch>[1]): Promise<StoreView[]> => {
+
+  return apiFetch<StoreView[]>(getStoresUrl(centreId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateStoreUrl = (centreId: string,) => {
+
+
+
+
+  return `/v1/centres/${centreId}/stores`
+}
+
+export const createStore = async (centreId: string,
+    createStoreBody: CreateStore, options?: Parameters<typeof apiFetch>[1]): Promise<StoreView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<StoreView>(getCreateStoreUrl(centreId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(createStoreBody)
+  }
+);}
+
+
+
 export const getSurgeriesUrl = (centreId: string,
     params?: SurgeriesParams,) => {
   const normalizedParams = new URLSearchParams();
@@ -2948,6 +4022,27 @@ return apiFetch<TariffItemView>(getUpdateTariffItemUrl(centreId,itemId),
     method: 'PUT',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
     body: JSON.stringify(updateTariffItemBody)
+  }
+);}
+
+
+
+export const getTransfersUrl = (centreId: string,) => {
+
+
+
+
+  return `/v1/centres/${centreId}/transfers`
+}
+
+export const transfers = async (centreId: string, options?: Parameters<typeof apiFetch>[1]): Promise<TransferView[]> => {
+
+  return apiFetch<TransferView[]>(getTransfersUrl(centreId),
+  {
+    ...options,
+    method: 'GET'
+
+
   }
 );}
 
@@ -3244,6 +4339,348 @@ return apiFetch<NodeView>(getCreateNodeUrl(),
 
 
 
+export const getRequestAdjustmentUrl = () => {
+
+
+
+
+  return `/v1/inventory/adjustments`
+}
+
+export const requestAdjustment = async (requestAdjustmentBody: RequestAdjustment, options?: Parameters<typeof apiFetch>[1]): Promise<AdjustmentView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<AdjustmentView>(getRequestAdjustmentUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(requestAdjustmentBody)
+  }
+);}
+
+
+
+export const getDecideAdjustmentUrl = (adjustmentId: string,) => {
+
+
+
+
+  return `/v1/inventory/adjustments/${adjustmentId}/decide`
+}
+
+export const decideAdjustment = async (adjustmentId: string,
+    decideAdjustmentBody: DecideAdjustment, options?: Parameters<typeof apiFetch>[1]): Promise<AdjustmentView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<AdjustmentView>(getDecideAdjustmentUrl(adjustmentId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(decideAdjustmentBody)
+  }
+);}
+
+
+
+export const getItemsUrl = (params?: ItemsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/inventory/items?${stringifiedParams}` : `/v1/inventory/items`
+}
+
+export const items = async (params?: ItemsParams, options?: Parameters<typeof apiFetch>[1]): Promise<ItemView[]> => {
+
+  return apiFetch<ItemView[]>(getItemsUrl(params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCreateItemUrl = () => {
+
+
+
+
+  return `/v1/inventory/items`
+}
+
+export const createItem = async (saveItem: SaveItem, options?: Parameters<typeof apiFetch>[1]): Promise<ItemView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<ItemView>(getCreateItemUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(saveItem)
+  }
+);}
+
+
+
+export const getUpdateItemUrl = (itemId: string,
+    params?: UpdateItemParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/inventory/items/${itemId}?${stringifiedParams}` : `/v1/inventory/items/${itemId}`
+}
+
+export const updateItem = async (itemId: string,
+    saveItem: SaveItem,
+    params?: UpdateItemParams, options?: Parameters<typeof apiFetch>[1]): Promise<ItemView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<ItemView>(getUpdateItemUrl(itemId,params),
+  {
+    ...options,
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(saveItem)
+  }
+);}
+
+
+
+export const getReceiveUrl = () => {
+
+
+
+
+  return `/v1/inventory/receipts`
+}
+
+export const receive = async (createReceipt: CreateReceipt, options?: Parameters<typeof apiFetch>[1]): Promise<ReceiptView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<ReceiptView>(getReceiveUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(createReceipt)
+  }
+);}
+
+
+
+export const getTransferUrl = () => {
+
+
+
+
+  return `/v1/inventory/transfers`
+}
+
+export const transfer = async (createTransfer: CreateTransfer, options?: Parameters<typeof apiFetch>[1]): Promise<TransferView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<TransferView>(getTransferUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(createTransfer)
+  }
+);}
+
+
+
+export const getLabJobUrl = (jobId: string,) => {
+
+
+
+
+  return `/v1/lab-jobs/${jobId}`
+}
+
+export const labJob = async (jobId: string, options?: Parameters<typeof apiFetch>[1]): Promise<JobView> => {
+
+  return apiFetch<JobView>(getLabJobUrl(jobId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getAdvanceLabJobUrl = (jobId: string,) => {
+
+
+
+
+  return `/v1/lab-jobs/${jobId}/advance`
+}
+
+export const advanceLabJob = async (jobId: string,
+    advanceJob: AdvanceJob, options?: Parameters<typeof apiFetch>[1]): Promise<JobView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<JobView>(getAdvanceLabJobUrl(jobId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(advanceJob)
+  }
+);}
+
+
+
+export const getQualityCheckLabJobUrl = (jobId: string,) => {
+
+
+
+
+  return `/v1/lab-jobs/${jobId}/quality-check`
+}
+
+export const qualityCheckLabJob = async (jobId: string,
+    qualityCheck: QualityCheck, options?: Parameters<typeof apiFetch>[1]): Promise<JobView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<JobView>(getQualityCheckLabJobUrl(jobId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(qualityCheck)
+  }
+);}
+
+
+
 export const getLegalEntitiesUrl = () => {
 
 
@@ -3337,6 +4774,170 @@ export const me = async ( options?: Parameters<typeof apiFetch>[1]): Promise<Me>
     method: 'GET'
 
 
+  }
+);}
+
+
+
+export const getCreateSpectacleOrderUrl = () => {
+
+
+
+
+  return `/v1/optical/orders`
+}
+
+export const createSpectacleOrder = async (createOrder: CreateOrder, options?: Parameters<typeof apiFetch>[1]): Promise<OrderView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<OrderView>(getCreateSpectacleOrderUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(createOrder)
+  }
+);}
+
+
+
+export const getSpectacleOrderUrl = (orderId: string,) => {
+
+
+
+
+  return `/v1/optical/orders/${orderId}`
+}
+
+export const spectacleOrder = async (orderId: string, options?: Parameters<typeof apiFetch>[1]): Promise<OrderView> => {
+
+  return apiFetch<OrderView>(getSpectacleOrderUrl(orderId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCancelSpectacleOrderUrl = (orderId: string,) => {
+
+
+
+
+  return `/v1/optical/orders/${orderId}/cancel`
+}
+
+export const cancelSpectacleOrder = async (orderId: string,
+    orderAction: OrderAction, options?: Parameters<typeof apiFetch>[1]): Promise<OrderView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<OrderView>(getCancelSpectacleOrderUrl(orderId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(orderAction)
+  }
+);}
+
+
+
+export const getDeliverSpectaclesUrl = (orderId: string,) => {
+
+
+
+
+  return `/v1/optical/orders/${orderId}/deliver`
+}
+
+export const deliverSpectacles = async (orderId: string,
+    orderAction: OrderAction, options?: Parameters<typeof apiFetch>[1]): Promise<OrderView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<OrderView>(getDeliverSpectaclesUrl(orderId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(orderAction)
+  }
+);}
+
+
+
+export const getMarkSpectaclesReadyUrl = (orderId: string,) => {
+
+
+
+
+  return `/v1/optical/orders/${orderId}/ready`
+}
+
+export const markSpectaclesReady = async (orderId: string,
+    orderAction: OrderAction, options?: Parameters<typeof apiFetch>[1]): Promise<OrderView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<OrderView>(getMarkSpectaclesReadyUrl(orderId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(orderAction)
   }
 );}
 
@@ -3504,6 +5105,48 @@ export const patientEyeHistory = async (patientId: string, options?: Parameters<
 
 
 
+export const getPatientPrescriptionsUrl = (patientId: string,) => {
+
+
+
+
+  return `/v1/patients/${patientId}/prescriptions`
+}
+
+export const patientPrescriptions = async (patientId: string, options?: Parameters<typeof apiFetch>[1]): Promise<PrescriptionView[]> => {
+
+  return apiFetch<PrescriptionView[]>(getPatientPrescriptionsUrl(patientId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getPatientSpectacleOrdersUrl = (patientId: string,) => {
+
+
+
+
+  return `/v1/patients/${patientId}/spectacle-orders`
+}
+
+export const patientSpectacleOrders = async (patientId: string, options?: Parameters<typeof apiFetch>[1]): Promise<OrderView[]> => {
+
+  return apiFetch<OrderView[]>(getPatientSpectacleOrdersUrl(patientId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
 export const getPeopleUrl = () => {
 
 
@@ -3638,6 +5281,98 @@ export const permissions = async ( options?: Parameters<typeof apiFetch>[1]): Pr
 
 
 
+export const getDispenseUrl = () => {
+
+
+
+
+  return `/v1/pharmacy/sales`
+}
+
+export const dispense = async (dispenseBody: Dispense, options?: Parameters<typeof apiFetch>[1]): Promise<SaleView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<SaleView>(getDispenseUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(dispenseBody)
+  }
+);}
+
+
+
+export const getSaleUrl = (saleId: string,) => {
+
+
+
+
+  return `/v1/pharmacy/sales/${saleId}`
+}
+
+export const sale = async (saleId: string, options?: Parameters<typeof apiFetch>[1]): Promise<SaleView> => {
+
+  return apiFetch<SaleView>(getSaleUrl(saleId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getReturnSaleUrl = (saleId: string,) => {
+
+
+
+
+  return `/v1/pharmacy/sales/${saleId}/return`
+}
+
+export const returnSale = async (saleId: string,
+    returnSaleBody: ReturnSale, options?: Parameters<typeof apiFetch>[1]): Promise<SaleView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<SaleView>(getReturnSaleUrl(saleId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(returnSaleBody)
+  }
+);}
+
+
+
 export const getPositionsUrl = () => {
 
 
@@ -3725,6 +5460,63 @@ return apiFetch<PostingView>(getEndPostingUrl(postingId),
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
     body: JSON.stringify(endPostingBody)
+  }
+);}
+
+
+
+export const getPrescriptionUrl = (prescriptionId: string,) => {
+
+
+
+
+  return `/v1/prescriptions/${prescriptionId}`
+}
+
+export const prescription = async (prescriptionId: string, options?: Parameters<typeof apiFetch>[1]): Promise<PrescriptionView> => {
+
+  return apiFetch<PrescriptionView>(getPrescriptionUrl(prescriptionId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getCancelPrescriptionUrl = (prescriptionId: string,) => {
+
+
+
+
+  return `/v1/prescriptions/${prescriptionId}/cancel`
+}
+
+export const cancelPrescription = async (prescriptionId: string,
+    cancelPrescriptionBody: CancelPrescription, options?: Parameters<typeof apiFetch>[1]): Promise<PrescriptionView> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return apiFetch<PrescriptionView>(getCancelPrescriptionUrl(prescriptionId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(cancelPrescriptionBody)
   }
 );}
 
@@ -4129,6 +5921,96 @@ return apiFetch<RoleDetail>(getDraftVersionUrl(roleId),
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
     body: JSON.stringify(draftVersionBody)
+  }
+);}
+
+
+
+export const getBatchesUrl = (storeId: string,
+    params?: BatchesParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/stores/${storeId}/batches?${stringifiedParams}` : `/v1/stores/${storeId}/batches`
+}
+
+export const batches = async (storeId: string,
+    params?: BatchesParams, options?: Parameters<typeof apiFetch>[1]): Promise<BatchView[]> => {
+
+  return apiFetch<BatchView[]>(getBatchesUrl(storeId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getMovementsUrl = (storeId: string,
+    params?: MovementsParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/stores/${storeId}/movements?${stringifiedParams}` : `/v1/stores/${storeId}/movements`
+}
+
+export const movements = async (storeId: string,
+    params?: MovementsParams, options?: Parameters<typeof apiFetch>[1]): Promise<MovementView[]> => {
+
+  return apiFetch<MovementView[]>(getMovementsUrl(storeId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+export const getStockUrl = (storeId: string,
+    params?: StockParams,) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? 'null' : String(value))
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0 ? `/v1/stores/${storeId}/stock?${stringifiedParams}` : `/v1/stores/${storeId}/stock`
+}
+
+export const stock = async (storeId: string,
+    params?: StockParams, options?: Parameters<typeof apiFetch>[1]): Promise<StockLine[]> => {
+
+  return apiFetch<StockLine[]>(getStockUrl(storeId,params),
+  {
+    ...options,
+    method: 'GET'
+
+
   }
 );}
 

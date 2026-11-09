@@ -6,7 +6,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { readFile } from 'node:fs/promises';
 import { extname, join } from 'node:path';
 
-import { clinicRoute, personaMe } from './clinic-mock.mjs';
+import { clinicRoute, personaMe, supplyRoute } from './clinic-mock.mjs';
 
 const port = Number(process.argv[2] ?? 4173);
 let signedIn = !process.argv.includes('--signed-out');
@@ -112,7 +112,7 @@ createServer(async (req, res) => {
     const meNow = who ? personaMe(who, T) : me;
     const body = req.method === 'GET' && path === '/v1/help' ? helpFor(meNow)
       : who && req.method === 'GET' && path === '/v1/me' ? meNow
-      : clinicRoute(req.method, path, url.searchParams) ?? routes[`${req.method} ${path}`]?.() ?? dynamic(req.method, path);
+      : supplyRoute(req.method, path, url.searchParams) ?? clinicRoute(req.method, path, url.searchParams) ?? routes[`${req.method} ${path}`]?.() ?? dynamic(req.method, path);
     if (body === undefined) { res.writeHead(404); return res.end('{"status":404,"code":"not-found","detail":"Not found"}'); }
     const status = body.__status ?? 200;
     res.writeHead(status, { 'Content-Type': 'application/json', 'Set-Cookie': 'XSRF-TOKEN=mock-token; Path=/core-neha' });

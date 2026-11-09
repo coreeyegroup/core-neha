@@ -47,6 +47,96 @@
         ],
         "type": "object"
       },
+      "AdjustmentView": {
+        "properties": {
+          "batchId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "batchNo": {
+            "type": "string"
+          },
+          "decidedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "decidedByName": {
+            "type": "string"
+          },
+          "decisionNote": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "itemCode": {
+            "type": "string"
+          },
+          "itemName": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "quantity": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "requestedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "requestedByName": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "storeId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "storeName": {
+            "type": "string"
+          },
+          "version": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "AdvanceJob": {
+        "properties": {
+          "blankItemId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "note": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string"
+          },
+          "toStatus": {
+            "minLength": 1,
+            "pattern": "SURFACING|COATING|EDGING|FITTING|QC|DISPATCHED",
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "toStatus"
+        ],
+        "type": "object"
+      },
       "AmountRow": {
         "properties": {
           "amount": {
@@ -277,6 +367,53 @@
           },
           "viaBootstrap": {
             "type": "boolean"
+          }
+        },
+        "type": "object"
+      },
+      "BatchView": {
+        "properties": {
+          "batchNo": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "expiryDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "itemCode": {
+            "type": "string"
+          },
+          "itemId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "itemName": {
+            "type": "string"
+          },
+          "mrp": {
+            "type": "number"
+          },
+          "qtyOnHand": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "receivedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "storeId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "unitCost": {
+            "type": "number"
           }
         },
         "type": "object"
@@ -535,6 +672,19 @@
         },
         "required": [
           "expectedVersion",
+          "reason"
+        ],
+        "type": "object"
+      },
+      "CancelPrescription": {
+        "properties": {
+          "reason": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
           "reason"
         ],
         "type": "object"
@@ -1276,6 +1426,125 @@
         ],
         "type": "object"
       },
+      "CreateOrder": {
+        "properties": {
+          "addLe": {
+            "maximum": 4,
+            "minimum": 0,
+            "type": "number"
+          },
+          "addRe": {
+            "maximum": 4,
+            "minimum": 0,
+            "type": "number"
+          },
+          "axisLe": {
+            "format": "int32",
+            "maximum": 180,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "axisRe": {
+            "format": "int32",
+            "maximum": 180,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "cylLe": {
+            "maximum": 10,
+            "minimum": -10,
+            "type": "number"
+          },
+          "cylRe": {
+            "maximum": 10,
+            "minimum": -10,
+            "type": "number"
+          },
+          "fittingHeight": {
+            "maximum": 40,
+            "minimum": 10,
+            "type": "number"
+          },
+          "frameBatchId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "frameSource": {
+            "minLength": 1,
+            "pattern": "STOCK|PATIENT_OWN",
+            "type": "string"
+          },
+          "lensBatchId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "lensItemId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "lensSource": {
+            "minLength": 1,
+            "pattern": "STOCK|LAB",
+            "type": "string"
+          },
+          "notes": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          },
+          "patientId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "pdLe": {
+            "maximum": 45,
+            "minimum": 20,
+            "type": "number"
+          },
+          "pdRe": {
+            "maximum": 45,
+            "minimum": 20,
+            "type": "number"
+          },
+          "promisedDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "sphLe": {
+            "maximum": 30,
+            "minimum": -30,
+            "type": "number"
+          },
+          "sphRe": {
+            "maximum": 30,
+            "minimum": -30,
+            "type": "number"
+          },
+          "storeId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "tint": {
+            "maxLength": 60,
+            "minLength": 0,
+            "type": "string"
+          },
+          "visitRef": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "frameSource",
+          "lensItemId",
+          "lensSource",
+          "patientId",
+          "pdLe",
+          "pdRe",
+          "storeId"
+        ],
+        "type": "object"
+      },
       "CreatePerson": {
         "properties": {
           "email": {
@@ -1299,6 +1568,74 @@
           "email",
           "familyName",
           "givenName"
+        ],
+        "type": "object"
+      },
+      "CreatePrescription": {
+        "properties": {
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/PrescriptionLineInput"
+            },
+            "maxItems": 30,
+            "minItems": 0,
+            "type": "array"
+          },
+          "notes": {
+            "maxLength": 1000,
+            "minLength": 0,
+            "type": "string"
+          },
+          "patientId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "visitRef": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lines",
+          "patientId"
+        ],
+        "type": "object"
+      },
+      "CreateReceipt": {
+        "properties": {
+          "invoiceDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/ReceiptLineInput"
+            },
+            "maxItems": 200,
+            "minItems": 0,
+            "type": "array"
+          },
+          "storeId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "supplierInvoiceNo": {
+            "maxLength": 60,
+            "minLength": 0,
+            "type": "string"
+          },
+          "supplierName": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "invoiceDate",
+          "lines",
+          "storeId",
+          "supplierInvoiceNo",
+          "supplierName"
         ],
         "type": "object"
       },
@@ -1340,6 +1677,31 @@
         ],
         "type": "object"
       },
+      "CreateStore": {
+        "properties": {
+          "code": {
+            "minLength": 1,
+            "pattern": "^[A-Z0-9][A-Z0-9_-]{1,39}$",
+            "type": "string"
+          },
+          "name": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "storeType": {
+            "minLength": 1,
+            "pattern": "PHARMACY|OPTICAL|OPTICAL_LAB|OT|CENTRAL",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "name",
+          "storeType"
+        ],
+        "type": "object"
+      },
       "CreateTariffItem": {
         "properties": {
           "category": {
@@ -1372,6 +1734,37 @@
           "gstRate",
           "name",
           "price"
+        ],
+        "type": "object"
+      },
+      "CreateTransfer": {
+        "properties": {
+          "fromStoreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/TransferLineInput"
+            },
+            "maxItems": 100,
+            "minItems": 0,
+            "type": "array"
+          },
+          "note": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          },
+          "toStoreId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "fromStoreId",
+          "lines",
+          "toStoreId"
         ],
         "type": "object"
       },
@@ -1500,6 +1893,28 @@
         },
         "type": "object"
       },
+      "DecideAdjustment": {
+        "properties": {
+          "approve": {
+            "type": "boolean"
+          },
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "note": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "approve",
+          "expectedVersion",
+          "note"
+        ],
+        "type": "object"
+      },
       "Decision": {
         "properties": {
           "expectedVersion": {
@@ -1589,6 +2004,59 @@
             "type": "integer"
           }
         },
+        "type": "object"
+      },
+      "Dispense": {
+        "properties": {
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/DispenseLineInput"
+            },
+            "maxItems": 40,
+            "minItems": 0,
+            "type": "array"
+          },
+          "patientId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "prescriptionId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "storeId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "lines",
+          "patientId",
+          "storeId"
+        ],
+        "type": "object"
+      },
+      "DispenseLineInput": {
+        "properties": {
+          "itemId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "prescriptionLineId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "quantity": {
+            "format": "int32",
+            "maximum": 999,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "itemId",
+          "quantity"
+        ],
         "type": "object"
       },
       "DraftVersion": {
@@ -1901,6 +2369,194 @@
         },
         "type": "object"
       },
+      "ItemView": {
+        "properties": {
+          "batchTracked": {
+            "type": "boolean"
+          },
+          "brand": {
+            "type": "string"
+          },
+          "category": {
+            "type": "string"
+          },
+          "coating": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "colour": {
+            "type": "string"
+          },
+          "dosageForm": {
+            "type": "string"
+          },
+          "expiryTracked": {
+            "type": "boolean"
+          },
+          "genericName": {
+            "type": "string"
+          },
+          "gstRate": {
+            "type": "number"
+          },
+          "hsnCode": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "lensIndex": {
+            "type": "number"
+          },
+          "lensType": {
+            "type": "string"
+          },
+          "manufacturer": {
+            "type": "string"
+          },
+          "model": {
+            "type": "string"
+          },
+          "mrp": {
+            "type": "number"
+          },
+          "name": {
+            "type": "string"
+          },
+          "reorderLevel": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "schedule": {
+            "type": "string"
+          },
+          "sizeText": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "strength": {
+            "type": "string"
+          },
+          "unit": {
+            "type": "string"
+          },
+          "version": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "JobEvent": {
+        "properties": {
+          "actorName": {
+            "type": "string"
+          },
+          "at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "fromStatus": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "toStatus": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "JobView": {
+        "properties": {
+          "blankItemName": {
+            "type": "string"
+          },
+          "dispatchedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/JobEvent"
+            },
+            "type": "array"
+          },
+          "fittedByName": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "jobNo": {
+            "type": "string"
+          },
+          "labCentreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "labCentreName": {
+            "type": "string"
+          },
+          "labStoreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "orderId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "orderNo": {
+            "type": "string"
+          },
+          "patientName": {
+            "type": "string"
+          },
+          "qcByName": {
+            "type": "string"
+          },
+          "qcMeasured": {
+            "additionalProperties": {},
+            "type": "object"
+          },
+          "qcNote": {
+            "type": "string"
+          },
+          "qcResult": {
+            "type": "string"
+          },
+          "receivedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "remakeCount": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "shopCentreName": {
+            "type": "string"
+          },
+          "specification": {
+            "additionalProperties": {},
+            "type": "object"
+          },
+          "status": {
+            "type": "string"
+          },
+          "version": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
       "LegalEntityView": {
         "properties": {
           "code": {
@@ -2067,6 +2723,62 @@
             "type": "string"
           },
           "username": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "MovementView": {
+        "properties": {
+          "balanceAfter": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "batchNo": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "itemCode": {
+            "type": "string"
+          },
+          "itemName": {
+            "type": "string"
+          },
+          "movedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "movedByName": {
+            "type": "string"
+          },
+          "movementType": {
+            "type": "string"
+          },
+          "quantity": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "reason": {
+            "type": "string"
+          },
+          "refId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "refNo": {
+            "type": "string"
+          },
+          "refType": {
+            "type": "string"
+          },
+          "storeId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "storeName": {
             "type": "string"
           }
         },
@@ -2264,6 +2976,179 @@
             "type": "integer"
           },
           "visitId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "OrderAction": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "reason": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "expectedVersion"
+        ],
+        "type": "object"
+      },
+      "OrderView": {
+        "properties": {
+          "addLe": {
+            "type": "number"
+          },
+          "addRe": {
+            "type": "number"
+          },
+          "axisLe": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "axisRe": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "billBalance": {
+            "type": "number"
+          },
+          "billId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "billNo": {
+            "type": "string"
+          },
+          "billStatus": {
+            "type": "string"
+          },
+          "cancelReason": {
+            "type": "string"
+          },
+          "centreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "coating": {
+            "type": "string"
+          },
+          "cylLe": {
+            "type": "number"
+          },
+          "cylRe": {
+            "type": "number"
+          },
+          "deliveredAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "deliveredByName": {
+            "type": "string"
+          },
+          "fittingHeight": {
+            "type": "number"
+          },
+          "frameName": {
+            "type": "string"
+          },
+          "framePrice": {
+            "type": "number"
+          },
+          "frameSource": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "labJobId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "labJobNo": {
+            "type": "string"
+          },
+          "labJobStatus": {
+            "type": "string"
+          },
+          "lensIndex": {
+            "type": "number"
+          },
+          "lensName": {
+            "type": "string"
+          },
+          "lensPrice": {
+            "type": "number"
+          },
+          "lensSource": {
+            "type": "string"
+          },
+          "lensType": {
+            "type": "string"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "orderNo": {
+            "type": "string"
+          },
+          "orderedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "orderedByName": {
+            "type": "string"
+          },
+          "patientId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "patientName": {
+            "type": "string"
+          },
+          "patientUhid": {
+            "type": "string"
+          },
+          "pdLe": {
+            "type": "number"
+          },
+          "pdRe": {
+            "type": "number"
+          },
+          "promisedDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "sphLe": {
+            "type": "number"
+          },
+          "sphRe": {
+            "type": "number"
+          },
+          "status": {
+            "type": "string"
+          },
+          "storeId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "tint": {
+            "type": "string"
+          },
+          "totalAmount": {
+            "type": "number"
+          },
+          "version": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "visitRef": {
             "format": "uuid",
             "type": "string"
           }
@@ -2620,6 +3505,299 @@
         ],
         "type": "object"
       },
+      "PrescriptionLineInput": {
+        "properties": {
+          "dose": {
+            "maxLength": 60,
+            "minLength": 0,
+            "type": "string"
+          },
+          "durationDays": {
+            "format": "int32",
+            "maximum": 365,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "eye": {
+            "pattern": "RE|LE|BE",
+            "type": "string"
+          },
+          "frequency": {
+            "maxLength": 60,
+            "minLength": 0,
+            "type": "string"
+          },
+          "instructions": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string"
+          },
+          "itemId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "quantity": {
+            "format": "int32",
+            "maximum": 999,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "route": {
+            "pattern": "TOPICAL|ORAL|INJECTION|OTHER",
+            "type": "string"
+          }
+        },
+        "required": [
+          "dose",
+          "durationDays",
+          "frequency",
+          "itemId",
+          "quantity"
+        ],
+        "type": "object"
+      },
+      "PrescriptionLineView": {
+        "properties": {
+          "dispensedQty": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "dose": {
+            "type": "string"
+          },
+          "durationDays": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "eye": {
+            "type": "string"
+          },
+          "frequency": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "instructions": {
+            "type": "string"
+          },
+          "itemCode": {
+            "type": "string"
+          },
+          "itemId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "itemName": {
+            "type": "string"
+          },
+          "quantity": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "route": {
+            "type": "string"
+          },
+          "schedule": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "PrescriptionView": {
+        "properties": {
+          "centreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/PrescriptionLineView"
+            },
+            "type": "array"
+          },
+          "notes": {
+            "type": "string"
+          },
+          "patientId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "patientName": {
+            "type": "string"
+          },
+          "patientUhid": {
+            "type": "string"
+          },
+          "prescribedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "prescribedByName": {
+            "type": "string"
+          },
+          "prescriptionNo": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "version": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "visitRef": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "QualityCheck": {
+        "properties": {
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "measuredAxisLe": {
+            "format": "int32",
+            "maximum": 180,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "measuredAxisRe": {
+            "format": "int32",
+            "maximum": 180,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "measuredCylLe": {
+            "maximum": 10,
+            "minimum": -10,
+            "type": "number"
+          },
+          "measuredCylRe": {
+            "maximum": 10,
+            "minimum": -10,
+            "type": "number"
+          },
+          "measuredSphLe": {
+            "maximum": 30,
+            "minimum": -30,
+            "type": "number"
+          },
+          "measuredSphRe": {
+            "maximum": 30,
+            "minimum": -30,
+            "type": "number"
+          },
+          "note": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string"
+          },
+          "pass": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "expectedVersion",
+          "note",
+          "pass"
+        ],
+        "type": "object"
+      },
+      "ReceiptLineInput": {
+        "properties": {
+          "batchNo": {
+            "maxLength": 40,
+            "minLength": 0,
+            "type": "string"
+          },
+          "expiryDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "itemId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "mrp": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "quantity": {
+            "format": "int32",
+            "maximum": 100000,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "unitCost": {
+            "minimum": 0,
+            "type": "number"
+          }
+        },
+        "required": [
+          "batchNo",
+          "itemId",
+          "mrp",
+          "quantity",
+          "unitCost"
+        ],
+        "type": "object"
+      },
+      "ReceiptView": {
+        "properties": {
+          "centreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "invoiceDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "lines": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "receiptNo": {
+            "type": "string"
+          },
+          "receivedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "receivedByName": {
+            "type": "string"
+          },
+          "storeId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "storeName": {
+            "type": "string"
+          },
+          "supplierInvoiceNo": {
+            "type": "string"
+          },
+          "supplierName": {
+            "type": "string"
+          },
+          "totalCost": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
       "RegisterPatient": {
         "properties": {
           "abhaNumber": {
@@ -2724,6 +3902,37 @@
         "required": [
           "expectedVersion",
           "lineId"
+        ],
+        "type": "object"
+      },
+      "RequestAdjustment": {
+        "properties": {
+          "batchId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "note": {
+            "maxLength": 500,
+            "minLength": 0,
+            "type": "string"
+          },
+          "quantity": {
+            "format": "int32",
+            "maximum": 100000,
+            "minimum": -100000,
+            "type": "integer"
+          },
+          "reason": {
+            "minLength": 1,
+            "pattern": "DAMAGED|EXPIRED|COUNT_CORRECTION|LOST|OTHER",
+            "type": "string"
+          }
+        },
+        "required": [
+          "batchId",
+          "note",
+          "quantity",
+          "reason"
         ],
         "type": "object"
       },
@@ -2898,6 +4107,47 @@
         },
         "type": "object"
       },
+      "ReturnLine": {
+        "properties": {
+          "quantity": {
+            "format": "int32",
+            "maximum": 999,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "reason": {
+            "maxLength": 300,
+            "minLength": 0,
+            "type": "string"
+          },
+          "saleLineId": {
+            "format": "uuid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "quantity",
+          "reason",
+          "saleLineId"
+        ],
+        "type": "object"
+      },
+      "ReturnSale": {
+        "properties": {
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/ReturnLine"
+            },
+            "maxItems": 40,
+            "minItems": 0,
+            "type": "array"
+          }
+        },
+        "required": [
+          "lines"
+        ],
+        "type": "object"
+      },
       "Revoke": {
         "properties": {
           "expectedVersion": {
@@ -3025,6 +4275,118 @@
         },
         "type": "object"
       },
+      "SaleLineView": {
+        "properties": {
+          "amount": {
+            "type": "number"
+          },
+          "batchNo": {
+            "type": "string"
+          },
+          "expiryDate": {
+            "format": "date",
+            "type": "string"
+          },
+          "gstRate": {
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "itemCode": {
+            "type": "string"
+          },
+          "itemId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "itemName": {
+            "type": "string"
+          },
+          "mrp": {
+            "type": "number"
+          },
+          "quantity": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "returnedQty": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "SaleView": {
+        "properties": {
+          "billId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "billNo": {
+            "type": "string"
+          },
+          "billStatus": {
+            "type": "string"
+          },
+          "centreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "lines": {
+            "items": {
+              "$ref": "#/components/schemas/SaleLineView"
+            },
+            "type": "array"
+          },
+          "patientId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "patientName": {
+            "type": "string"
+          },
+          "patientUhid": {
+            "type": "string"
+          },
+          "prescriptionId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "prescriptionNo": {
+            "type": "string"
+          },
+          "returnedAmount": {
+            "type": "number"
+          },
+          "saleNo": {
+            "type": "string"
+          },
+          "soldAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "soldByName": {
+            "type": "string"
+          },
+          "storeId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "storeName": {
+            "type": "string"
+          },
+          "totalAmount": {
+            "type": "number"
+          }
+        },
+        "type": "object"
+      },
       "SaveConsultation": {
         "properties": {
           "advice": {
@@ -3108,6 +4470,119 @@
             "type": "string"
           }
         },
+        "type": "object"
+      },
+      "SaveItem": {
+        "properties": {
+          "brand": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "category": {
+            "minLength": 1,
+            "pattern": "DRUG|CONSUMABLE|SURGICAL|FRAME|SPECTACLE_LENS|LENS_BLANK|CONTACT_LENS|OPTICAL_ACCESSORY|LAB_REAGENT",
+            "type": "string"
+          },
+          "coating": {
+            "maxLength": 60,
+            "minLength": 0,
+            "type": "string"
+          },
+          "code": {
+            "minLength": 1,
+            "pattern": "^[A-Z0-9][A-Z0-9_-]{1,39}$",
+            "type": "string"
+          },
+          "colour": {
+            "maxLength": 60,
+            "minLength": 0,
+            "type": "string"
+          },
+          "dosageForm": {
+            "maxLength": 60,
+            "minLength": 0,
+            "type": "string"
+          },
+          "expectedVersion": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "expiryTracked": {
+            "type": "boolean"
+          },
+          "genericName": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "gstRate": {
+            "type": "number"
+          },
+          "hsnCode": {
+            "maxLength": 12,
+            "minLength": 0,
+            "type": "string"
+          },
+          "lensIndex": {
+            "type": "number"
+          },
+          "lensType": {
+            "pattern": "SINGLE_VISION|BIFOCAL|PROGRESSIVE",
+            "type": "string"
+          },
+          "manufacturer": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "model": {
+            "maxLength": 100,
+            "minLength": 0,
+            "type": "string"
+          },
+          "mrp": {
+            "minimum": 0,
+            "type": "number"
+          },
+          "name": {
+            "maxLength": 200,
+            "minLength": 0,
+            "type": "string"
+          },
+          "reorderLevel": {
+            "format": "int32",
+            "maximum": 100000,
+            "minimum": 0,
+            "type": "integer"
+          },
+          "schedule": {
+            "pattern": "OTC|G|H|H1|X",
+            "type": "string"
+          },
+          "sizeText": {
+            "maxLength": 40,
+            "minLength": 0,
+            "type": "string"
+          },
+          "strength": {
+            "maxLength": 60,
+            "minLength": 0,
+            "type": "string"
+          },
+          "unit": {
+            "maxLength": 20,
+            "minLength": 0,
+            "type": "string"
+          }
+        },
+        "required": [
+          "category",
+          "code",
+          "gstRate",
+          "name",
+          "unit"
+        ],
         "type": "object"
       },
       "SaveOptometry": {
@@ -3301,6 +4776,81 @@
           "patientId",
           "visitType"
         ],
+        "type": "object"
+      },
+      "StockLine": {
+        "properties": {
+          "batches": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "belowReorder": {
+            "type": "boolean"
+          },
+          "category": {
+            "type": "string"
+          },
+          "itemCode": {
+            "type": "string"
+          },
+          "itemId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "itemName": {
+            "type": "string"
+          },
+          "nearestExpiry": {
+            "format": "date",
+            "type": "string"
+          },
+          "quantity": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "reorderLevel": {
+            "format": "int32",
+            "type": "integer"
+          },
+          "stockValue": {
+            "type": "number"
+          },
+          "unit": {
+            "type": "string"
+          }
+        },
+        "type": "object"
+      },
+      "StoreView": {
+        "properties": {
+          "centreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "centreName": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "storeType": {
+            "type": "string"
+          },
+          "version": {
+            "format": "int32",
+            "type": "integer"
+          }
+        },
         "type": "object"
       },
       "SubmitDayClose": {
@@ -3534,6 +5084,61 @@
           "version": {
             "format": "int32",
             "type": "integer"
+          }
+        },
+        "type": "object"
+      },
+      "TransferLineInput": {
+        "properties": {
+          "batchId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "quantity": {
+            "format": "int32",
+            "maximum": 100000,
+            "minimum": 1,
+            "type": "integer"
+          }
+        },
+        "required": [
+          "batchId",
+          "quantity"
+        ],
+        "type": "object"
+      },
+      "TransferView": {
+        "properties": {
+          "fromStoreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "fromStoreName": {
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          },
+          "sentAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "sentByName": {
+            "type": "string"
+          },
+          "toStoreId": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "toStoreName": {
+            "type": "string"
+          },
+          "transferNo": {
+            "type": "string"
           }
         },
         "type": "object"
@@ -4631,6 +6236,48 @@
         ]
       }
     },
+    "/v1/centres/{centreId}/adjustments": {
+      "get": {
+        "operationId": "adjustments",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AdjustmentView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "inventory-controller"
+        ]
+      }
+    },
     "/v1/centres/{centreId}/appointments": {
       "get": {
         "operationId": "appointments",
@@ -5335,6 +6982,365 @@
         ]
       }
     },
+    "/v1/centres/{centreId}/expiring": {
+      "get": {
+        "operationId": "expiring",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "days",
+            "required": false,
+            "schema": {
+              "default": 90,
+              "format": "int32",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BatchView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "inventory-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/lab-jobs": {
+      "get": {
+        "operationId": "labJobs",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/JobView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "optical-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/pharmacy-sales": {
+      "get": {
+        "operationId": "sales",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "date",
+            "required": false,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/SaleView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "pharmacy-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/prescriptions": {
+      "get": {
+        "operationId": "prescriptions",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PrescriptionView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "pharmacy-controller"
+        ]
+      },
+      "post": {
+        "operationId": "prescribe",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePrescription"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrescriptionView"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "pharmacy-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/receipts": {
+      "get": {
+        "operationId": "receipts",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ReceiptView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "inventory-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/spectacle-orders": {
+      "get": {
+        "operationId": "spectacleOrders",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/OrderView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "optical-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/stores": {
+      "get": {
+        "operationId": "stores",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/StoreView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "inventory-controller"
+        ]
+      },
+      "post": {
+        "operationId": "createStore",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateStore"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StoreView"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "inventory-controller"
+        ]
+      }
+    },
     "/v1/centres/{centreId}/surgeries": {
       "get": {
         "operationId": "surgeries",
@@ -5515,6 +7521,40 @@
         },
         "tags": [
           "billing-controller"
+        ]
+      }
+    },
+    "/v1/centres/{centreId}/transfers": {
+      "get": {
+        "operationId": "transfers",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "centreId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TransferView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "inventory-controller"
         ]
       }
     },
@@ -5822,6 +7862,378 @@
         ]
       }
     },
+    "/v1/inventory/adjustments": {
+      "post": {
+        "operationId": "requestAdjustment",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RequestAdjustment"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdjustmentView"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "inventory-controller"
+        ]
+      }
+    },
+    "/v1/inventory/adjustments/{adjustmentId}/decide": {
+      "post": {
+        "operationId": "decideAdjustment",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "adjustmentId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DecideAdjustment"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdjustmentView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "inventory-controller"
+        ]
+      }
+    },
+    "/v1/inventory/items": {
+      "get": {
+        "operationId": "items",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "category",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "includeRetired",
+            "required": false,
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ItemView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "inventory-controller"
+        ]
+      },
+      "post": {
+        "operationId": "createItem",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveItem"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemView"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "inventory-controller"
+        ]
+      }
+    },
+    "/v1/inventory/items/{itemId}": {
+      "put": {
+        "operationId": "updateItem",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "itemId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "retire",
+            "required": false,
+            "schema": {
+              "default": false,
+              "type": "boolean"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SaveItem"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ItemView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "inventory-controller"
+        ]
+      }
+    },
+    "/v1/inventory/receipts": {
+      "post": {
+        "operationId": "receive",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateReceipt"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReceiptView"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "inventory-controller"
+        ]
+      }
+    },
+    "/v1/inventory/transfers": {
+      "post": {
+        "operationId": "transfer",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTransfer"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TransferView"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "inventory-controller"
+        ]
+      }
+    },
+    "/v1/lab-jobs/{jobId}": {
+      "get": {
+        "operationId": "labJob",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "jobId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "optical-controller"
+        ]
+      }
+    },
+    "/v1/lab-jobs/{jobId}/advance": {
+      "post": {
+        "operationId": "advanceLabJob",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "jobId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AdvanceJob"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "optical-controller"
+        ]
+      }
+    },
+    "/v1/lab-jobs/{jobId}/quality-check": {
+      "post": {
+        "operationId": "qualityCheckLabJob",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "jobId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/QualityCheck"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/JobView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "optical-controller"
+        ]
+      }
+    },
     "/v1/legal-entities": {
       "get": {
         "operationId": "legalEntities",
@@ -5910,6 +8322,190 @@
         },
         "tags": [
           "iam-controller"
+        ]
+      }
+    },
+    "/v1/optical/orders": {
+      "post": {
+        "operationId": "createSpectacleOrder",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateOrder"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderView"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "optical-controller"
+        ]
+      }
+    },
+    "/v1/optical/orders/{orderId}": {
+      "get": {
+        "operationId": "spectacleOrder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "optical-controller"
+        ]
+      }
+    },
+    "/v1/optical/orders/{orderId}/cancel": {
+      "post": {
+        "operationId": "cancelSpectacleOrder",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderAction"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "optical-controller"
+        ]
+      }
+    },
+    "/v1/optical/orders/{orderId}/deliver": {
+      "post": {
+        "operationId": "deliverSpectacles",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderAction"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "optical-controller"
+        ]
+      }
+    },
+    "/v1/optical/orders/{orderId}/ready": {
+      "post": {
+        "operationId": "markSpectaclesReady",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "orderId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OrderAction"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "optical-controller"
         ]
       }
     },
@@ -6118,6 +8714,74 @@
         ]
       }
     },
+    "/v1/patients/{patientId}/prescriptions": {
+      "get": {
+        "operationId": "patientPrescriptions",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "patientId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/PrescriptionView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "pharmacy-controller"
+        ]
+      }
+    },
+    "/v1/patients/{patientId}/spectacle-orders": {
+      "get": {
+        "operationId": "patientSpectacleOrders",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "patientId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/OrderView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "optical-controller"
+        ]
+      }
+    },
     "/v1/people": {
       "get": {
         "operationId": "people",
@@ -6264,6 +8928,108 @@
         ]
       }
     },
+    "/v1/pharmacy/sales": {
+      "post": {
+        "operationId": "dispense",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Dispense"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaleView"
+                }
+              }
+            },
+            "description": "Created"
+          }
+        },
+        "tags": [
+          "pharmacy-controller"
+        ]
+      }
+    },
+    "/v1/pharmacy/sales/{saleId}": {
+      "get": {
+        "operationId": "sale",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "saleId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaleView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "pharmacy-controller"
+        ]
+      }
+    },
+    "/v1/pharmacy/sales/{saleId}/return": {
+      "post": {
+        "operationId": "returnSale",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "saleId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReturnSale"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SaleView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "pharmacy-controller"
+        ]
+      }
+    },
     "/v1/positions": {
       "get": {
         "operationId": "positions",
@@ -6353,6 +9119,78 @@
         },
         "tags": [
           "workforce-controller"
+        ]
+      }
+    },
+    "/v1/prescriptions/{prescriptionId}": {
+      "get": {
+        "operationId": "prescription",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "prescriptionId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrescriptionView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "pharmacy-controller"
+        ]
+      }
+    },
+    "/v1/prescriptions/{prescriptionId}/cancel": {
+      "post": {
+        "operationId": "cancelPrescription",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "prescriptionId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CancelPrescription"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PrescriptionView"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "pharmacy-controller"
         ]
       }
     },
@@ -6782,6 +9620,152 @@
         },
         "tags": [
           "iam-controller"
+        ]
+      }
+    },
+    "/v1/stores/{storeId}/batches": {
+      "get": {
+        "operationId": "batches",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "storeId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "itemId",
+            "required": false,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "inStock",
+            "required": false,
+            "schema": {
+              "default": true,
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/BatchView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "inventory-controller"
+        ]
+      }
+    },
+    "/v1/stores/{storeId}/movements": {
+      "get": {
+        "operationId": "movements",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "storeId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "format": "date",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/MovementView"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "inventory-controller"
+        ]
+      }
+    },
+    "/v1/stores/{storeId}/stock": {
+      "get": {
+        "operationId": "stock",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "storeId",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/StockLine"
+                  },
+                  "type": "array"
+                }
+              }
+            },
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "inventory-controller"
         ]
       }
     },

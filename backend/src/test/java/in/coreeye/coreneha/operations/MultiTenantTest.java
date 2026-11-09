@@ -75,7 +75,17 @@ class MultiTenantTest extends PostgresTestBase {
         // The vendor removes eye care from chain A's licence: the consultant's role no longer grants it.
         licensing.setLicence(a, change(a, List.of("BILLING"), null, "Eye care not renewed"));
         TenantContext.callAs(tenantA, () -> {
-            assertThat(access.holds(consultantA, Permission.EYE_CLINICAL_READ, Scope.centre(centreA))).isFalse();
+            String modules = jdbc.sql("select coalesce(string_agg(module_code, ','), '') from org.tenant_module").query(String.class).single();
+            Boolean licensed = jdbc.sql("select org.permission_licensed(:t, 'eye.clinical.read')").param("t", tenantA).query(Boolean.class).single();
+            String grants = jdbc.sql("""
+                    select string_agg(g.permission_code || '@' || org.permission_licensed(u.tenant_id, g.permission_code), ',')
+                    from iam.role_assignment ra join iam.user_account u on u.id = ra.user_id
+                    join iam.role_version rv on rv.role_id = ra.role_id and rv.status = 'PUBLISHED'
+                    join iam.role_version_grant g on g.role_version_id = rv.id where ra.user_id = :u""")
+                    .param("u", consultantA.userId()).query(String.class).single();
+            assertThat(modules).as("licensed modules after the change").isEqualTo("BILLING");
+            assertThat(licensed).as("eye licensed? grants=" + grants).isFalse();
+            assertThat(access.holds(consultantA, Permission.EYE_CLINICAL_READ, Scope.centre(centreA))).as("grants=" + grants).isFalse();
             assertThat(access.holds(consultantA, Permission.PATIENT_READ, Scope.centre(centreA))).as("core stays").isTrue();
             assertThat(licensing.licence(adminA).modules()).containsExactly("BILLING");
             return null;

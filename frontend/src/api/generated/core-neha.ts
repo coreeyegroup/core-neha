@@ -5,6 +5,69 @@
  * OpenAPI spec version: v0
  */
 import { apiFetch } from '../http';
+export interface LicenceInfo {
+  licenceNo?: string;
+  maxCentres?: number;
+  plan?: string;
+  status?: string;
+  validFrom?: string;
+  validTo?: string;
+}
+
+export interface ModuleInfo {
+  code?: string;
+  licensed?: boolean;
+  permissions?: number;
+}
+
+export interface HeldAt {
+  role?: string;
+  scopeName?: string;
+  scopeType?: string;
+}
+
+export interface PermissionInfo {
+  area?: string;
+  code?: string;
+  description?: string;
+  heldAt?: HeldAt[];
+  licensed?: boolean;
+  module?: string;
+  roles?: string[];
+  tenantOnly?: boolean;
+}
+
+export interface PositionInfo {
+  category?: string;
+  code?: string;
+  people?: number;
+  roles?: string[];
+  status?: string;
+  title?: string;
+}
+
+export interface RoleInfo {
+  activeAssignments?: number;
+  code?: string;
+  description?: string;
+  name?: string;
+  permissions?: string[];
+  positions?: string[];
+  publishedVersion?: number;
+  status?: string;
+  system?: boolean;
+}
+
+export interface AccessGuide {
+  chainName?: string;
+  full?: boolean;
+  licence?: LicenceInfo;
+  modules?: ModuleInfo[];
+  permissions?: PermissionInfo[];
+  positions?: PositionInfo[];
+  roles?: RoleInfo[];
+}
+
 export interface Acquire {
   expectedVersion: number;
   imageCount?: number;
@@ -2701,6 +2764,27 @@ permission: string;
 scopeType: string;
 scopeId: string;
 };
+
+export const getAccessGuideUrl = () => {
+
+
+
+
+  return `/v1/access-guide`
+}
+
+export const accessGuide = async ( options?: Parameters<typeof apiFetch>[1]): Promise<AccessGuide> => {
+
+  return apiFetch<AccessGuide>(getAccessGuideUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
 
 export const getCancelAppointmentUrl = (appointmentId: string,) => {
 

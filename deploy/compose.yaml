@@ -168,12 +168,13 @@ services:
       ORTHANC__DICOM_AET: CORENEHA
       ORTHANC__AUTHENTICATION_ENABLED: "false"
       ORTHANC__REMOTE_ACCESS_ALLOWED: "true"
-      ORTHANC__DICOM_WEB__ENABLE: "true"
-      ORTHANC__DICOM_WEB__ROOT: /dicom-web/
-      ORTHANC__DICOM_WEB__PUBLIC_ROOT: ${CORE_NEHA_BASE_PATH}/api/pacs/dicom-web/
       DICOM_WEB_PLUGIN_ENABLED: "true"
       OHIF_PLUGIN_ENABLED: "true"
-      ORTHANC__OHIF__DATA_SOURCE: dicom-web
+      # The viewer is served under the gateway path, so its router base must match (Orthanc book, OHIF
+      # plugin: RouterBasename), and it reads images over DICOMweb, the only data path the gateway allows.
+      ORTHANC_JSON: >-
+        {"DicomWeb": {"Enable": true, "Root": "/dicom-web/", "PublicRoot": "${CORE_NEHA_BASE_PATH}/api/pacs/dicom-web/"},
+         "OHIF": {"DataSource": "dicom-web", "RouterBasename": "${CORE_NEHA_BASE_PATH}/api/pacs/ohif/"}}
       VERBOSE_ENABLED: "false"
     volumes:
       - pacsdata:/var/lib/orthanc/db

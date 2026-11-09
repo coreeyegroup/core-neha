@@ -6,6 +6,10 @@ CREATE SCHEMA inventory;
 CREATE SCHEMA pharmacy;
 CREATE SCHEMA optical;
 GRANT USAGE ON SCHEMA inventory, pharmacy, optical TO core_neha_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA inventory, pharmacy, optical
+    GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO core_neha_app;
+ALTER DEFAULT PRIVILEGES IN SCHEMA inventory, pharmacy, optical
+    GRANT USAGE, SELECT ON SEQUENCES TO core_neha_app;
 
 ------------------------------------------------------------------------------
 -- inventory

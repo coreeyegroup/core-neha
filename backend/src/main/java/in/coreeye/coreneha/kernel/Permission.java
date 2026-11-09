@@ -52,7 +52,28 @@ public enum Permission {
     BILLING_TARIFF_MANAGE("billing.tariff.manage", false),
     BILLING_REPORT_READ("billing.report.read", false),
     BILLING_DAYCLOSE_SUBMIT("billing.dayclose.submit", false),
-    BILLING_DAYCLOSE_APPROVE("billing.dayclose.approve", false);
+    BILLING_DAYCLOSE_APPROVE("billing.dayclose.approve", false),
+    // Inventory: item master, stores, stock by batch, receipts, transfers, adjustments
+    INVENTORY_ITEM_MANAGE("inventory.item.manage", true),
+    INVENTORY_READ("inventory.read", false),
+    INVENTORY_STORE_MANAGE("inventory.store.manage", false),
+    INVENTORY_RECEIVE("inventory.receive", false),
+    INVENTORY_TRANSFER("inventory.transfer", false),
+    INVENTORY_ADJUST_REQUEST("inventory.adjust.request", false),
+    INVENTORY_ADJUST_APPROVE("inventory.adjust.approve", false),
+    // Pharmacy
+    PHARMACY_PRESCRIBE("pharmacy.prescribe", false),
+    PHARMACY_READ("pharmacy.read", false),
+    PHARMACY_DISPENSE("pharmacy.dispense", false),
+    PHARMACY_RETURN("pharmacy.return", false),
+    // Optical shop
+    OPTICAL_READ("optical.read", false),
+    OPTICAL_ORDER("optical.order", false),
+    OPTICAL_DELIVER("optical.deliver", false),
+    // Optical manufacturing (lab)
+    OPTICALLAB_READ("opticallab.read", false),
+    OPTICALLAB_PROCESS("opticallab.process", false),
+    OPTICALLAB_QC("opticallab.qc", false);
 
     private final String code;
     private final boolean tenantOnly;

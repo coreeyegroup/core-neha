@@ -41,4 +41,5 @@ done
 "$CN_REPO/ops/demo-seed.sh"
 "$CN_REPO/ops/clinic-seed.sh"
 "$CN_REPO/ops/clinic-staff.sh"
+"$CN_REPO/ops/clinic-supply.sh"
 cn_log "demonstration system reloaded; new one-time passwords are in $CN_SECRETS/onboarding/"

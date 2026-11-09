@@ -54,7 +54,7 @@ class DiagnosticsTest extends PostgresTestBase {
         ClinicDiagnostics.Summary s = demo.load(code);
         assertThat(s.labTests()).isEqualTo(10);
         assertThat(s.procedures()).isEqualTo(8);
-        assertThat(s.orders()).isEqualTo(10);
+        assertThat(s.orders()).isEqualTo(11);
         assertThat(s.validated()).isEqualTo(3);
         assertThat(s.verified()).isEqualTo(1);
         assertThat(s.images()).isFalse();

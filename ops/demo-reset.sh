@@ -43,4 +43,5 @@ done
 "$CN_REPO/ops/clinic-staff.sh"
 "$CN_REPO/ops/clinic-supply.sh"
 "$CN_REPO/ops/clinic-diagnostics.sh"
+"$CN_REPO/ops/demo-inspector.sh"
 cn_log "demonstration system reloaded; new one-time passwords are in $CN_SECRETS/onboarding/"

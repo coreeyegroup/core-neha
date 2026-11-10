@@ -39,6 +39,7 @@ class DiagnosticsTest extends PostgresTestBase {
     @Autowired DiagnosticsService diagnostics;
     @Autowired ImagingAccess imaging;
     @Autowired AccessGuideService guide;
+    @Autowired DemoInspector inspector;
     @Autowired CoreNehaProperties props;
     @Autowired JdbcClient jdbc;
     @MockitoBean IdentityProvisioner provisioner;
@@ -147,6 +148,22 @@ class DiagnosticsTest extends PostgresTestBase {
                     .satisfies(p -> assertThat(p.roles()).contains("EYE_RADIOLOGIST", "DIAGNOSTICS_CATALOGUE"));
             assertThat(all.permissions()).filteredOn(p -> p.code().equals("lab.validate")).first()
                     .satisfies(p -> assertThat(p.roles()).contains("EYE_PATHOLOGIST"));
+            return null;
+        });
+
+        // The developer's demonstration inspector: every permission at whole-organisation scope, through the normal controls.
+        DemoInspector.Summary first = inspector.load(code);
+        assertThat(first.created()).isTrue();
+        assertThat(first.permissions()).isEqualTo(68);
+        assertThat(inspector.load(code).created()).as("safe to run again").isFalse();
+        TenantContext.callAs(tenant, () -> {
+            Actor dev = actorOf(id("select id from iam.user_account where username = '" + first.username() + "'"));
+            var g = guide.guide(dev);
+            assertThat(g.full()).isTrue();
+            assertThat(g.permissions()).allSatisfy(p -> assertThat(p.heldAt()).extracting(AccessGuideService.HeldAt::scopeType).containsOnly("TENANT"));
+            assertThat(imaging.allows(dev, props.basePath() + "/api/pacs/ohif/viewer")).isTrue();
+            assertThat(count("select count(*) from iam.role_assignment a join iam.role r on r.id = a.role_id where r.code = 'DEMO_INSPECTOR' and a.status = 'ACTIVE'"))
+                    .isEqualTo(1);
             return null;
         });
     }

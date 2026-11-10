@@ -8,7 +8,8 @@ set -uo pipefail
 cn_load_env
 login="$(printf '%s' "${1:?usage: ops/whois.sh <login id, e.g. e10001>}" | tr 'A-Z' 'a-z')"
 case "$login" in *[!a-z0-9._@-]*) echo "refused: unexpected characters in the login id" >&2; exit 1 ;; esac
-q() { "$CN_REPO/ops/cn" exec -T postgres psql -U postgres -d core_neha -At -F ' | ' -v login="$login" -c "$1" 2>&1; }
+# SQL goes in on standard input so that psql substitutes :'login' as a quoted literal (it does not with -c).
+q() { printf '%s;\n' "$1" | "$CN_REPO/ops/cn" exec -T postgres psql -U postgres -d core_neha -At -F ' | ' -v login="$login" 2>&1; }
 
 echo "== account (login | employee no | name | organisation | account status | MFA required)"
 q "select u.username, p.employee_no, p.given_name || ' ' || p.family_name, t.name, u.status, u.mfa_required

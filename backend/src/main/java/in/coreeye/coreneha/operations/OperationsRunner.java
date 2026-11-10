@@ -32,12 +32,13 @@ class OperationsRunner implements ApplicationRunner {
     private final ClinicStaff clinicStaff;
     private final ClinicSupply clinicSupply;
     private final ClinicDiagnostics clinicDiagnostics;
+    private final DemoInspector demoInspector;
     private final TenantLicensing licensing;
     private final ConfigurableApplicationContext context;
 
     OperationsRunner(CoreNehaProperties props, Environment env, BootstrapService bootstrap, DemoSeed demoSeed,
                      ClinicSeed clinicSeed, ClinicStaff clinicStaff, ClinicSupply clinicSupply,
-                     ClinicDiagnostics clinicDiagnostics, TenantLicensing licensing,
+                     ClinicDiagnostics clinicDiagnostics, DemoInspector demoInspector, TenantLicensing licensing,
                      ConfigurableApplicationContext context) {
         this.props = props;
         this.env = env;
@@ -47,6 +48,7 @@ class OperationsRunner implements ApplicationRunner {
         this.clinicStaff = clinicStaff;
         this.clinicSupply = clinicSupply;
         this.clinicDiagnostics = clinicDiagnostics;
+        this.demoInspector = demoInspector;
         this.licensing = licensing;
         this.context = context;
     }
@@ -66,6 +68,7 @@ class OperationsRunner implements ApplicationRunner {
                 case "clinic-staff" -> runClinicStaff();
                 case "clinic-supply" -> runClinicSupply();
                 case "clinic-diagnostics" -> runClinicDiagnostics();
+                case "demo-inspector" -> runDemoInspector();
                 case "tenant-list" -> runTenantList();
                 case "tenant-licence" -> runTenantLicence();
                 case "tenant-suspend" -> licensing.setStatus(required("CORE_NEHA_TENANT_CODE"), false, required("CORE_NEHA_REASON"));
@@ -125,6 +128,22 @@ class OperationsRunner implements ApplicationRunner {
     }
 
     /** Adds the full staff of the eye clinic (every position, two people each); safe to run again. */
+    private void runDemoInspector() throws Exception {
+        if (!props.demo()) {
+            throw new IllegalStateException("Demonstration data is loaded only when CORE_NEHA_ENVIRONMENT=demo");
+        }
+        String tenant = env.getProperty("CORE_NEHA_SEED_TENANT", DemoSeed.TENANT_CODE);
+        DemoInspector.Summary s = demoInspector.load(tenant);
+        if (!s.created()) {
+            log.info("Demonstration inspector already exists: login id {}; its role now has all {} permissions", s.username(), s.permissions());
+            return;
+        }
+        Path file = CredentialsFile.write(props.operations().outputDir(), "demo-inspector-login",
+                "core-neha DEMONSTRATION inspector login: every permission, whole organisation (tenant " + tenant + ")", List.of(s.login()));
+        log.info("Demonstration inspector created: login id {}, {} permissions; one-time password written to {}", s.username(), s.permissions(),
+                file.getFileName());
+    }
+
     private void runClinicStaff() throws Exception {
         if (!props.demo()) {
             throw new IllegalStateException("Demonstration data is loaded only when CORE_NEHA_ENVIRONMENT=demo");
